@@ -174,25 +174,10 @@ const routes = [
         component: shelterdashboardContent,
       },
       {
-        // my shelter view
+        // my shelter profile view
         path: "/myshelter",
         name: "shelterprofile",
         component: shelterprofile,
-        redirect: "/myshelter_feed", // shelter_NewsfeedCard.vue
-        children: [
-          {
-            // a component shelter_NewsfeedCard.vue
-            path: "/myshelter_feed",
-            name: "shelterfeed",
-            component: shelterfeed,
-          },
-          {
-            // a component shelter_ViewPostCard.vue
-            path: "/myshelter_viewpost",
-            name: "shelterviewpost",
-            component: shelterviewpost,
-          },
-        ],
       },
       {
         // my shelter - Edit Profile

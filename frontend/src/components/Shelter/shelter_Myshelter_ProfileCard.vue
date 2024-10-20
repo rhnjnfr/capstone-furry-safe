@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-white md:flex md:items-center md:justify-between md:space-x-5 border-b-2 border-t p-[2rem] lg:px-[5rem]">
+    <div class="bg-white border rounded-2xl md:flex md:items-center md:justify-between md:space-x-5 p-[2rem] lg:px-[5rem]">
         <div v-for="(profile, index) in profiles" :key="index"
             class="flex items-center space-x-5 sm:justify-center">
             <div class="flex-shrink-0">

@@ -41,7 +41,7 @@
                   <div class="flex flex-col mt-1.5">
                     <label for="rehomed" class="font-medium leading-6 text-gray-700">
                       Date Re-homed</label>
-                    <input v-model="daterehomed" type="text" name="rehomed" id="rehomed" placeholder="Date Rehomed"
+                    <input v-model="daterehomed" type="text" name="rehomed" placeholder="Date Rehomed"
                       class="mt-1.5 border rounded-md p-1.5 px-6" readonly>
                   </div>
                   <div class="flex flex-col mt-1.5">

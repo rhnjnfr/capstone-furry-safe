@@ -140,7 +140,7 @@ onMounted(() => {
                 </RouterLink>
             </div>
         </div>
-        <div id="margin" class="sm:mx-[1rem] md:mx-[10rem]">
+        <div class="sm:mx-[1rem] md:mx-[10rem]">
             <div class="border-b mb-6">
                 <div class=" flex justify-between px-4 sm:px-0">
                     <h3 class="text-base font-semibold leading-7 text-gray-900">Pet Information</h3>

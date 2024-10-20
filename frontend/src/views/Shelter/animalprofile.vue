@@ -5,7 +5,7 @@
                 <textvalue msg="Animal Profile" />
             </div>
             <div class="flex sm:gap-x-1 md:gap-x-4 items-center">
-                <div class="bgorange py-[.40rem] px-[2rem] sm:px-[12px] rounded-md hover:bg-bgdarkorange">
+                <div class="bgorange py-[.40rem] px-[2rem] sm:px-[12px] rounded-md hover:bg-lightorange">
                     <RouterLink to="/create_animalprofileform" class="flex gap-x-1 items-center">
                         <FolderPlusIcon class="-ml-0.5 mr-1.5 sm:h-4 sm:w-4 md:h-5 md:w-5 text-white"
                             aria-hidden="true" />
@@ -19,7 +19,7 @@
         </header>
         <main class="mt-[1rem]">
             <ul id="profile-columns" role="list"
-                class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 place-items-center">
+                class="grid gap-6 place-items-center">
                 <li v-for="pets in profiles" :key="pets.name"
                     class="col-span-1 flex flex-col divide-y divide-gray-200 rounded-lg w-full bg-white text-center border drop-shadow-md">
                     <div class="flex flex-1 flex-col p-7">
