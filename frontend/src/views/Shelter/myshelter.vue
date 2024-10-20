@@ -54,12 +54,12 @@ onMounted(() => {
             <div class="mt-[1rem]">
                 <profileCard />
             </div>
-            <div id="minscreen"
+            <div
                 class="mt-[1rem] flex sm:flex-col md:flex-row lg:flex-row md:justify-between sm:w-full sm:gap-y-[1rem] md:gap-x-[1rem]">
-                <div id="leftside" class="xl:w-[27%]">
+                <div id="detailcard" class="sm:w-full md:w-full lg:w-full xl:w-[27%]">
                     <detailCard class="border rounded-md" />
                 </div>
-                <div id="rightside" class="xl:w-[78%] h-fit">
+                <div id="newsfeed" class="sm:w-full md:w-full lg:w-full xl:w-[78%] h-fit">
                     <div class="mb-[1rem]">
                         <div
                             class="flex justify-between items-center bg-amber-50 rounded-lg py-2 sm:px-[2rem] lg:px-[3rem]">
@@ -81,9 +81,9 @@ onMounted(() => {
                     </div>
                     <div>
                         <div id="pxlg"
-                            class="flex justify-between border-b-2 border-t items-center p-[1rem] sm:px-[2rem] lg:px-[3rem] bg-white">
+                            class="flex justify-between border-b-2 border-t items-center p-[1rem] sm:px-[2rem] lg:px-[2rem] bg-white">
                             <span id="feed" class="sm:text-[14px]">Shelter's Feed</span>
-                            <div id="sbuttons" class="flex gap-4">
+                            <div id="sbuttons" class="flex gap-x-2">
                                 <button type="button" @click="toggleModalEvent"
                                     class="flex justify-center rounded-md bgorange px-3 py-2 text-sm font-semibold text-white shadow-sm hover:animate-bounce group">
                                     <svg id="px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"

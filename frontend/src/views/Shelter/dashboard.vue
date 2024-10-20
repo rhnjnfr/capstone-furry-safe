@@ -3,7 +3,7 @@ import textvalue from '@/components/textString.vue'
 import datetoday from '@/components/Shelter/dateCard.vue'
 import linkfooter from '@/components/footerLink.vue'
 import updatescard from '@/components/Shelter/shelter_Dashboard_Activities.vue';
-import displaymap from '@/components/Map.vue';
+import displaymap from '@/components/Map2.vue';
 import mapoverlay from '@/components/pin_MapModal.vue'
 
 import statsCard from '@/components/Shelter/shelter_Dashboard_statsCard.vue';

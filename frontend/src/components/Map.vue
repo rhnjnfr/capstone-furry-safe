@@ -57,10 +57,20 @@ const pawIcon = L.icon({
 //   }
 // });
 
+//old code of jeneh change to new code of salpocial
 // Initialize map on component mount
-onMounted(() => {
-  getLocation();
+// onMounted(() => {
+//   getLocation();
+// }); by jeneh
+
+// new added line changes on onMounted(()
+// Initialize map on component mount
+onMounted(async () => {
+  getLocation(); // Get user's location first
+  await fetchShelters(); // Fetch shelter data afterwards
 });
+// end of new added line changes on onMounted(()) - from salpocial's code
+
 
 // Clean up map when the component is unmounted
 onBeforeUnmount(() => {
@@ -70,6 +80,48 @@ onBeforeUnmount(() => {
     map.value = null;
   }
 });
+
+// start of added new line - salpocial code
+// Function to fetch shelters data from the backend
+const fetchShelters = async () => {
+  try {
+    const response = await fetch('http://localhost:5000/shelters');
+    if (!response.ok) throw new Error('Network response was not ok');
+    const data = await response.json();
+    console.log("Fetched shelter data:", data);
+    shelters.value = data; // Set the fetched data to shelters array
+
+    // Check if map is initialized before adding markers
+    if (map.value) {
+      addShelterMarkers(); // Call the function to add markers
+    } else {
+      console.warn("Map is not initialized yet.");
+    }
+  } catch (error) {
+    console.error("Error fetching shelter data:", error);
+  }
+};
+
+// Function to add shelter markers to the map
+const addShelterMarkers = async () => {
+  for (const shelter of shelters.value) {
+    const lat = parseFloat(shelter.latitude); // Convert to float if necessary
+    const lng = parseFloat(shelter.longitude); // Convert to float if necessary
+    if (!isNaN(lat) && !isNaN(lng) && shelter.shelter_name) { // Ensure valid coordinates
+      const shelterMarker = L.marker([lat, lng], { icon: pawIcon }).addTo(map.value);
+
+      // Update the popup content to include both name and address
+      const popupContent = `
+                <strong>${shelter.shelter_name}</strong><br>
+                Address: ${shelter.address ? shelter.address : 'Address not available'}
+            `;
+      shelterMarker.bindPopup(popupContent);
+    } else {
+      console.warn("Invalid coordinates for shelter:", shelter);
+    }
+  }
+};
+// end of added new line - salpocial code
 
 // Initialize the map function
 const initializeMap = (lat, lng) => {

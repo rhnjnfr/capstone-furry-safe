@@ -151,10 +151,6 @@
     #card {
         max-width: 100%;
     }
-
-    #minscreen {
-        flex-direction: column;
-    }
 }
 
 @media (max-width: 1367px) {
@@ -190,9 +186,6 @@
         max-width: 100%;
     }
 
-    #minscreen {
-        flex-direction: column;
-    }
 }
 
 @media (max-width: 1024px) {
@@ -208,10 +201,6 @@
 
     #feed {
         font-size: 13px;
-    }
-
-    #minscreen {
-        flex-direction: row;
     }
 
     #shelterform {
@@ -263,12 +252,25 @@
     }
 }
 
-@media (max-width: 843px) {
-    #minscreen {
-        flex-direction: column;
+@media (min-width: 880px) and (max-width: 1023px) {
+    #detailcard {
+        width: 40%;
     }
-
+    #newsfeed {
+        width: 60%;
+    }
 }
+
+@media (min-width: 489px) and (max-width: 820px) {
+    #detailcard {
+        width: 100%;
+    }
+    #newsfeed {
+        width: 100%;
+    }
+}
+
+
 
 @media (min-width: 800px) and (max-width: 1017px) {
     #w-squares {
