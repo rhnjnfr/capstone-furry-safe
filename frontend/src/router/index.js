@@ -50,6 +50,8 @@ import test from "@/components/pin_MapModal.vue";
 
 // buddy
 import buddyDashboard from "../layouts/Client/Buddy/dashboard.vue"
+import home from "../views/Buddy/home.vue"
+import buddymessages from "../views/Buddy/Message.vue"
 
 const routes = [
   //jene loginhelp huehfjkgjgsad
@@ -236,15 +238,21 @@ const routes = [
     path: "/buddydashboard",
     name: "buddyDashboard",
     component: buddyDashboard,
-    // redirect: "",
-    // children: [
-    //   {
-    //     // dashboard
-    //     path: "/landingcontent",
-    //     name: "landingcontent",
-    //     component: landingcontent,
-    //   },
-    // ],
+    redirect: "/buddy_home",
+    children: [
+      {
+        // dashboard
+        path: "/buddy_home",
+        name: "buddy_home",
+        component: home,
+      },
+      {
+        // dashboard
+        path: "/buddy_messages",
+        name: "buddy_messages",
+        component: buddymessages,
+      },
+    ],
   },
   // end of buddy path...
 

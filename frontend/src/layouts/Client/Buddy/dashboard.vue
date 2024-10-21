@@ -38,18 +38,19 @@
                                                     class="text-[11px] font-semibold text-gray-600 px-4">NAVIGATION</span>
                                                 <li v-for="item in navigation" :key="item.name">
                                                     <RouterLink v-if="item.name !== 'Create'" :to="item.to"
-                                                        :class="[item.current ? 'bg-gray-100 text-gray-800' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100', 'group flex gap-x-3 rounded-md p-2 text-base leading-6 font-semibold px-6 cursor-pointer']">
+                                                        :class="[item === currentNavigatedItem ? 'bg-red-500 text-gray-800' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100', 'group flex gap-x-3 rounded-md p-2 text-base leading-6 font-semibold px-6 cursor-pointer']">
                                                         <component :is="item.icon" class="h-6 w-6 shrink-0"
                                                             aria-hidden="true" />
                                                         {{ item.name }}
                                                     </RouterLink>
                                                     <button v-else @click="openCreateModal = true"
-                                                        :class="[item.current ? 'bg-gray-100 text-gray-800' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100', 'group flex gap-x-3 rounded-md p-2 text-base leading-6 font-semibold px-6 cursor-pointer']">
+                                                        :class="[item === currentNavigatedItem ? 'bg-red-500 text-gray-800' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100', 'group flex gap-x-3 rounded-md p-2 text-base leading-6 font-semibold px-6 cursor-pointer']">
                                                         <component :is="item.icon" class="h-6 w-6 shrink-0"
                                                             aria-hidden="true" />
                                                         {{ item.name }}
                                                     </button>
                                                 </li>
+
                                             </ul>
                                         </li>
 
@@ -88,7 +89,7 @@
                         <li>
                             <ul role="list" class="-mx-2 space-y-4">
                                 <span class="text-[11px] font-semibold text-gray-600 px-4">NAVIGATION</span>
-                                <li v-for="item in navigation" :key="item.name">
+                                <!-- <li v-for="item in navigation" :key="item.name">
                                     <RouterLink v-if="item.name !== 'Create'" :to="item.to"
                                         :class="[item.current ? 'bg-gray-100 text-gray-800' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100', 'group flex gap-x-3 rounded-md p-2 text-base leading-6 font-semibold px-6 cursor-pointer']">
                                         <component :is="item.icon" class="h-6 w-6 shrink-0" aria-hidden="true" />
@@ -99,7 +100,20 @@
                                         <component :is="item.icon" class="h-6 w-6 shrink-0" aria-hidden="true" />
                                         {{ item.name }}
                                     </button>
+                                </li> -->
+                                <li v-for="item in navigation" :key="item.name">
+                                    <RouterLink v-if="item.name !== 'Create'" :to="item.to"
+                                        :class="[item === currentNavigatedItem ? 'bg-gray-100 text-gray-800' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100', 'group flex gap-x-3 rounded-md p-2 text-base leading-6 font-semibold px-6 cursor-pointer']">
+                                        <component :is="item.icon" class="h-6 w-6 shrink-0" aria-hidden="true" />
+                                        {{ item.name }}
+                                    </RouterLink>
+                                    <button v-else @click="openCreateModal = true"
+                                        :class="[item === currentNavigatedItem ? 'bg-gray-100 text-gray-800' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100', 'group flex gap-x-3 rounded-md p-2 text-base leading-6 font-semibold px-6 cursor-pointer']">
+                                        <component :is="item.icon" class="h-6 w-6 shrink-0" aria-hidden="true" />
+                                        {{ item.name }}
+                                    </button>
                                 </li>
+
                             </ul>
                         </li>
 
@@ -179,7 +193,7 @@
                                     <RouterLink :to="item.to"
                                         :class="[active ? 'bg-gray-50' : '', 'block px-3 py-1 text-sm leading-6 text-gray-800']">
                                         {{
-                                        item.name }}</RouterLink>
+                                            item.name }}</RouterLink>
                                     </MenuItem>
                                 </MenuItems>
                             </transition>
@@ -199,7 +213,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed  } from 'vue'
+import { useRoute } from 'vue-router'; // Import useRoute
 import { Dialog, DialogPanel, Menu, MenuButton, MenuItem, MenuItems, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { Bars3Icon, BellIcon, PlusIcon, AdjustmentsHorizontalIcon, ArrowRightStartOnRectangleIcon, UserIcon, CursorArrowRaysIcon, HomeIcon, ChatBubbleOvalLeftEllipsisIcon, XMarkIcon } from '@heroicons/vue/24/outline'
 import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/vue/20/solid'
@@ -208,12 +223,18 @@ import CreateReportModal from '@/components/Buddy/buddy_CreateReportPost_Modal.v
 const openCreateModal = ref(false) // for create report modal
 
 const navigation = [
-    { name: 'Home', to: { name: '' }, icon: HomeIcon, current: false },
-    { name: 'Message', to: { name: '' }, icon: ChatBubbleOvalLeftEllipsisIcon, current: false },
+    { name: 'Home', to: { name: 'buddy_home' }, icon: HomeIcon, current: false },
+    { name: 'Message', to: { name: 'buddy_messages' }, icon: ChatBubbleOvalLeftEllipsisIcon, current: false },
     { name: 'Explore', to: { name: '' }, icon: CursorArrowRaysIcon, current: false },
     { name: 'Create', to: null, icon: PlusIcon, current: false, },
     { name: 'Profile', to: { name: '' }, icon: UserIcon, current: false },
 ]
+
+const route = useRoute()
+// Computed property to determine the current navigation item
+const currentNavigatedItem = computed(() => {
+    return navigation.find(item => item.to && item.to.name === route.name);
+});
 
 const userNavigation = [
     { name: 'Your profile', to: { name: 'profile' }, },

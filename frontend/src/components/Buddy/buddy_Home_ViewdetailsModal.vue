@@ -31,7 +31,8 @@
                                     class="sm:h-fit md:h-[30rem] lg:h-[40rem] xl:h-[45rem] flex sm:flex-col md:flex-row">
                                     <div
                                         class="flex items-center text-gray-700 md:hidden gap-x-2 border-b px-[2rem] py-4">
-                                        <img :src="viewpostdetials.profile" alt="profile" class="w-10 h-10 rounded-full" />
+                                        <img :src="viewpostdetials.profile" alt="profile"
+                                            class="w-10 h-10 rounded-full" />
                                         <span class="font-bold sm:text-base xl:text-xl">{{
                                             viewpostdetials.sheltername }}</span>
                                     </div>
@@ -60,14 +61,14 @@
                                         class="text-gray-700 sm:w-full md:w-[40%] xl:w-[40%] sm:py-[1rem] rounded-r-2xl flex flex-col text-sm sm:border-t lg:border-l ">
                                         <!-- display details -->
                                         <div
-                                            class="flex items-center sm:hidden md:flex gap-x-2 border-b px-[2rem] pb-4">
+                                            class="flex items-center sm:hidden md:flex gap-x-2 px-[2rem] pb-2">
                                             <img :src="viewpostdetials.profile" alt="profile"
                                                 class="w-10 h-10 rounded-full" />
                                             <span class="font-bold sm:text-base xl:text-xl">{{
                                                 viewpostdetials.sheltername }}</span>
                                         </div>
                                         <div
-                                            class="px-[2rem] py-[1rem] xl:my-[4rem] flex flex-col gap-y-2 sm:text-sm lg:text-base font-medium">
+                                            class="px-[2rem] py-[1rem] flex flex-col gap-y-2 sm:text-sm lg:text-base font-medium">
                                             <div class="flex gap-x-2">
                                                 <span>Name:</span>
                                                 <span>{{ viewpostdetials.name }}</span>
@@ -93,6 +94,10 @@
                                                 <p class="text-base text-left font-medium text-gray-900 pt-[1rem]">
                                                     {{ viewpostdetials.caption }}
                                                 </p>
+                                            </div>
+                                            <div class="w-full mt-4">
+                                                <textarea class="border rounded-lg font-normal sm:text-sm md:text-base w-full p-2"
+                                                    name="commentsection" placeholder="Add a comment..."></textarea>
                                             </div>
 
                                         </div>
