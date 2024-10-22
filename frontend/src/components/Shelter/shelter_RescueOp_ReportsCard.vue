@@ -1,4 +1,4 @@
-<script>
+<!-- <script>
 // import { EyeIcon } from "@heroicons/vue/20/solid";
 import statusbuttons from '@/components/Shelter/shelter_RescueOp_ReportCard_ReportStatusButtons.vue'
 import { RouterLink } from 'vue-router';
@@ -59,7 +59,60 @@ export default {
         }
     }
 };
+</script> -->
+<script setup>
+import { ref } from 'vue';
+import statusbuttons from '@/components/Shelter/shelter_RescueOp_ReportCard_ReportStatusButtons.vue';
+import previewhover from '@/components/Shelter/shelter_HoverName.vue';
+
+const showRescueCancelButtons = ref(false);
+const showSuccessMessage = ref(false);
+const hoveredIndex = ref(null); // Track the hovered item index
+
+const reports = ref([
+    {
+        id: 1,
+        username: 'Eric Jr.',
+        type: 'Missing Dog',
+        caption: 'Found this dog at abandoned lot near STI College Davao',
+        location: '#506 Lim Building J.P. Laurel Avenue, Corner Acacia, Davao City, Philippines',
+        animalstatus: 'Severe',
+        imageUrl: require('@/assets/images/eric.png'),
+        badge: 'rescuer',
+    },
+    {
+        id: 2,
+        username: 'Bals',
+        type: 'Missing Dog',
+        caption: 'Found this dog at abandoned lot near STI College Davao',
+        location: '#506 Lim Building J.P. Laurel Avenue, Corner Acacia, Davao City, Philippines',
+        animalstatus: 'Severe',
+        imageUrl: require('@/assets/images/bals.png'),
+        badge: 'rescuer',
+    },
+    {
+        id: 3,
+        username: 'Charles',
+        type: 'Missing Dog',
+        caption: 'Found this dog at abandoned lot near STI College Davao',
+        location: '#506 Lim Building J.P. Laurel Avenue, Corner Acacia, Davao City, Philippines',
+        animalstatus: 'Severe',
+        imageUrl: require('@/assets/images/charles.png'),
+        badge: 'rescuer',
+    },
+    {
+        id: 4,
+        username: 'Bert',
+        type: 'Missing Dog',
+        caption: 'Found this dog at abandoned lot near STI College Davao',
+        location: '#506 Lim Building J.P. Laurel Avenue, Corner Acacia, Davao City, Philippines',
+        animalstatus: 'Severe',
+        imageUrl: require('@/assets/images/bert.png'),
+        badge: 'rescuer',
+    },
+]);
 </script>
+
 <template>
     <div>
         <div v-for="(report, index) in reports" :key="index" class="bg-white shadow-md rounded-lg mb-4">

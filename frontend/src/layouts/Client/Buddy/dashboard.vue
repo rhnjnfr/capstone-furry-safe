@@ -38,13 +38,13 @@
                                                     class="text-[11px] font-semibold text-gray-600 px-4">NAVIGATION</span>
                                                 <li v-for="item in navigation" :key="item.name">
                                                     <RouterLink v-if="item.name !== 'Create'" :to="item.to"
-                                                        :class="[item === currentNavigatedItem ? 'bg-red-500 text-gray-800' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100', 'group flex gap-x-3 rounded-md p-2 text-base leading-6 font-semibold px-6 cursor-pointer']">
+                                                        :class="[item === currentNavigatedItem ? 'bg-gray-100 text-gray-800' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100', 'group flex gap-x-3 rounded-md p-2 text-base leading-6 font-semibold px-6 cursor-pointer']">
                                                         <component :is="item.icon" class="h-6 w-6 shrink-0"
                                                             aria-hidden="true" />
                                                         {{ item.name }}
                                                     </RouterLink>
                                                     <button v-else @click="openCreateModal = true"
-                                                        :class="[item === currentNavigatedItem ? 'bg-red-500 text-gray-800' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100', 'group flex gap-x-3 rounded-md p-2 text-base leading-6 font-semibold px-6 cursor-pointer']">
+                                                        :class="[item === currentNavigatedItem ? 'bg-gray-100 text-gray-800' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100', 'group flex gap-x-3 rounded-md p-2 text-base leading-6 font-semibold px-6 cursor-pointer']">
                                                         <component :is="item.icon" class="h-6 w-6 shrink-0"
                                                             aria-hidden="true" />
                                                         {{ item.name }}

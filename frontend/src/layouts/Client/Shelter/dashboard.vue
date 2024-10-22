@@ -184,7 +184,7 @@ import { RouterLink, useRoute } from 'vue-router'
 // components open source
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
 // icons open source
-import { Bars3Icon, XMarkIcon, IdentificationIcon, HomeModernIcon, ChatBubbleLeftRightIcon, RectangleGroupIcon, DocumentPlusIcon, SparklesIcon, ChatBubbleLeftEllipsisIcon } from '@heroicons/vue/24/outline'
+import { Bars3Icon, XMarkIcon, IdentificationIcon, HomeModernIcon, ChatBubbleLeftRightIcon, RectangleGroupIcon, DocumentPlusIcon, SparklesIcon, MegaphoneIcon } from '@heroicons/vue/24/outline'
 import { PuzzlePieceIcon, ArrowRightStartOnRectangleIcon } from '@heroicons/vue/20/solid'
 //my components for popup modals
 import popupNewpost from '@/components/Shelter/shelter_NewPostModal.vue'
@@ -202,9 +202,10 @@ const route = useRoute()
 
 const navigation = [
     { name: 'Dashboard', to: { name: 'dashboardContent' }, icon: RectangleGroupIcon, current: false },
-    { name: 'Rescue Operation', to: { name: 'rescueoperation' }, icon: ChatBubbleLeftRightIcon, current: false },
-    { name: 'My Shelter', to: { name: 'shelterprofile' }, icon: HomeModernIcon, current: false },
+    { name: 'Rescue Operation', to: { name: 'rescueoperation' }, icon: MegaphoneIcon , current: false },
     { name: 'Animal Profile', to: { name: 'animalprofile' }, icon: IdentificationIcon, current: false },
+    { name: 'Messages', to: { name: 'sheltermessages' }, icon: ChatBubbleLeftRightIcon, current: false },
+    { name: 'My Shelter', to: { name: 'shelterprofile' }, icon: HomeModernIcon, current: false },
 ]
 
 const currentNavigationItem = computed(() => { // to style the currently selected

@@ -592,9 +592,9 @@ onMounted(async () => {
 
 <template>
     <!-- Gi change nko height kay samok T-T -->
-    <div class="flex h-[50rem] overflow-y-hidden">
+    <div class="flex sm:h-[52rem] lg:h-screen  overflow-y-hidden">
         <!-- Conversations Sidebar -->
-        <div class="w-[30%] border-r-2 text-gray-600 pr-6">
+        <div class="w-[30%] border-r-2 text-gray-600 pr-6 flex-1">
             <div class="py-4">
                 <span class="text-xl font-bold">Chats</span>
             </div>
@@ -627,12 +627,19 @@ onMounted(async () => {
                 <div class="overflow-y-auto h-[calc(100vh-200px)]">
                     <!-- Create New Conversation Section -->
                     <div v-if="createConversation">
-                        <div class="bg-orange-100 border-t p-3 mt-1 mb-2 rounded px-4 cursor-pointer hover:bg-blue-100">
-                            <div class="flex justify-between">
-                                <span v-if="!receiverId" class="font-medium truncate">New Message</span>
+                        <div
+                            class="bgorange border-t p-3 mt-1 mb-2 rounded px-4 cursor-pointer hover:bg-lightorange group">
+                            <div class="flex justify-between items-center">
+                                <span v-if="!receiverId" class="font-medium truncate text-white">New Message</span>
                                 <span v-else class="font-medium truncate">New Message to {{ receiverName }}</span>
-                                <img width="25" height="20" src="https://img.icons8.com/pastel-glyph/128/cancel--v1.png"
-                                    alt="cancel--v1" @click="closeNewMessage(); createConversation = false" />
+                                <!-- <img width="25" height="20" src="https://img.icons8.com/pastel-glyph/128/cancel--v1.png"
+                                    alt="cancel--v1" @click="closeNewMessage(); createConversation = false"
+                                    class="hidden group-hover:block" /> -->
+                                <img width="25" height="25"
+                                    src="https://img.icons8.com/external-creatype-outline-colourcreatype/64/FFFFFF/external-circle-essential-ui-v1-creatype-outline-colourcreatype-4.png"
+                                    alt="external-circle-essential-ui-v1-creatype-outline-colourcreatype-4"
+                                    @click="closeNewMessage(); createConversation = false"
+                                    class="hidden group-hover:block" />
                             </div>
                         </div>
                     </div>
@@ -662,7 +669,8 @@ onMounted(async () => {
                                 <p class="text-sm truncate">You: {{ conversation.message }}</p>
                             </div>
                             <div v-else>
-                                <p class="text-sm truncate">{{conversation.other_participant_name}}: {{ conversation.message }}</p>
+                                <p class="text-sm truncate">{{ conversation.other_participant_name }}: {{
+                                    conversation.message }}</p>
                             </div>
                         </div>
                         <div v-else>
@@ -757,7 +765,7 @@ onMounted(async () => {
                     <div v-else class="flex justify-start mb-2">
                         <div class="text-sm text-gray-600 p-3">
                             <div class="text-right">
-                                <span class="font-medium">You</span>
+                                <span class="font-medium">{{ selectedConversation?.NameFrom }}</span>
                                 <span class="text-[10px] ml-2">{{ formatTime(message.date) }}</span>
                             </div>
                             <div v-if="message.message && message.photo_url">
@@ -828,9 +836,9 @@ onMounted(async () => {
             <!-- New Conversation Header -->
             <div class="text-gray-600 bg-white p-4 gap-x-2 items-center flex">
                 <span class="text-md font-semibold">
-                    <div v-if="!receiverId" class="relative w-full">
-                        <span>To: </span>
-                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                    <span>To: </span>
+                    <div v-if="!receiverId" class="relative">
+                        <div class=" pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                             <MagnifyingGlassIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
                         </div>
                         <input id="search" name="search" @input="handleInput(searchValue)" v-model="searchValue"
