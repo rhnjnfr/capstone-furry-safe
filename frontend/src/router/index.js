@@ -47,7 +47,7 @@ import location from "@/components/location_prompt.vue";
 // import map from "../views/shelter/pin_Location.vue"
 import test from "@/components/pin_MapModal.vue";
 
-
+import sheltermessages from "@/components/Shelter/shelter_RescueOp_ChatBox.vue"
 // buddy
 import buddyDashboard from "../layouts/Client/Buddy/dashboard.vue"
 import home from "../views/Buddy/home.vue"
@@ -230,6 +230,12 @@ const routes = [
         path: "/viewprofile",
         name: "viewprofile",
         component: viewprofile,
+      },
+      {
+        // rescue operation - view profile details
+        path: "/messages",
+        name: "sheltermessages",
+        component: sheltermessages,
       },
     ],
   },

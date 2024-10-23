@@ -35,7 +35,7 @@ import { ref } from 'vue'
 
 const tabs = ref([
     { name: 'Rescue Operation', current: true },
-    { name: 'Chats', current: false },
+    // { name: 'Chats', current: false },
 ])
 
 const currentTab = ref(tabs.value[0].name)
