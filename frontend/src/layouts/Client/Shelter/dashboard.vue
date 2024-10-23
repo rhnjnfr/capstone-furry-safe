@@ -252,13 +252,6 @@ async function logout() {
     try {
         //req to clear cookies 
         const response = await axios.post("http://localhost:5000/logout")
-        // , {
-        //     email: this.userEmail,
-        //     password: this.userPassword
-        // },
-        // {
-        //     withCredentials: true // This allows the request to include cookies
-        // });
 
         console.log(response)
         // return

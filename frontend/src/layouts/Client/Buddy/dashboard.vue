@@ -1,3 +1,70 @@
+<script setup>
+import { ref, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'; // Import useRoute
+import { Dialog, DialogPanel, Menu, MenuButton, MenuItem, MenuItems, TransitionChild, TransitionRoot } from '@headlessui/vue'
+import { Bars3Icon, BellIcon, PlusIcon, AdjustmentsHorizontalIcon, ArrowRightStartOnRectangleIcon, UserIcon, CursorArrowRaysIcon, HomeIcon, ChatBubbleOvalLeftEllipsisIcon, XMarkIcon } from '@heroicons/vue/24/outline'
+import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/vue/20/solid'
+import axios from "axios"
+import CreateReportModal from '@/components/Buddy/buddy_CreateReportPost_Modal.vue'
+const openCreateModal = ref(false) // for create report modal
+
+const navigation = [
+    { name: 'Home', to: { name: 'buddy_home' }, icon: HomeIcon, current: false },
+    { name: 'Message', to: { name: 'buddy_messages' }, icon: ChatBubbleOvalLeftEllipsisIcon, current: false },
+    { name: 'Explore', to: { name: '' }, icon: CursorArrowRaysIcon, current: false },
+    { name: 'Create', to: null, icon: PlusIcon, current: false, },
+    { name: 'Profile', to: { name: '' }, icon: UserIcon, current: false },
+]
+
+const route = useRoute()
+const router = useRouter();
+//logout 
+function navigateTo(path) {
+    router.push(path);
+}
+// Computed property to determine the current navigation item
+const currentNavigatedItem = computed(() => {
+    return navigation.find(item => item.to && item.to.name === route.name);
+});
+
+
+const userNavigation = [
+    { name: 'Your profile', to: { name: 'profile' }, },
+]
+
+const avatar = {
+    username: 'Eric',
+    profileImage: require('@/assets/images/eric.png'),
+    icon: ChevronDownIcon
+}
+async function logout() {
+    try {
+        //req to clear cookies 
+        const response = await axios.post("http://localhost:5000/logout")
+
+        console.log(response)
+        // return
+        if (response.status == '200') {
+            // console.log("Successfully logged out."); 
+            localStorage.removeItem('u_id')
+            localStorage.removeItem('u_type')
+            localStorage.removeItem('c_id')
+            localStorage.removeItem('access_token')
+            navigateTo('/')
+
+        } else {
+            console.log("Failed to log out.");
+        }
+    }
+    catch (err) {
+        alert("An error occured when logging out")
+        console.log(err)
+    }
+}
+
+const sidebarOpen = ref(false)
+</script>
+
 <template>
     <div>
         <TransitionRoot as="template" :show="sidebarOpen">
@@ -62,7 +129,7 @@
                                                     aria-hidden="true" />
                                                 Settings
                                             </RouterLink>
-                                            <a href="#"
+                                            <a @click.prevent="logout()"
                                                 class="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-600 hover:bg-gray-100 hover:text-gray-800 px-6">
                                                 <ArrowRightStartOnRectangleIcon class="h-6 w-6 shrink-0"
                                                     aria-hidden="true" />
@@ -123,11 +190,11 @@
                                 <AdjustmentsHorizontalIcon class="h-6 w-6 shrink-0" aria-hidden="true" />
                                 Settings
                             </RouterLink>
-                            <RouterLink to="/"
+                            <a @click.prevent="logout()"
                                 class="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-600 hover:bg-gray-100 hover:text-gray-800 px-6">
                                 <ArrowRightStartOnRectangleIcon class="h-6 w-6 shrink-0" aria-hidden="true" />
                                 Logout
-                            </RouterLink>
+                            </a>
                         </li>
                     </ul>
                 </nav>
@@ -211,41 +278,3 @@
         </div>
     </div>
 </template>
-
-<script setup>
-import { ref, computed  } from 'vue'
-import { useRoute } from 'vue-router'; // Import useRoute
-import { Dialog, DialogPanel, Menu, MenuButton, MenuItem, MenuItems, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import { Bars3Icon, BellIcon, PlusIcon, AdjustmentsHorizontalIcon, ArrowRightStartOnRectangleIcon, UserIcon, CursorArrowRaysIcon, HomeIcon, ChatBubbleOvalLeftEllipsisIcon, XMarkIcon } from '@heroicons/vue/24/outline'
-import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/vue/20/solid'
-
-import CreateReportModal from '@/components/Buddy/buddy_CreateReportPost_Modal.vue'
-const openCreateModal = ref(false) // for create report modal
-
-const navigation = [
-    { name: 'Home', to: { name: 'buddy_home' }, icon: HomeIcon, current: false },
-    { name: 'Message', to: { name: 'buddy_messages' }, icon: ChatBubbleOvalLeftEllipsisIcon, current: false },
-    { name: 'Explore', to: { name: '' }, icon: CursorArrowRaysIcon, current: false },
-    { name: 'Create', to: null, icon: PlusIcon, current: false, },
-    { name: 'Profile', to: { name: '' }, icon: UserIcon, current: false },
-]
-
-const route = useRoute()
-// Computed property to determine the current navigation item
-const currentNavigatedItem = computed(() => {
-    return navigation.find(item => item.to && item.to.name === route.name);
-});
-
-const userNavigation = [
-    { name: 'Your profile', to: { name: 'profile' }, },
-]
-
-const avatar = {
-    username: 'Eric',
-    profileImage: require('@/assets/images/eric.png'),
-    icon: ChevronDownIcon
-}
-
-
-const sidebarOpen = ref(false)
-</script>
