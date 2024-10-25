@@ -614,7 +614,7 @@ const comparePetExtraPhoto = async (newPhotos, oldPhotos) => {
       .remove(filesToDelete); // Pass array directly
 
     if (error) {
-      console.error("Error deleting file:", error);
+      console.error("Err deleting file:", error);
     } else {
       console.log("Files deleted successfully:", data);
     }
@@ -629,7 +629,7 @@ export const searchUser = async (req, res) => {
     search_text: value,
   });
   if (error) {
-    console.error("Error deleting file:", error);
+    console.error("Error deleting file 2:", error);
   } else {
     res.status(200).send(data);
   }
@@ -649,7 +649,7 @@ export const loadInbox = async (req, res) => {
     _chat_id: chat_id,
   });
   if (error) {
-    console.error("Error deleting file:", error);
+    console.error("Error deleting file 1:", error);
   } else {
     console.log("loading...");
     res.status(200).send(data);

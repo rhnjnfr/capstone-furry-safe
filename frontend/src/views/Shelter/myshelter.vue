@@ -19,7 +19,7 @@ const route = useRoute();
 const showModalNewEvent = ref(false);
 const showModalCreatePost = ref(false);
 const isOpen = ref(false);
-const showEventInfo = ref(false);
+const showEventInfo = ref(true);
 const toastRef = ref(null);  // Ref for the Toast component
 
 // Methods
@@ -61,7 +61,7 @@ onMounted(() => {
                 </div>
                 <div id="newsfeed" class="xl:w-[70%]">
                     <div class="mb-[1rem]">
-                        <div
+                        <!-- <div
                             class="flex justify-between items-center bg-amber-50 rounded-lg py-2 sm:px-[2rem] lg:px-[3rem]">
                             <div><span class="sm:text-[14px]">Event Posts</span></div>
                             <div>
@@ -74,9 +74,10 @@ onMounted(() => {
                                         alt="external-chevron-arrows-tanah-basah-basic-outline-tanah-basah-4" />
                                 </button>
                             </div>
-                        </div>
+                        </div> -->
                         <div>
-                            <eventsCard ref="eventCard" />
+                            <!-- <eventsCard ref="eventCard" /> -->
+                            <eventsCard />
                         </div>
                     </div>
                     <div>

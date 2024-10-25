@@ -47,7 +47,8 @@ export default {
 </script>
 <template>
     <div>
-        <div v-if="showEventInfo" class="mt-[1rem] py-2 w-full overflow-x-auto">
+        <!-- <div v-if="showEventInfo" class="mt-[1rem] py-2 w-full overflow-x-auto"> -->
+            <div class="mt-[1rem] py-2 w-full overflow-x-auto">
             <div class="flex">
                 <div v-for="(event, index) in events" :key="index"
                     class="border bg-white rounded-lg sm:w-[20rem] lg:w-[30rem] mx-2 flex-shrink-0">
