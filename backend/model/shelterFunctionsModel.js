@@ -661,7 +661,7 @@ export const sendMessage = async (req, res) => {
   console.log("send message function backend");
   const files = req.files;
   const sentimage = files.filter((file) => file.fieldname === "url");
-  const extraPhotoUrls = [];
+  let extraPhotoUrls = [];
 
   let url = null;
   let { chat_id, user_id, message } = req.body;
@@ -691,10 +691,14 @@ export const sendMessage = async (req, res) => {
     }
     console.log(extraPhotoUrls);
 
-    if (message == null) {
+    if (message == '') {
       message = null;
-      console.log("NULL NA");
     }
+    
+    if(extraPhotoUrls.length == 0){
+      extraPhotoUrls = null
+    }
+    console.log(extraPhotoUrls, message)
     const { data, error } = await supabase.rpc("insert_chat_message", {
       _user_id: user_id,
       _chat_id: chat_id,
@@ -703,7 +707,7 @@ export const sendMessage = async (req, res) => {
     });
 
     if (error) {
-      console.error("Error sending message:", error);
+      console.error("Error sending message 1:", error);
       res.status(500).send({ success: false, error: error.message });
     } else {
       res.status(200).send({ success: true, url: extraPhotoUrls });
@@ -722,7 +726,7 @@ export const getFullName = async (req, res) => {
       _user_id: id,
     });
     if (err) {
-      console.error("Error sending message:", err);
+      console.error("Error sending message 2:", err);
       res.status(500).send({ success: false, error: err.message });
     } else {
       res.status(200).send(data);
@@ -742,7 +746,7 @@ export const createNewChat = async (req, res) => {
       p2_id: receiverid,
     });
     if (error) {
-      console.error("Error sending message:", error);
+      console.error("Error sending message 3:", error);
       res.status(500).send({ success: false, error: error.message });
     } else {
       res.status(200).json(data);

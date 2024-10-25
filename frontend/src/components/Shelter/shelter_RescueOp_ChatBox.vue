@@ -157,85 +157,6 @@ const selectConversation = async (conversation) => {
         console.log("Error fetching messages:", err);
     }
 };
-
-// async function sendMessage(formData) {
-//     for (let pair of formData.entries()) {
-//         console.log("send messsae", pair[0], pair[1]);
-//     }
-
-//     if (!newMessage.value.trim()) {
-//         newMessage.value = null;
-//     }
-
-//     // Ensure a chat ID is selected
-//     if (!selectedChat_id.value) {
-//         createNewMessage();
-//         return;
-//     }
-
-//     console.log("message agjsagdsak", newMessage.value);
-//     if (!newMessage.value) {
-//         console.log("conssdghakjsgdalsjdg ");
-//     }
-//     // Removed incorrect log for messageData since it's defined later
-//     try {
-//         const response = await axios.post("http://localhost:5000/sendmessage", formData, {
-//             headers: {
-//                 'Content-Type': 'multipart/form-data'
-//             }
-//         });
-//         console.log("under response", response.data);
-//         if (response.data.success) { // true
-//             createConversation.value = false;
-
-//             url.value = response.data.url;
-
-//             let messageData = {
-//                 chat_id: selectedChat_id.value,
-//                 user_id: parseInt(user_id.value),
-//                 message: newMessage.value,
-//                 photo_url: url.value.join(','), // Changed from 'url' to 'photo_url' and removed space after comma
-//                 date: new Date().toISOString(),
-//                 sender_name: userFullName,
-//                 p1_name: userFullName,
-//                 p2_name: receiverName.value // Ensure receiverName is set
-//             };
-
-//             const date = new Date(messageData.date);
-//             const formattedDate = `${(date.getMonth() + 1).toString().padStart(2, '0')}-` +
-//                 `${date.getDate().toString().padStart(2, '0')}-` +
-//                 `${date.getFullYear()} ` +
-//                 `${date.getHours().toString().padStart(2, '0')}:` +
-//                 `${date.getMinutes().toString().padStart(2, '0')}`;
-
-//             const formattedMessageData = {
-//                 ...messageData,
-//                 date: formattedDate
-//             };
-
-//             // Update local messages for the sender
-//             selectedConversation.value.messages.push({
-//                 ...formattedMessageData,
-//                 date: new Date(formattedMessageData.date)
-//             });
-
-//             selectedConversation.value.lastMessageDate = new Date(formattedMessageData.date);
-
-//             updateConversationsList(formattedMessageData);
-//             // **Removed the incorrect selectConversation call**
-//             // selectConversation(messageData)
-//             socket.emit('send-message', formattedMessageData); // Emit the message to the receiver
-
-//             newMessage.value = ''; // Clear the input field
-//             files.value = [];
-//             scrollToBottom(); // Scroll after sending a new message
-//         } else {
-//             console.error("Failed to send message:", response.data.message);
-//         }
-//     } catch (error) {
-//         console.error("Error sending message:", error);
-//     }
-// };
 //check here
 async function sendMessage(thisformData) {
     for (let pair of thisformData.entries()) {
@@ -270,7 +191,7 @@ async function sendMessage(thisformData) {
                 chat_id: selectedChat_id.value,
                 user_id: parseInt(user_id.value),
                 message: newMessage.value,
-                photo_url: url.value.join(','), // Changed from 'url' to 'photo_url' and removed space after comma
+                // photo_url: url.value.join(','), // Changed from 'url' to 'photo_url' and removed space after comma
                 date: new Date().toISOString(),
                 sender_name: userFullName,
                 p1_name: userFullName,
@@ -313,29 +234,6 @@ async function sendMessage(thisformData) {
     }
 }
 
-// Create a new message (conversation)
-// const createNewMessage = async () => {
-//     try {
-//         const response = await axios.post("http://localhost:5000/newchat", {
-//             senderid: user_id.value,
-//             receiverid: receiverId.value
-//         });
-
-//         if (response.data) {
-//             // console.log("response data", response.data[0].chat_id)
-//             selectedChat_id.value = response.data[0].chat_id;
-//             // receiverName.value =  response.data[0].chat_id
-
-//             console.log("tite", response.data);
-//             // sendMessage()
-//             retrieveMessage();
-//         }
-//     }
-//     catch (err) {
-//         console.log("D:", err);
-//     }
-// };
-
 const createNewMessage = async () => {
     try {
         const response = await axios.post("http://localhost:5000/newchat", {
@@ -347,6 +245,7 @@ const createNewMessage = async () => {
         if (response.data) {
             selectedChat_id.value = response.data[0].chat_id;
             // Join the new chat room
+            console.log("id value", selectedChat_id.value)
             socket.emit('join-chat', selectedChat_id.value);
             console.log("New chat created with ID:", selectedChat_id.value);
             await retrieveMessage(); // Ensure that retrieveMessage is awaited
@@ -664,7 +563,15 @@ onMounted(async () => {
                             <span class="font-medium truncate">{{ conversation.other_participant_name }}</span>
                             <span class="text-[12px] sm:hidden xl:flex">{{ formatTime(conversation.date) }}</span>
                         </div>
-                        <div v-if="conversation.message">
+                        <div v-if="conversation.message?.includes('https')">
+                            <div v-if="conversation.user_id == user_id">
+                                <p> You sent a photo.</p>
+                            </div>
+                            <div v-else>
+                                <p> {{ conversation.other_participant_name }} sent a photo.</p>
+                            </div>
+                        </div>
+                        <div v-else>
                             <div v-if="conversation.user_id == user_id">
                                 <p class="text-sm truncate">You: {{ conversation.message }}</p>
                             </div>
@@ -673,47 +580,6 @@ onMounted(async () => {
                                     conversation.message }}</p>
                             </div>
                         </div>
-                        <div v-else>
-                            <div v-if="conversation.user_id == user_id">
-                                <p> You sent a photo.</p>
-                            </div>
-                            <div v-else>
-                                <p> {{ conversation.other_participant_name }} sent a photo.</p>
-                            </div>
-                        </div>
-
-
-                        <!-- photo_url: conversation.photo_url, -->
-                        <!-- 
-                <div v-for="(message, messageIndex) in sortedMessages" :key="messageIndex" class="message">
-                    <div v-if="message.user_id == user_id && message.message"
-                        class="flex text-sm text-gray-600 p-3 justify-end">
-                        <div class="text-sm text-gray-600 p-3">
-                            <div class="text-right">
-                                <span class="font-medium">You</span>
-                                <span class="text-[10px] ml-2">{{ formatTime(message.date) }}</span>
-                            </div>
-                            <div class="mt-1 bg-teal-200 px-4 py-2 rounded-lg">
-                                <p>{{ message.message }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div v-else-if="message.message" class="flex justify-start mb-2">
-                        <div class="text-sm text-gray-600 p-3">
-                            <div class="text-left">
-                                <span class="font-medium">{{ message.sender_name }}</span>
-                                <span class="text-[10px] ml-2">{{ formatTime(message.date) }}</span>
-                            </div>
-                            <div class="mt-1 bg-amber-200 px-4 py-2 rounded-lg">
-                                <p>{{ message.message }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div v-if="messageIndex === sortedMessages.length - 1" ref="lastMessage"></div>
-                </div> -->
-
                     </div>
                 </div>
             </div>
@@ -732,29 +598,20 @@ onMounted(async () => {
                 <div v-for="(message, messageIndex) in sortedMessages" :key="messageIndex" class="message">
                     <!-- Outgoing Messages (Sent by Current User) -->
                     <div v-if="message.user_id == user_id" class="flex text-sm text-gray-600 p-3 justify-end">
+
                         <div class="text-sm text-gray-600 p-3">
                             <div class="text-right">
-                                <span class="font-medium">You</span>
+                                <span class="font-medium">{{ selectedConversation?.NameFrom }}</span>
                                 <span class="text-[10px] ml-2">{{ formatTime(message.date) }}</span>
                             </div>
-                            <div v-if="message.message && message.photo_url">
-                                <div class="mt-1 bg-teal-200 px-4 py-2 rounded-lg">
-                                    <p>{{ message.message }}</p>
-                                </div>
-                                <div class="pt-2 flex space-x-2">
-                                    <template v-for="photo in parsedPhotos(message.photo_url)" :key="photo">
-                                        <img :src="photo" alt=""
-                                            class="pointer-events-none h-20 w-20 object-cover rounded">
-                                    </template>
+                            <div v-if="message.message?.includes('https')">
+                                <div class="pt-2">
+                                    <img :src="message.message" alt=""
+                                        class="pointer-events-none h-20 w-20 object-cover rounded">
                                 </div>
                             </div>
-                            <div v-else-if="message.message" class="mt-1 bg-teal-200 px-4 py-2 rounded-lg">
-                                <p>{{ message.message }}</p>
-                            </div>
-                            <div v-else class="pt-2 flex space-x-2">
-                                <template v-for="photo in parsedPhotos(message.photo_url)" :key="photo">
-                                    <img :src="photo" alt="" class="pointer-events-none h-20 w-20 object-cover rounded">
-                                </template>
+                            <div v-else="message.message" class="mt-1 bg-teal-200 px-4 py-2 rounded-lg">
+                                <p>{{ message.message }} </p>
                             </div>
                         </div>
                     </div>
@@ -762,27 +619,21 @@ onMounted(async () => {
 
 
                     <!-- Incoming Messages (Sent by Other Participant) -->
+
                     <div v-else class="flex justify-start mb-2">
                         <div class="text-sm text-gray-600 p-3">
                             <div class="text-right">
                                 <span class="font-medium">{{ selectedConversation?.NameFrom }}</span>
                                 <span class="text-[10px] ml-2">{{ formatTime(message.date) }}</span>
                             </div>
-                            <div v-if="message.message && message.photo_url">
-                                <div class="mt-1 bg-teal-200 px-4 py-2 rounded-lg">
-                                    <p>{{ message.message }}</p>
-                                </div>
+                            <div v-if="message.message?.includes('https')">
                                 <div class="pt-2">
-                                    <img :src="message.photo_url" alt=""
+                                    <img :src="message.message" alt=""
                                         class="pointer-events-none h-20 w-20 object-cover rounded">
                                 </div>
                             </div>
-                            <div v-else-if="message.message" class="mt-1 bg-teal-200 px-4 py-2 rounded-lg">
-                                <p>{{ message.message }}</p>
-                            </div>
-                            <div v-else class="pt-2">
-                                <img :src="message.photo_url" alt=""
-                                    class="pointer-events-none h-20 w-20 object-cover rounded">
+                            <div v-else="message.message" class="mt-1 bg-teal-200 px-4 py-2 rounded-lg">
+                                <p>{{ message.message }} </p>
                             </div>
                         </div>
                     </div>
