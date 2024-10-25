@@ -114,12 +114,12 @@
     </div>
 
     <!-- Right Sidebar -->
-    <div class="w-64 border-l p-4">
+    <!-- <div class="w-64 border-l p-4">
       <h3 class="font-semibold mb-4">Shared Files (15)</h3>
       <div class="grid grid-cols-3 gap-2">
         <div v-for="i in 9" :key="i" class="bg-gray-200 w-16 h-16 rounded-lg"></div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 

@@ -34,25 +34,35 @@
                     <select
                       class="border text-gray-700 bg-slate-50 font-medium rounded-lg text-sm px-5 py-2.5  inline-flex text-left  ">
                       <option value="" selected disabled hidden>Report Type</option>
-                      <option value="Missing">Missing Pet</option>
-                      <option value="Abandoned">Abandoned Pet</option>
+                      <option value="Missing">Missing</option>
+                      <option value="Abandoned">Stray</option>
                     </select>
                   </div>
                 </div>
                 <div class="text-sm">
                   <div class="py-2 flex flex-col gap-y-2">
                     <label for="petcategory" class="font-medium">Pet Category</label>
-                    <select id="petcategory" class="text-gray-700 bg-slate-50 block w-full p-2.5 border rounded-lg ">
+                    <select v-model="selectedCategory" id="petcategory"
+                      class="text-gray-700 bg-slate-50 block w-full p-2.5 border rounded-lg ">
                       <option value="" selected disabled hidden>Select Pet Category</option>
-                      <option value="Dog">Dog</option>
-                      <option value="Cat">Cat</option>
-                      <option value="Others">Others</option>
+                      <option v-for="(item, index) in category" :key="index" :value="item.id">{{ item.pet_category }}
+                      </option>
                     </select>
                   </div>
                   <div class="py-2 flex flex-col gap-y-2">
-                    <label for="location" class="font-medium">Location</label>
-                    <input id="location" placeholder="Enter your Location"
-                      class="w-full bg-transparent rounded-md border border-stroke dark:border-dark-3 py-[10px] px-5 text-dark-6 outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-gray-2 disabled:border-gray-2" />
+                    <div>
+                      <label for="location" class="font-medium">Location</label>
+                      <input id="location" placeholder="Enter your Location"
+                        class="w-full bg-transparent rounded-md border border-stroke dark:border-dark-3 py-[10px] px-5 text-dark-6 outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-gray-2 disabled:border-gray-2" />
+                    </div>
+                    <div>
+                      <button>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="25" height="25">
+                          <path fill="#f03d3d"
+                            d="M172.3 501.7C27 291 0 269.4 0 192 0 86 86 0 192 0s192 86 192 192c0 77.4-27 99-172.3 309.7-9.5 13.8-29.9 13.8-39.5 0zM192 272c44.2 0 80-35.8 80-80s-35.8-80-80-80-80 35.8-80 80 35.8 80 80 80z" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                   <div class="py-2 flex flex-col gap-y-2">
                     <label for="petcondition" class="font-medium">Pet Condition</label>
@@ -91,14 +101,6 @@
                           <img :src="images" alt="Images Icon" class="h-[2rem] w-[2rem]" />
                         </label>
                       </div>
-                      <div>
-                        <button>
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="25" height="25">
-                            <path fill="#f03d3d"
-                              d="M172.3 501.7C27 291 0 269.4 0 192 0 86 86 0 192 0s192 86 192 192c0 77.4-27 99-172.3 309.7-9.5 13.8-29.9 13.8-39.5 0zM192 272c44.2 0 80-35.8 80-80s-35.8-80-80-80-80 35.8-80 80 35.8 80 80 80z" />
-                          </svg>
-                        </button>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -119,10 +121,15 @@
 <script setup>
 import { ref } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
+import axios from "axios"
+import { onMounted } from 'vue';
 
 const fileInput = ref(null);
 const imageUrls = ref([]);
 const images = 'https://img.icons8.com/fluency/48/stack-of-photos.png';
+const category = ref([]);
+
+const selectedCategory = ''
 
 // Handle file change and load images
 const handleFileChange = (event) => {
@@ -136,6 +143,16 @@ const handleFileChange = (event) => {
     reader.readAsDataURL(file);
   }
 }
+async function getCategory() {
+  try {
+    const response = await axios.get("http://localhost:5000/load-category")
+    category.value = response.data
+  }
+  catch (err) {
+    console.log("error", err)
+  }
+  console.log(category.value)
+}
 
 // Remove image from list
 const removeImage = (index) => {
@@ -145,4 +162,7 @@ const removeImage = (index) => {
 const emit = defineEmits(['close']) // for closing the modal
 const open = ref(true)
 
+onMounted(() => {
+  getCategory()
+});
 </Script>

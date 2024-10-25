@@ -61,13 +61,18 @@ const pawIcon = L.icon({
 
 // Initialize the map on component mount
 onMounted(async () => {
-    getLocation(); // Get user's location first
-    await fetchShelters(); // Fetch shelter data afterwards
+    console.log("map 2");
+    getLocation(); // Ensure we get user's location and initialize the map
+    // if (map.value) {
+    //     await fetchShelters(); // Fetch shelter data afterwards
+    // }
 });
 
 // Clean up map when the component is unmounted
 onBeforeUnmount(() => {
     if (map.value) {
+        markerLayers.forEach(marker => map.value.removeLayer(marker));
+        markerLayers.length = 0; // Clear marker array
         map.value.off();
         map.value.remove();
         map.value = null;
@@ -80,10 +85,13 @@ const fetchShelters = async () => {
         const response = await fetch('http://localhost:5000/shelters');
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
-        console.log("Fetched shelter data:", data);
-        shelters.value = data; // Set the fetched data to shelters array
 
-        // Check if map is initialized before adding markers
+        if (!Array.isArray(data)) {
+            console.error("Fetched data is not an array:", data);
+            return;
+        }
+
+        shelters.value = data; // Set the fetched data to shelters array
         if (map.value) {
             addShelterMarkers(); // Call the function to add markers
         } else {
@@ -94,19 +102,31 @@ const fetchShelters = async () => {
     }
 };
 
+const markerLayers = [];
 // Function to add shelter markers to the map
 const addShelterMarkers = async () => {
-    for (const shelter of shelters.value) {
-        const lat = parseFloat(shelter.latitude); // Convert to float if necessary
-        const lng = parseFloat(shelter.longitude); // Convert to float if necessary
-        if (!isNaN(lat) && !isNaN(lng) && shelter.shelter_name) { // Ensure valid coordinates
-            const shelterMarker = L.marker([lat, lng], { icon: pawIcon }).addTo(map.value);
 
-            // Update the popup content to include both name and address
+    markerLayers.forEach(marker => {
+        map.value.removeLayer(marker);
+    });
+
+    // Remove existing markers
+    markerLayers.forEach(marker => {
+        map.value.removeLayer(marker);
+    });
+    markerLayers.length = 0; // Clear the array
+
+    for (const shelter of shelters.value) {
+        const lat = parseFloat(shelter.latitude);
+        const lng = parseFloat(shelter.longitude);
+        if (!isNaN(lat) && !isNaN(lng) && shelter.shelter_name) {
+            const shelterMarker = L.marker([lat, lng], { icon: pawIcon }).addTo(map.value);
+            markerLayers.push(shelterMarker); // Add marker to the array
+
             const popupContent = `
-                  <strong>${shelter.shelter_name}</strong><br>
-                  Address: ${shelter.address ? shelter.address : 'Address not available'}
-              `;
+                <strong>${shelter.shelter_name}</strong><br>
+                Address: ${shelter.address ? shelter.address : 'Address not available'}
+            `;
             shelterMarker.bindPopup(popupContent);
         } else {
             console.warn("Invalid coordinates for shelter:", shelter);
@@ -116,7 +136,7 @@ const addShelterMarkers = async () => {
 
 // Initialize the map function
 const initializeMap = (lat, lng) => {
-    console.log("Initializing map at:", lat, lng); // Log initialization
+    console.log("Initializing map at:", lat, lng);
     if (!map.value) {
         map.value = L.map(mapId).setView([lat, lng], zoomLevel);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -129,6 +149,8 @@ const initializeMap = (lat, lng) => {
         map.value.setView([lat, lng], zoomLevel);
     }
 };
+
+
 
 // Add marker function
 const addMarker = async (e) => {
@@ -157,29 +179,34 @@ const addMarker = async (e) => {
 
 // Get user's current location
 const getLocation = () => {
-    if (props.shelterlat && props.shelterlng) {
-        initializeMap(props.shelterlat, props.shelterlng);
-        addMarker({
-            latlng: { lat: props.shelterlat, lng: props.shelterlng },
-        });
-    } else if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                user_lat.value = position.coords.latitude;
-                user_long.value = position.coords.longitude;
-                initializeMap(user_lat.value, user_long.value); // Initialize map here
-                addMarker({
-                    latlng: { lat: user_lat.value, lng: user_long.value },
-                });
-            },
-            () => {
-                console.warn("Geolocation access denied or failed. Using default location.");
-                initializeMap(user_lat.value, user_long.value); // Initialize map with default location
-            }
-        );
-    } else {
-        console.warn("Geolocation is not supported by this browser. Using default location.");
-        initializeMap(user_lat.value, user_long.value); // Initialize map with default location
+    if (!map.value) {
+        if (props.shelterlat && props.shelterlng) {
+            initializeMap(props.shelterlat, props.shelterlng);
+            addMarker({
+                latlng: { lat: props.shelterlat, lng: props.shelterlng },
+            });
+        } else if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    user_lat.value = position.coords.latitude;
+                    user_long.value = position.coords.longitude;
+                    initializeMap(user_lat.value, user_long.value);
+                    addMarker({
+                        latlng: { lat: user_lat.value, lng: user_long.value },
+                    });
+                },
+                () => {
+                    console.warn("Geolocation access denied or failed. Using default location.");
+                    initializeMap(user_lat.value, user_long.value);
+                }
+            );
+        } else {
+            console.warn("Geolocation is not supported by this browser. Using default location.");
+            initializeMap(user_lat.value, user_long.value);
+        }
+
+        // Fetch shelters after the map is initialized
+        fetchShelters();
     }
 };
 
@@ -189,7 +216,7 @@ const getAddress = async (lat, lon) => {
     try {
         const response = await fetch(url, {
             headers: {
-                'User -Agent': 'Furry-Safe/1.0 (jinnkin21@gmail.com)', // Corrected header
+                'User-Agent': 'Furry-Safe/1.0 (jinnkin21@gmail.com)', // Corrected header
             },
         });
 
