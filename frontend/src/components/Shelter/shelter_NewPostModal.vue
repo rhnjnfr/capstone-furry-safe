@@ -51,7 +51,7 @@
                       class="mt-1.5 border rounded-md p-1.5 px-6" readonly>
                   </div>
                 </div>
-                
+
                 <div class="mt-2">
                   <textarea v-model="newpost" placeholder="Write a caption or description of this post..."
                     class="border rounded-lg py-[1rem] px-6 w-full h-[8rem]" />

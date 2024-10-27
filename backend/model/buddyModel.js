@@ -50,4 +50,19 @@ export const createBuddyDetails = async (buddyid, user)=> {
         console.log("Create buddy details error: ", err)
     }
 }
+export const createBuddyReport = async ()=> {
+
+    // _user_id 
+    // _post_type 
+    // _content 
+    // _report_type 
+    // _lat 
+    // _long 
+    // _pet_condition 
+    // _report_status
+    // _pet_category 
+    // _photo_urls 
+    // _pet_id
+
+}
 export default createBuddy;
