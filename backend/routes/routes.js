@@ -38,6 +38,16 @@ import {
   fetchAllShelters, //added fetchAllShelters
 } from "../controllers/shelter_functions.js";
 
+import {
+  insertBuddyReport
+}
+from "../controllers/buddy_functions.js"
+
+import {
+  getReportCategory
+} 
+from "../controllers/sub_functions.js"
+
 const storage = multer.memoryStorage({
   destination: (req, file, cb) => {
     cb(null, "images/documents");
@@ -97,5 +107,11 @@ router.post("/newchat", insertNewChat);
 
 //New router for map - by salpocial
 router.get("/shelters", fetchAllShelters);
+
+//sub function
+router.get("/getreportcategory", getReportCategory);
+
+//buddy functions 
+router.post("/insertbuddyreport", upload2.any(), insertBuddyReport)
 
 export default router;

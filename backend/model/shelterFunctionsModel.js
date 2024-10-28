@@ -376,7 +376,8 @@ export const savepetprofie = async (req, res) => {
       status_id &&
       (pet_type || other_pet_category) &&
       (other_sterilization || sterilization_id_int)
-    ) {
+    ) 
+    {
       const { data, error } = await supabase.rpc("insert_pet_data", {
         _about_pet: about,
         _age: age,
@@ -418,7 +419,7 @@ export const savepetprofie = async (req, res) => {
     }
   } catch (error) {
     console.error("Unexpected error:", error);
-    res.status(500).send({ message: "An unexpected error occurred." });
+    res.status(500).send({ message: error });
   }
 };
 //updating || used in edit
