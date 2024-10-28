@@ -13,7 +13,7 @@ const navigation = [
     { name: 'Message', to: { name: 'buddy_messages' }, icon: ChatBubbleOvalLeftEllipsisIcon, current: false },
     { name: 'Explore', to: { name: '' }, icon: CursorArrowRaysIcon, current: false },
     { name: 'Create', to: null, icon: PlusIcon, current: false, },
-    { name: 'Profile', to: { name: '' }, icon: UserIcon, current: false },
+    { name: 'Profile', to: { name: 'buddy_profile' }, icon: UserIcon, current: false },
 ]
 
 const route = useRoute()
@@ -110,8 +110,8 @@ const sidebarOpen = ref(false)
                                                             aria-hidden="true" />
                                                         {{ item.name }}
                                                     </RouterLink>
-                                                    <button v-else @click="openCreateModal = true"
-                                                        :class="[item === currentNavigatedItem ? 'bg-gray-100 text-gray-800' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100', 'group flex gap-x-3 rounded-md p-2 text-base leading-6 font-semibold px-6 cursor-pointer']">
+                                                    <button v-else @click="openCreateModal = true; currentModalMode = 'create'"
+                                                        :class="[item === currentNavigatedItem ? 'bg-gray-100 text-gray-800' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100', 'group flex gap-x-3 rounded-md p-2 text-base leading-6 font-semibold px-6 cursor-pointer w-full']">
                                                         <component :is="item.icon" class="h-6 w-6 shrink-0"
                                                             aria-hidden="true" />
                                                         {{ item.name }}
@@ -156,26 +156,14 @@ const sidebarOpen = ref(false)
                         <li>
                             <ul role="list" class="-mx-2 space-y-4">
                                 <span class="text-[11px] font-semibold text-gray-600 px-4">NAVIGATION</span>
-                                <!-- <li v-for="item in navigation" :key="item.name">
-                                    <RouterLink v-if="item.name !== 'Create'" :to="item.to"
-                                        :class="[item.current ? 'bg-gray-100 text-gray-800' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100', 'group flex gap-x-3 rounded-md p-2 text-base leading-6 font-semibold px-6 cursor-pointer']">
-                                        <component :is="item.icon" class="h-6 w-6 shrink-0" aria-hidden="true" />
-                                        {{ item.name }}
-                                    </RouterLink>
-                                    <button v-else @click="openCreateModal = true"
-                                        :class="[item.current ? 'bg-gray-100 text-gray-800' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100', 'group flex gap-x-3 rounded-md p-2 text-base leading-6 font-semibold px-6 cursor-pointer']">
-                                        <component :is="item.icon" class="h-6 w-6 shrink-0" aria-hidden="true" />
-                                        {{ item.name }}
-                                    </button>
-                                </li> -->
                                 <li v-for="item in navigation" :key="item.name">
                                     <RouterLink v-if="item.name !== 'Create'" :to="item.to"
                                         :class="[item === currentNavigatedItem ? 'bg-gray-100 text-gray-800' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100', 'group flex gap-x-3 rounded-md p-2 text-base leading-6 font-semibold px-6 cursor-pointer']">
                                         <component :is="item.icon" class="h-6 w-6 shrink-0" aria-hidden="true" />
                                         {{ item.name }}
                                     </RouterLink>
-                                    <button v-else @click="openCreateModal = true"
-                                        :class="[item === currentNavigatedItem ? 'bg-gray-100 text-gray-800' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100', 'group flex gap-x-3 rounded-md p-2 text-base leading-6 font-semibold px-6 cursor-pointer']">
+                                    <button v-else @click="openCreateModal = true; currentModalMode = 'create'"
+                                        :class="[item === currentNavigatedItem ? 'bg-gray-100 text-gray-800' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100', 'group flex gap-x-3 rounded-md p-2 text-base leading-6 font-semibold px-6 cursor-pointer w-full']">
                                         <component :is="item.icon" class="h-6 w-6 shrink-0" aria-hidden="true" />
                                         {{ item.name }}
                                     </button>
@@ -272,7 +260,7 @@ const sidebarOpen = ref(false)
             <main class="py-10 bg-gray-50">
                 <div class="px-4 sm:px-6 lg:px-8">
                     <RouterView /> <!-- diri mang display ang mga child sa dashboard -->
-                    <CreateReportModal v-if="openCreateModal" @close="openCreateModal = false" />
+                    <CreateReportModal v-if="openCreateModal" mode="create" @close="openCreateModal = false" />
                 </div>
             </main>
         </div>

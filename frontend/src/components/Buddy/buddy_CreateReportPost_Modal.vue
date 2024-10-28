@@ -16,7 +16,8 @@
               class="relative transform overflow-hidden rounded-lg bg-white shadow-lg transition-all sm:max-w-[60rem] sm:mx-4 sm:w-full p-6">
               <div class="flex justify-between items-center">
                 <DialogTitle as="h3" class="text-lg font-semibold leading-6 text-gray-900">
-                  Create Report
+                  <!-- if edit "Edit report.." if create "create report..."- joey -->
+                  {{ mode === 'edit' ? 'Edit Report Post' : 'Create Report Post' }}
                 </DialogTitle>
                 <button @click="$emit('close')" ref="cancelButtonRef" class="text-gray-500 hover:text-gray-700">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -106,9 +107,10 @@
                 </div>
               </div>
               <div class="flex justify-end w-full mt-4">
-                <button type="button" @click="$emit('close')"
+                <!-- handleSubmit naah sa script either edit or create kay geh reuse ning form huieeeee- joey -->
+                <button @click="handleSubmit"
                   class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                  Report
+                  {{ mode === 'edit' ? 'Save Changes' : 'Report' }}
                 </button>
               </div>
             </DialogPanel>
@@ -123,6 +125,28 @@ import { ref } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import axios from "axios"
 import { onMounted } from 'vue';
+
+import { defineProps } from 'vue'; // for reusing the form defining mode receive either edit or create yeahhh - joey
+
+const props = defineProps({ // for reuse form defines mode if either edit or create - joey
+  mode: {
+    type: String,
+    required: true
+  }
+});
+
+// Function to handle submission based on mode ( if edit button or create button) - joey
+const handleSubmit = () => {
+  if (props.mode === 'edit') {
+    // Logic for editing
+    console.log('Editing post...');
+  } else {
+    // Logic for creating
+    console.log('Creating post...');
+  }
+};
+
+
 
 const fileInput = ref(null);
 const imageUrls = ref([]);
