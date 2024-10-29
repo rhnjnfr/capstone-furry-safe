@@ -26,9 +26,7 @@ export const createBuddy = async (userID, user) => {
     }
 };
 
-
-//create buddy in buddy details
-export const createBuddyDetails = async (buddyid, user) => {
+export const createBuddyDetails = async (buddyid, user) => { //create buddy in buddy details
     try {
         const { data, error } = await supabase
             .from('tbl_buddy_details')
@@ -52,13 +50,14 @@ export const createBuddyDetails = async (buddyid, user) => {
         console.log("Create buddy details error: ", err)
     }
 }
-export const createBuddyReport = async (req, res) => {
+export const createBuddyReport = async (req, res) => { //create report
 
     let { _user_id, _post_type, _content, _lat, _long, _address,
         _pet_condition, _pet_category, _other_pet_category, _pet_id } = req.body
     console.log("create report function")
     _pet_id = _pet_id === "" ? null : _pet_id;
     _other_pet_category = _other_pet_category == 'null' ? null : _other_pet_category
+    _pet_condition = _pet_condition == 'null' ? null : _pet_condition
     const photos = req.files
     let photoUrl = []
 
@@ -103,7 +102,7 @@ export const createBuddyReport = async (req, res) => {
             console.error("Database insert error:", error);
             return res
                 .status(500)
-                .send({ message: "Failed to save image URLs to the database." });
+                .send({ message: "Failed to save post to the database." });
         } else {
             res.status(200).send({ success: true });
         }
@@ -112,17 +111,27 @@ export const createBuddyReport = async (req, res) => {
         console.error("Unexpected error:", err);
         res.status(500).send({ message: err });
     }
-    // _user_id 
-    // _post_type 
-    // _content 
-    // _report_type 
-    // _lat 
-    // _long 
-    // _pet_condition 
-    // _report_status
-    // _pet_category 
-    // _photo_urls 
-    // _pet_id
+}
+export const retrieveBuddyDetails = async (req, res) => { //retrieve buddy details
+    const { _id } = req.body
+
+    try {
+        const { data, error } = await supabase.rpc("get_buddy_details", {
+            user_id_input: _id
+        })
+        if (error) {
+            console.error("Database insert error:", error);
+            return res
+                .status(500)
+                .send({ message: "Failed to save details to the database." });
+        } else {
+            res.status(200).send({ success: true, data: data});
+        }
+    }
+    catch (err) {
+        console.error("Unexpected error:", err);
+        res.status(500).send({ message: err });
+    }
 
 }
 export default createBuddy;

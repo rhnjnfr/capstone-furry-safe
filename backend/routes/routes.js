@@ -39,7 +39,8 @@ import {
 } from "../controllers/shelter_functions.js";
 
 import {
-  insertBuddyReport
+  insertBuddyReport,
+  getBuddyDetails
 }
 from "../controllers/buddy_functions.js"
 
@@ -113,5 +114,6 @@ router.get("/getreportcategory", getReportCategory);
 
 //buddy functions 
 router.post("/insertbuddyreport", upload2.any(), insertBuddyReport)
+router.post("/getbuddydetails", upload2.any(), getBuddyDetails)
 
 export default router;
