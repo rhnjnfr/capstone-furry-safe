@@ -1,3 +1,98 @@
+<script setup>
+import { ref, onMounted } from 'vue';
+import { PencilIcon, UserIcon, Square2StackIcon } from "@heroicons/vue/20/solid";
+import axios from 'axios';
+import viewpostdetials from '@/components/Buddy/buddy_Profile_GridViewdetailsModal.vue';
+import default_avatar from '@/assets/images/buddy_default.jpg'
+
+const _id = localStorage.getItem('u_id')
+
+// view detials on grid images
+const selectedPostViewDetailsId = ref(null);
+const selectedPostDetails = ref([])
+const selectedTab = ref('feed'); // Default selected tab
+const user = ref({})
+
+
+onMounted(() => { //pag load sa page mag load ni =)
+  console.log("D:")
+  getUserDetails()
+  getBuddyPost()
+})
+
+const selectTab = (tab) => {
+  selectedTab.value = tab; // Update the selected tab
+};
+const toggleModalViewDetails = (id) => {
+  selectedPostViewDetailsId.value = selectedPostViewDetailsId.value === id ? null : id;
+  const foundPost = buddyPosts.value.find(post => post.post_id === selectedPostViewDetailsId.value);
+
+  if (foundPost) {
+    selectedPostDetails.value = foundPost
+    console.log(selectedPostDetails.value)
+  } 
+};
+
+async function getUserDetails() {
+  try {
+    const response = await axios.post("http://localhost:5000/getbuddydetails",
+      {
+        _id: _id
+      }
+    )
+    if (response.data.success) {
+      console.log(response.data.data)
+      user.value = response.data.data[0]
+      console.log("user avatar", user.value) // Check to confirm values are set
+    }
+  }
+  catch (err) {
+    console.log("error", err)
+  }
+}
+
+const buddyPosts = ref([])
+async function getBuddyPost() {
+  try {
+    console.log("id", _id)
+    const response = await axios.post("http://localhost:5000/getbuddypost",
+      {
+        _id: _id
+      }
+    )
+    if (response.data.success) {
+      buddyPosts.value = response.data.data;
+      console.log("buddyPosts data:", buddyPosts.value);  // Log the data here
+    }
+  }
+  catch (err) {
+    console.log("error", err)
+  }
+}
+
+const feedImages = ref([ //predefined by joey
+  {
+    id: 1,
+    imageUrl: [
+      require('@/assets/images/eric.png'),
+      require('@/assets/images/eric.png'),
+      require('@/assets/images/eric.png')
+    ]
+  },
+  {
+    id: 2,
+    imageUrl: require('@/assets/images/charles.png')
+  },
+  {
+    id: 3,
+    imageUrl: [
+      require('@/assets/images/bals.png'),
+      require('@/assets/images/eric.png'),
+      require('@/assets/images/eric.png')
+    ]
+  }
+]);
+</script>
 <template>
   <div class="flex h-screen">
     <main class="flex-1">
@@ -7,7 +102,7 @@
             <img :src="user.user_profile_url || default_avatar" alt=""
               class="rounded-full border-2 w-32 h-32 object-cover" />
             <div>
-              <h2 class="text-2xl font-bold">{{ user.full_name }}</h2>
+              <h2 class="text-2xl font-bold">{{ user.firstname + ' ' + user.lastname }}</h2>
               <div class="flex sm:justify-center md:justify-start items-center gap-x-2 text-gray-600 text-sm">
                 <UserIcon class="h-4 w-4 text-gray-500" />
                 <span class="font-medium">{{ user.gender }}</span>
@@ -41,18 +136,19 @@
           <!-- grid images of buddy post -->
           <div>
             <ul role="list" class="grid grid-cols-3 gap-x-2 gap-y-2 md:grid-cols-3 xl:grid-cols-4">
-              <li v-for="post in feedImages" :key="post.id" class="relative">
-                <button @click="toggleModalViewDetails(post.id)" class="group block w-full overflow-hidden bg-white">
-                  <!-- Display the first image in the array or the single image if it's not an array -->
-                  <img :src="Array.isArray(post.imageUrl) ? post.imageUrl[0] : post.imageUrl" alt=""
-                    class="pointer-events-none aspect-square object-cover group-hover:opacity-75" />
+              <li v-for="post in buddyPosts" :key="post.post_id" class="relative">
+                <button @click="toggleModalViewDetails(post.post_id)"
+                  class="group block w-full overflow-hidden bg-white">
+                  <!-- Display the first image in the photos array or a placeholder if no image exists -->
+                  <img :src="Array.isArray(post.photos) && post.photos.length > 0 ? post.photos[0] : 'placeholder.jpg'"
+                    alt="Post image" class="pointer-events-none aspect-square object-cover group-hover:opacity-75" />
 
-                  <!-- Display the overlay icon if there are multiple images -->
-                  <Square2StackIcon v-if="Array.isArray(post.imageUrl) && post.imageUrl.length > 1"
+                  <!-- Display overlay icon if there are multiple images -->
+                  <Square2StackIcon v-if="Array.isArray(post.photos) && post.photos.length > 1"
                     class="absolute top-2 right-2 h-5 w-5 text-white group-hover:opacity-75" />
                 </button>
-                <viewpostdetials v-if="selectedPostViewDetailsId === post.id"
-                  @close="toggleModalViewDetails(post.id)" />
+                <viewpostdetials  v-if="selectedPostViewDetailsId === post.post_id" :selectedPostDetails="selectedPostDetails"
+                  @close="toggleModalViewDetails(post.post_id)" />
               </li>
             </ul>
           </div>
@@ -143,72 +239,3 @@
     </main>
   </div>
 </template>
-
-<script setup>
-import { ref, onMounted } from 'vue';
-import { PencilIcon, UserIcon, Square2StackIcon } from "@heroicons/vue/20/solid";
-import axios from 'axios';
-
-import viewpostdetials from '@/components/Buddy/buddy_Profile_GridViewdetailsModal.vue';
-// view detials on grid images
-const selectedPostViewDetailsId = ref(null);
-const toggleModalViewDetails = (id) => {
-  selectedPostViewDetailsId.value = selectedPostViewDetailsId.value === id ? null : id;
-  console.log(id);
-};
-
-const selectedTab = ref('feed'); // Default selected tab
-
-const selectTab = (tab) => {
-  selectedTab.value = tab; // Update the selected tab
-};
-
-import default_avatar from '@/assets/images/buddy_default.jpg'
-const user = ref({})
-async function getUserDetails() {
-  try {
-    const _id = localStorage.getItem('u_id')
-    const response = await axios.post("http://localhost:5000/getbuddydetails",
-      {
-        _id: _id
-      }
-    )
-    if (response.data.success) {
-      console.log(response.data.data)
-      user.value = response.data.data[0]
-      console.log("user avatar", user.value) // Check to confirm values are set
-    }
-  }
-  catch (err) {
-    console.log("error", err)
-  }
-}
-
-onMounted(() => { //pag load sa page mag load ni =)
-  console.log("D:")
-  getUserDetails()
-})
-
-const feedImages = ref([
-  {
-    id: 1,
-    imageUrl: [
-      require('@/assets/images/eric.png'),
-      require('@/assets/images/eric.png'),
-      require('@/assets/images/eric.png')
-    ]
-  },
-  {
-    id: 2,
-    imageUrl: require('@/assets/images/charles.png')
-  },
-  {
-    id: 3,
-    imageUrl: [
-      require('@/assets/images/bals.png'),
-      require('@/assets/images/eric.png'),
-      require('@/assets/images/eric.png')
-    ]
-  }
-]);
-</script>

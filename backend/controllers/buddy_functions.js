@@ -1,7 +1,8 @@
 import {
     createBuddyReport,
     retrieveBuddyDetails, 
-    updateBuddyDetails
+    updateBuddyDetails,
+    retrieveBuddyPost
 }
     from "../model/buddyModel.js"
 
@@ -13,4 +14,7 @@ export const getBuddyDetails = (req, res) => {
 };
 export const setBuddyDetails = (req, res) => {
     updateBuddyDetails(req, res);
+};
+export const getBuddyPost = (req, res) => {
+    retrieveBuddyPost(req, res);
 };

@@ -26,6 +26,7 @@ const fileInput = ref(null);
 const selectedImage = ref(null);
 let fileToUpload = null;
 
+const retrievedProfile = ref(null)
 // Navigation function
 function navigateTo(path) {
     router.push(path);
@@ -50,8 +51,6 @@ function handleFileChange(event) {
         selectedImage.value = event.target.result;
     };
     reader.readAsDataURL(file);
-    console.log("value", selectedImage.value)
-    console.log("value", fileToUpload)
 }
 
 function clearImage() {
@@ -72,7 +71,7 @@ async function getUserDetails() {
             }
         )
         if (response.data.success) {
-            console.log(response.data.data)
+            console.log("response", response.data.data)
             populateForm(response.data.data)
         }
     }
@@ -80,20 +79,30 @@ async function getUserDetails() {
         console.log("error", err)
     }
 }
-// // Populate the interface with the retrieved data 
-async function populateForm(data) {
-    const [_firstname, _lastname] = data[0].full_name.split(' ')
+async function populateForm(data) { // // Populate the interface with the retrieved data
+
+    firstname.value = data[0].firstname
+    lastname.value = data[0].lastname
     username.value = data[0].user_name
-    firstname.value = _firstname
-    lastname.value = _lastname
     dob.value = data[0].dob
     selectedGender.value = data[0].gender
     bio.value = data[0].bio
-    selectedImage.value = (data[0].user_profile_url == null) ? data[0].user_profile_url : null
+    selectedImage.value = (data[0].user_profile_url == null) ? null : data[0].user_profile_url
+    retrievedProfile.value = (data[0].user_profile_url == null) ? null : data[0].user_profile_url
 }
-
 async function saveProfile() {
     console.log("save profile function")
+
+    const isImageChanged = retrievedProfile.value !== selectedImage.value;
+
+    if (!isImageChanged && selectedImage.value !== null) {
+        console.log("Profile image hasn't changed, no update needed.");
+        fileToUpload = retrievedProfile.value
+
+        console.log(fileToUpload)
+    }
+
+
     // setbuddydetails
     const formData = new FormData();
 
@@ -110,8 +119,24 @@ async function saveProfile() {
         ['_dob', dob.value],
         ['_gender', selectedGender.value],
         ['_bio', bio.value],
-        ['_profile_url', fileToUpload]
     ]
+
+    // Handle the profile image update logic
+    if (selectedImage.value === null) {
+        // If image was removed, set profile URL to null
+        formData.append('_profile_url', null);
+        formData.append('_oldProfile', retrievedProfile.value);
+
+        console.log("Image removed, setting profile URL to null in DB.");
+    } else if (isImageChanged) {
+        // If image has changed, include the new file
+        formData.append('_profile_url', fileToUpload);
+        formData.append('_oldProfile', retrievedProfile.value);
+        console.log("Image changed, updating profile URL in DB.");
+    }
+    else {
+        formData.append('_profile_url', fileToUpload);
+    }
 
     dataInput.forEach(([key, value]) => formData.append(key, value));
 
@@ -120,6 +145,7 @@ async function saveProfile() {
     }
 
     try {
+        console.log("in try")
         const response = await axios.post("http://localhost:5000/setbuddydetails",
             formData,
             {
@@ -134,13 +160,6 @@ async function saveProfile() {
                 path: "/buddy_profile",
                 query: { showToast: true, message: 'Saved Successfully', status: 'success' }
             });
-            // if (toastRef.value && typeof toastRef.value.showToast === 'function') {
-            //     toastRef.value.showToast('success', 'Post Successful');
-
-            //     await new Promise(resolve => setTimeout(resolve, 800));  // Adjust delay as needed
-            //     emit('close');
-            //     // // Wait briefly for the form to close fully
-            // }
         } else {
             console.error('Failed to post:', response.data.message);
         }
@@ -149,6 +168,7 @@ async function saveProfile() {
         console.log("error", err)
     }
 }
+
 onMounted(() => {
     getUserDetails()
 });

@@ -54,8 +54,12 @@ export const createBuddyReport = async (req, res) => { //create report
 
     let { _user_id, _post_type, _content, _lat, _long, _address,
         _pet_condition, _pet_category, _other_pet_category, _pet_id } = req.body
-    console.log("create report function")
-    _pet_id = _pet_id === "" ? null : _pet_id;
+
+    console.log(req.body)
+
+    _pet_category = _pet_category == 'other' ? null : _pet_category
+    _content = _content == '' ? null : _content
+    _pet_id = (_pet_id == "" || _pet_id == 'null') ? null : _pet_id; 
     _other_pet_category = _other_pet_category == 'null' ? null : _other_pet_category
     _pet_condition = _pet_condition == 'null' ? null : _pet_condition
     const photos = req.files
@@ -134,12 +138,49 @@ export const retrieveBuddyDetails = async (req, res) => { //retrieve buddy detai
     }
 
 }
-export const updateBuddyDetails = async (req, res) => {
-    const { _buddy_id, _user_name, _firstname,
-        _lastname, _dob, _gender, _bio } = req.body
+export const updateBuddyDetails = async (req, res) => { //update buddy details
+    const { _buddy_id, _user_name, _firstname, _lastname, _dob, _gender, _bio } = req.body;
 
-    const file = req.files 
-    let photoUrl = null
+    console.log("_oldProfile:", req.body._oldProfile);
+
+    // Log _profile_url and _oldProfile to verify values
+    const _profile_url = (req.body._profile_url == null || req.body._profile_url == 'null') ? null : req.body._profile_url
+    const _oldProfile = (req.body._oldProfile == null || req.body._oldProfile == 'null') ? '' : req.body._oldProfile
+
+    console.log("_oldProfile:", _oldProfile);
+
+    const file = req.files
+
+    if (file && file.length > 0) {
+        file.forEach((photo, index) => {
+            console.log(`File ${index + 1}:`);
+            console.log("Original Name:", photo.originalname);
+            console.log("Mimetype:", photo.mimetype);
+            console.log("Size:", photo.size);
+            console.log("Path:", photo.path);
+        });
+    } else {
+        console.log("No files uploaded");
+    }
+    let photoUrl = _profile_url
+    console.log(photoUrl)
+
+    if (_oldProfile != null && _oldProfile != '') {
+        const prefix = "/storage/v1/object/public/images/user_images/";
+        // Extract the file path from the `oldProfile` URL
+        const filePath = new URL(_oldProfile).pathname.replace(prefix, "").trim();
+        console.log("File path to delete:", filePath);
+        const fullFilePath = `user_images/${filePath}`;
+        const { error: deleteError } = await supabase.storage
+            .from("images")
+            .remove([fullFilePath]);
+
+        if (deleteError) {
+            console.error("Failed to delete old profile photo:", deleteError);
+        } else {
+            console.log("Old profile photo deleted successfully");
+        }
+    }
 
     for (const photo of file) {
         const photoPath = `user_images/${Date.now()}_${photo.originalname}`;
@@ -168,11 +209,11 @@ export const updateBuddyDetails = async (req, res) => {
             _buddy_id: _buddy_id,
             _user_name: _user_name,
             _firstname: _firstname,
-            _lastname: _lastname, 
+            _lastname: _lastname,
             _dob: _dob,
             _gender: _gender,
             _bio: _bio,
-            _profile_url: photoUrl  
+            _profile_url: photoUrl
         })
         if (error) {
             console.error("Database insert error:", error);
@@ -180,12 +221,32 @@ export const updateBuddyDetails = async (req, res) => {
                 .status(500)
                 .send({ message: "Failed to save details to the database." });
         } else {
-            res.status(200).send({ success: true});
+            res.status(200).send({ success: true });
         }
     }
     catch (err) {
+        res.status(200).send({ success: false, message: err });
+    }
+}
+export const retrieveBuddyPost = async (req, res) => {
+    const { _id } = req.body
 
+    try {
+        const { data, error } = await supabase.rpc("get_post_details_with_photos", {
+            _id: _id
+        })
+        if (error) {
+            console.error("Database insert error:", error);
+            res.status(500).send({
+                success: false, message: 'Failed to retrieve posts', data: error
+            });
 
+        } else {
+            res.status(200).send({ success: true, data: data });
+        }
+    }
+    catch (err) {
+        console.error("Database insert error:", err);
     }
 }
 

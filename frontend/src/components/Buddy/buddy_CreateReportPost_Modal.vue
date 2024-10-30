@@ -56,12 +56,6 @@ function getReportInput() {
   photoflag.value = (imageUrls.value.length < 1) ? photoflag.value = false : photoflag.value = true
   locationflag.value = (selectedLocationAddress.value == '') ? locationflag.value = false : locationflag.value = true
 
-  selectedCategory.value = (selectedCategory.value == 'other') ? null : selectedCategory.value
-  petcondition.value = (petcondition.value == '') ? null : petcondition.value
-  reportDetails.value = (reportDetails.value == '') ? null : petcondition.value
-  other_selectedCategory.value = (other_selectedCategory.value == '') ? null : other_selectedCategory.value
-  selectedPetId.value = (selectedPetId.value == null) ? '' : selectedPetId.value
-
   if (photoflag.value == true && locationflag.value == true) {
     data.value = [
       ['_user_id', id],

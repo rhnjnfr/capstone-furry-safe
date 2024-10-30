@@ -123,7 +123,7 @@
                                                     </p>
                                                     <span
                                                         class="text-[12px] font-medium leading-6 text-gray-900 bg-green-50 py-1 px-4 rounded-2xl w-fit">{{
-                                                            viewpostdetials.reportstatus }}</span>
+                                                            selectedPost.report_status }}</span>
                                                 </dd>
                                             </div>
                                             <div class="my-4">
@@ -140,7 +140,7 @@
                                                             </dt>
                                                             <dd
                                                                 class="mt-1 text-sm leading-6 text-gray-700 xl:col-span-2 sm:mt-0">
-                                                                {{ viewpostdetials.reporttype }}</dd>
+                                                                {{ selectedPost.post_type }}</dd>
                                                         </div>
                                                         <div
                                                             class="bg-white px-4 py-6 sm:grid xl:grid-cols-3 sm:gap-y-2 gap-x-4 sm:px-3">
@@ -148,7 +148,7 @@
                                                                 Pet Category</dt>
                                                             <dd
                                                                 class="mt-1 text-sm leading-6 text-gray-700 xl:col-span-2 sm:mt-0">
-                                                                {{ viewpostdetials.petcategory }}</dd>
+                                                                {{ selectedPost.pet_category }}</dd>
                                                         </div>
                                                         <div
                                                             class="bg-gray-50 px-4 py-6 sm:grid xl:grid-cols-3 gap-y-1 gap-x-4 sm:px-3">
@@ -156,7 +156,7 @@
                                                                 Pet Condition</dt>
                                                             <dd
                                                                 class="mt-1 text-sm leading-6 text-gray-700 xl:col-span-2 sm:mt-0">
-                                                                {{ viewpostdetials.petcondition }}</dd>
+                                                                {{ selectedPost.pet_condition }}</dd>
                                                         </div>
                                                         <div
                                                             class="bg-white px-4 py-6 sm:grid xl:grid-cols-3 sm:gap-y-2 gap-x-4 sm:px-3">
@@ -164,7 +164,7 @@
                                                                 Report Location</dt>
                                                             <dd
                                                                 class="mt-1 text-sm leading-6 text-gray-700 xl:col-span-2 sm:mt-0">
-                                                                {{ viewpostdetials.location }}</dd>
+                                                                {{ selectedPost.report_address_location }}</dd>
                                                         </div>
                                                         <div
                                                             class="bg-gray-50 px-4 py-6 sm:grid xl:grid-cols-3 gap-y-1 gap-x-4 sm:px-3">
@@ -172,7 +172,7 @@
                                                                 Report Details</dt>
                                                             <dd
                                                                 class="mt-1 text-sm leading-6 xl:col-span-2 text-gray-700">
-                                                                {{ viewpostdetials.reportdetails }}</dd>
+                                                                {{ selectedPost.content }}</dd>
                                                         </div>
 
                                                     </dl>
@@ -202,19 +202,31 @@
     </TransitionRoot>
 </template>
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
-
 import { ChevronLeftIcon, ChevronRightIcon, EllipsisHorizontalIcon } from "@heroicons/vue/20/solid";
-
 import CreateReportModal from '@/components/Buddy/buddy_CreateReportPost_Modal.vue' // for edit modal
+
 const openEditModal = ref(false) // for create report modal
+const selectedPost = ref([])
 
 // dropdown button (edit and delete)
 const isOpen = ref(false);
 const toggleDropdown = () => {
     isOpen.value = !isOpen.value;
 };
+
+const props = defineProps({
+    selectedPostDetails: {
+        type: Array,
+        required: true,
+    },
+});
+
+onMounted(() => {
+    selectedPost.value = props.selectedPostDetails
+    console.log(selectedPost.value)
+})
 
 // Reactive state
 const currentIndex = ref(0);
