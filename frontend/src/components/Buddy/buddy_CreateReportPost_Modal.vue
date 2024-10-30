@@ -83,7 +83,6 @@ function getReportInput() {
 
     saveReport(formData)
   }
-  console.log("report inputs", selectedCategory.value, selectedLocationAddress.value, reportCategory.value, other_selectedCategory.value, photoflag.value)
 }
 
 // Handle file change and load images
@@ -99,9 +98,6 @@ const handleFileChange = (event) => {
     }
     reader.readAsDataURL(file)
   }
-
-
-  console.log(imageUrls.value)
 }
 function handleData(data) {
   console.log(data)
@@ -162,12 +158,6 @@ async function retrieveProfile() {
   }
 }
 async function saveReport(formData) {
-  console.log("report save function")
-
-  for (const [key, value] of formData.entries()) {
-    console.log(`Key: ${key}, Value:`, value);
-  }
-
   try {
     const response = await axios.post("http://localhost:5000/insertbuddyreport",
       formData,

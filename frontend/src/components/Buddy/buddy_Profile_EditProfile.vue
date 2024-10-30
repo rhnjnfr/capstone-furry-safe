@@ -13,8 +13,10 @@ const toastRef = ref(null);  // Create a ref for the Toast component
 const isModalpromptOpen = ref(false);
 
 const id = localStorage.getItem('c_id');
+const user_id = localStorage.getItem('u_id');
 const username = ref('');
-const about = ref('');
+const bio = ref('');
+const dob = ref('');
 const selectedGender = ref('')
 const firstname = ref('');
 const lastname = ref('');
@@ -48,6 +50,8 @@ function handleFileChange(event) {
         selectedImage.value = event.target.result;
     };
     reader.readAsDataURL(file);
+    console.log("value", selectedImage.value)
+    console.log("value", fileToUpload)
 }
 
 function clearImage() {
@@ -59,146 +63,95 @@ function clearImage() {
     }
 }
 
-function addLink() {
-    console.log('Add link button clicked');
-    links.value.push({ value: '' });
-    console.log('Links array:', links.value);
+async function getUserDetails() {
+    try {
+        const _id = localStorage.getItem('u_id')
+        const response = await axios.post("http://localhost:5000/getbuddydetails",
+            {
+                _id: _id
+            }
+        )
+        if (response.data.success) {
+            console.log(response.data.data)
+            populateForm(response.data.data)
+        }
+    }
+    catch (err) {
+        console.log("error", err)
+    }
 }
-
-function removeLink(index) {
-    links.value.splice(index, 1);
-}
-
-// // Retrieve data from the backend based on localStorage c_id 
-// async function get_Shelter_Details() {
-//     try {
-//         const response = await axios.post("http://localhost:5000/edit_shelterprofile", {
-//             shelterid: id
-//         });
-
-//         console.log(response.data[0])
-//         if (response.data) {
-//             populateForm(response.data[0]);
-//         }
-//     }
-//     catch (err) {
-//         console.log("An error occurred getting shelter details", err);
-//     }
-// }
-
 // // Populate the interface with the retrieved data 
-// async function populateForm(data) {
-//     username.value = data.shelter || '';
-//     about.value = data.bio || '';
-//     shelterAddress.value = data.address || '';
-//     firstname.value = data.contact || '';
-//     lastname.value = data.lastname || '';
-//     lat.value = data.latitude || '';
-//     lng.value = data.longitude || '';
-//     url.value = data.profile || '';
-//     // Handle links based on their format
+async function populateForm(data) {
+    const [_firstname, _lastname] = data[0].full_name.split(' ')
+    username.value = data[0].user_name
+    firstname.value = _firstname
+    lastname.value = _lastname
+    dob.value = data[0].dob
+    selectedGender.value = data[0].gender
+    bio.value = data[0].bio
+    selectedImage.value = (data[0].user_profile_url == null) ? data[0].user_profile_url : null
+}
 
-//     console.log("lat lang to pass", lat.value, lng.value)
+async function saveProfile() {
+    console.log("save profile function")
+    // setbuddydetails
+    const formData = new FormData();
 
-//     if (data.link) {
-//         let parsedLinks = [];
-//         try {
-//             // Attempt to parse as JSON
-//             parsedLinks = JSON.parse(data.link);
-//             if (!Array.isArray(parsedLinks)) {
-//                 throw new Error('Parsed links is not an array');
-//             }
-//         } catch (error) {
-//             console.warn('Links are not in JSON format. Attempting to split by comma.');
-//             // Fallback: split by comma
-//             parsedLinks = data.link.split(',').map(link => link.trim()).filter(link => link);
-//         }
-//         links.value = parsedLinks.map(link => ({ value: link }));
-//     } else {
-//         links.value = [{ value: '' }];
-//     }
+    //retrieve input
+    let dataInput = []
 
-//     // Handle profile image if available
-//     if (data.profile) {
-//         try {
-//             const response = await axios.post("http://localhost:5000/image",
-//                 {
-//                     profileUrl: data.profile
-//                 })
-//             selectedImage.value = response.data.data
-//         }
-//         catch (err) {
-//             console.log(err)
-//         }
-//     }
-// }
+    firstname.value = firstname.value.charAt(0).toUpperCase() + firstname.value.slice(1).toLowerCase();
+    lastname.value = lastname.value.charAt(0).toUpperCase() + lastname.value.slice(1).toLowerCase();
+    dataInput = [
+        ['_buddy_id', id],
+        ['_user_name', username.value],
+        ['_firstname', firstname.value],
+        ['_lastname', lastname.value],
+        ['_dob', dob.value],
+        ['_gender', selectedGender.value],
+        ['_bio', bio.value],
+        ['_profile_url', fileToUpload]
+    ]
 
-// async function saveProfile() {
-//     if (!fileToUpload) {
-//         fileToUpload = url.value;
-//     }
+    dataInput.forEach(([key, value]) => formData.append(key, value));
 
-//     const transformedLinks = links.value.map(linkObj => linkObj.value);
-//     const id = localStorage.getItem('c_id')
+    for (let [key, value] of formData.entries()) {
+        console.log(`Key: ${key}, Value:`, value);
+    }
 
-//     const formData = new FormData();
-//     formData.append('image', fileToUpload);
-//     formData.append('shelterid', id);
-//     formData.append('links', JSON.stringify(transformedLinks)); // Serialize if backend expects JSON
-//     formData.append('username', username.value);
-//     formData.append('shelteraddress', shelterAddress.value);
-//     formData.append('contact', firstname.value);
-//     formData.append('lastname', lastname.value);
-//     formData.append('latitude', lat.value);
-//     formData.append('longitude', lng.value);
-//     formData.append('bio', about.value);
+    try {
+        const response = await axios.post("http://localhost:5000/setbuddydetails",
+            formData,
+            {
+                headers: { 'Content-Type': 'multipart/form-data' } // Correct header placement
+            }
+        );
+        console.log("response: ", response)
 
-//     // Log FormData entries for debugging
-//     for (let pair of formData.entries()) {
-//         console.log(`${pair[0]}: ${pair[1]}`);
-//     }
+        if (response.data.success) {
+            console.log("hepi")
+            navigateTo({
+                path: "/buddy_profile",
+                query: { showToast: true, message: 'Saved Successfully', status: 'success' }
+            });
+            // if (toastRef.value && typeof toastRef.value.showToast === 'function') {
+            //     toastRef.value.showToast('success', 'Post Successful');
 
-//     try {
-//         const response = await axios.post("http://localhost:5000/save_shelterprofile",
-//             formData,
-//             {
-//                 headers: { 'Content-Type': 'multipart/form-data' } // Correct header placement
-//             }
-//         );
-
-//         if (response.data.success) {
-//             navigateTo({
-//                 path: "/myshelter",
-//                 query: { showToast: true, message: 'Saved Successfully', status: 'success'}
-//             });
-//         } else {
-//             if (route.query.showToast) {
-//                 if (toastRef.value) {
-//                     toastRef.value.showToast('error', response.data.message);
-//                 }
-//             }
-//         }
-//     }
-//     catch (err) {
-//         // Enhanced error handling
-//         if (err.response) {
-//             // Server responded with a status other than 2xx
-//             console.error("Backend error:", err.response.data);
-//             alert(`Error: ${err.response.data.message}`);
-//         } else if (err.request) {
-//             // Request was made but no response received
-//             console.error("No response from server:", err.request);
-//             alert('No response from server. Please try again later.');
-//         } else {
-//             // Something else caused the error
-//             console.error("Error:", err.message);
-//             alert(`Error: ${err.message}`);
-//         }
-//     }
-// }
-// onMounted(() => {
-//     get_Shelter_Details();
-// });
+            //     await new Promise(resolve => setTimeout(resolve, 800));  // Adjust delay as needed
+            //     emit('close');
+            //     // // Wait briefly for the form to close fully
+            // }
+        } else {
+            console.error('Failed to post:', response.data.message);
+        }
+    }
+    catch (err) {
+        console.log("error", err)
+    }
+}
+onMounted(() => {
+    getUserDetails()
+});
 </script>
 
 
@@ -287,16 +240,17 @@ function removeLink(index) {
                             <select v-model="selectedGender" id="gender" name="gender"
                                 class="block w-full rounded-md border-0 py-1.5 px-[1rem] text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-xs sm:text-sm sm:leading-6">
                                 <option value="" selected disabled hidden>Select Gender</option>
-                                <option value="male">Male</option>
-                                <option value="female">Female</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
                             </select>
                         </div>
                     </div>
                     <div class="col-span-full">
-                        <label for="about" class="block text-sm font-medium leading-6 text-gray-900">
+                        <label for="bio" class="block text-sm font-medium leading-6 text-gray-900">
                             Bio</label>
                         <div class="mt-2">
-                            <textarea v-model="about" id="about" name="about" rows="3"
+                            <textarea v-model="bio" id="bio" name="bio" rows="3"
                                 placeholder="Describe yourself, interest and dislike..."
                                 class="block w-full rounded-md border-0 py-1.5 px-[1rem] text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6">
                             </textarea>

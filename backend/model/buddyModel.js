@@ -125,7 +125,7 @@ export const retrieveBuddyDetails = async (req, res) => { //retrieve buddy detai
                 .status(500)
                 .send({ message: "Failed to save details to the database." });
         } else {
-            res.status(200).send({ success: true, data: data});
+            res.status(200).send({ success: true, data: data });
         }
     }
     catch (err) {
@@ -134,4 +134,59 @@ export const retrieveBuddyDetails = async (req, res) => { //retrieve buddy detai
     }
 
 }
+export const updateBuddyDetails = async (req, res) => {
+    const { _buddy_id, _user_name, _firstname,
+        _lastname, _dob, _gender, _bio } = req.body
+
+    const file = req.files 
+    let photoUrl = null
+
+    for (const photo of file) {
+        const photoPath = `user_images/${Date.now()}_${photo.originalname}`;
+        const { data: photoUploadData, error: photoUploadError } =
+            await supabase.storage
+                .from("images") // Ensure this is your correct bucket name
+                .upload(photoPath, photo.buffer, {
+                    contentType: photo.mimetype,
+                });
+
+        if (!photoUploadError) {
+            const { data: photoUrlData } = supabase.storage
+                .from("images")
+                .getPublicUrl(photoPath);
+            photoUrl = photoUrlData.publicUrl; // Collecting extra photo URLs
+        } else {
+            console.error("Extra photo upload error:", photoUploadError);
+            return res
+                .status(500)
+                .send({ message: "Failed to upload extra photos." });
+        }
+    }
+
+    try {
+        const { data, error } = await supabase.rpc("update_buddy_details", {
+            _buddy_id: _buddy_id,
+            _user_name: _user_name,
+            _firstname: _firstname,
+            _lastname: _lastname, 
+            _dob: _dob,
+            _gender: _gender,
+            _bio: _bio,
+            _profile_url: photoUrl  
+        })
+        if (error) {
+            console.error("Database insert error:", error);
+            return res
+                .status(500)
+                .send({ message: "Failed to save details to the database." });
+        } else {
+            res.status(200).send({ success: true});
+        }
+    }
+    catch (err) {
+
+
+    }
+}
+
 export default createBuddy;

@@ -40,7 +40,8 @@ import {
 
 import {
   insertBuddyReport,
-  getBuddyDetails
+  getBuddyDetails, 
+  setBuddyDetails
 }
 from "../controllers/buddy_functions.js"
 
@@ -115,5 +116,7 @@ router.get("/getreportcategory", getReportCategory);
 //buddy functions 
 router.post("/insertbuddyreport", upload2.any(), insertBuddyReport)
 router.post("/getbuddydetails", upload2.any(), getBuddyDetails)
+router.post("/setbuddydetails", upload2.any(), setBuddyDetails)
+
 
 export default router;
