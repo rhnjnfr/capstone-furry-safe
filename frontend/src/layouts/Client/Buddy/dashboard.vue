@@ -85,7 +85,6 @@ async function getUserDetails() {
 }
 
 onMounted(() => { //pag load sa page mag load ni =)
-    console.log("D:")
     getUserDetails()
 })
 const sidebarOpen = ref(false)

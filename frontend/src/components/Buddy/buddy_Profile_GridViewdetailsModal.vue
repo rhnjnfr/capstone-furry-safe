@@ -1,3 +1,77 @@
+
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
+import { ChevronLeftIcon, ChevronRightIcon, EllipsisHorizontalIcon } from "@heroicons/vue/20/solid";
+import CreateReportModal from '@/components/Buddy/buddy_CreateReportPost_Modal.vue' // for edit modal
+
+const openEditModal = ref(false) // for create report modal
+const selectedPost = ref()
+
+// dropdown button (edit and delete)
+const isOpen = ref(false);
+const toggleDropdown = () => {
+    isOpen.value = !isOpen.value;
+};
+
+const props = defineProps({
+    selectedPostDetails: {
+        type: Object,
+        required: true,
+    },
+});
+
+onMounted(() => {
+    selectedPost.value = props.selectedPostDetails
+    // console.log("selected Post", selectedPost.value)
+})
+
+// Reactive state
+const currentIndex = ref(0);
+
+const viewpostdetials = {
+    id: 1,
+    username: 'June',
+    profile: require("@/assets/images/homepage.png"),
+    reportstatus: "In process",
+    reporttype: "Missing Dog",
+    location: "Acacia Davao City",
+    petcategory: 'Dog',
+    petcondition: "Abandoned and injured",
+    reportdetails: "Found this dog at abandoned lot near STI College Davao please rescue it...",
+    imageUrls: [
+        require("@/assets/images/homepage.png"),
+        require("@/assets/images/charles.png"),
+        require("@/assets/images/eric.png"),
+        require("@/assets/images/bals.png"),
+    ],
+};
+
+// Computed properties
+// const currentImageUrl = computed(() => viewpostdetials.imageUrls[currentIndex.value]);
+const postImageUrl = computed(() => selectedPost.value.photos[currentIndex.value]);
+const hasPrev = computed(() => currentIndex.value > 0);
+const hasNext = computed(() => currentIndex.value < selectedPost.value.photos.length - 1);
+
+
+// Methods
+const nextImage = () => {
+    if (hasNext.value) {
+        currentIndex.value++;
+    }
+};
+
+const prevImage = () => {
+    if (hasPrev.value) {
+        currentIndex.value--;
+    }
+};
+
+const emit = defineEmits(['close']) // for closing the modal
+
+const open = ref(true)
+</script>
+
 <template>
     <TransitionRoot as="template" :show="open">
         <Dialog as="div" class="relative z-50" @click.self="$emit('close')">
@@ -69,7 +143,7 @@
                                             </button>
                                         </div>
                                         <div class="flex">
-                                            <img :src="currentImageUrl" alt="Image post"
+                                            <img :src="postImageUrl" alt="Image post"
                                                 class="flex-shrink-0 aspect-auto sm:w-full xl:w-[80rem] xl:h-[50rem] object-contain" />
                                         </div>
                                         <div
@@ -106,7 +180,8 @@
                                                         <button @click="openEditModal = true; currentModalMode = 'edit'"
                                                             class="block w-full py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-t-lg"
                                                             role="menuitem">Edit Post</button>
-                                                        <CreateReportModal v-if="openEditModal" mode="edit"
+                                                        <CreateReportModal v-if="openEditModal && selectedPost" mode="edit"
+                                                            :selectedPostDetails="selectedPost"
                                                             @close="openEditModal = false" />
 
                                                         <button @click="deletePost"
@@ -201,73 +276,3 @@
         </Dialog>
     </TransitionRoot>
 </template>
-<script setup>
-import { ref, computed, onMounted } from 'vue'
-import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import { ChevronLeftIcon, ChevronRightIcon, EllipsisHorizontalIcon } from "@heroicons/vue/20/solid";
-import CreateReportModal from '@/components/Buddy/buddy_CreateReportPost_Modal.vue' // for edit modal
-
-const openEditModal = ref(false) // for create report modal
-const selectedPost = ref([])
-
-// dropdown button (edit and delete)
-const isOpen = ref(false);
-const toggleDropdown = () => {
-    isOpen.value = !isOpen.value;
-};
-
-const props = defineProps({
-    selectedPostDetails: {
-        type: Array,
-        required: true,
-    },
-});
-
-onMounted(() => {
-    selectedPost.value = props.selectedPostDetails
-    console.log(selectedPost.value)
-})
-
-// Reactive state
-const currentIndex = ref(0);
-
-const viewpostdetials = {
-    id: 1,
-    username: 'June',
-    profile: require("@/assets/images/homepage.png"),
-    reportstatus: "In process",
-    reporttype: "Missing Dog",
-    location: "Acacia Davao City",
-    petcategory: 'Dog',
-    petcondition: "Abandoned and injured",
-    reportdetails: "Found this dog at abandoned lot near STI College Davao please rescue it...",
-    imageUrls: [
-        require("@/assets/images/homepage.png"),
-        require("@/assets/images/charles.png"),
-        require("@/assets/images/eric.png"),
-        require("@/assets/images/bals.png"),
-    ],
-};
-
-// Computed properties
-const currentImageUrl = computed(() => viewpostdetials.imageUrls[currentIndex.value]);
-const hasPrev = computed(() => currentIndex.value > 0);
-const hasNext = computed(() => currentIndex.value < viewpostdetials.imageUrls.length - 1);
-
-// Methods
-const nextImage = () => {
-    if (hasNext.value) {
-        currentIndex.value++;
-    }
-};
-
-const prevImage = () => {
-    if (hasPrev.value) {
-        currentIndex.value--;
-    }
-};
-
-const emit = defineEmits(['close']) // for closing the modal
-
-const open = ref(true)
-</script>
