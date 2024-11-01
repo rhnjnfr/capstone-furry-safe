@@ -81,7 +81,7 @@ async function get_Shelter_Details() {
             shelterid: id
         });
 
-        console.log(response.data[0])
+        console.log("response", response.data[0])
         if (response.data) {
             populateForm(response.data[0]);
         }
@@ -100,10 +100,8 @@ async function populateForm(data) {
     email.value = data.email || '';
     lat.value = data.latitude || '';
     lng.value = data.longitude || '';
-    url.value = data.profile || '';
+    selectedImage.value = data.profile || '';
     // Handle links based on their format
-
-    console.log("lat lang to pass", lat.value, lng.value)
 
     if (data.link) {
         let parsedLinks = [];
@@ -121,20 +119,6 @@ async function populateForm(data) {
         links.value = parsedLinks.map(link => ({ value: link }));
     } else {
         links.value = [{ value: '' }];
-    }
-
-    // Handle profile image if available
-    if (data.profile) {
-        try {
-            const response = await axios.post("http://localhost:5000/image",
-                {
-                    profileUrl: data.profile
-                })
-            selectedImage.value = response.data.data
-        }
-        catch (err) {
-            console.log(err)
-        }
     }
 }
 

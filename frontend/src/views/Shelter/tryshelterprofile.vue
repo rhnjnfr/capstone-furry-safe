@@ -1,3 +1,137 @@
+<script setup>
+import { onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
+import axios from "axios";
+import { PencilIcon, PhoneIcon, LinkIcon, EnvelopeIcon, MapPinIcon } from '@heroicons/vue/20/solid'
+import { SparklesIcon, RectangleStackIcon } from '@heroicons/vue/24/outline'
+
+import linkfooter from '@/components/footerLink.vue'; // footer
+
+import Toast from '@/components/toast.vue';  // Ensure correct case for the file name
+const route = useRoute();
+const toastRef = ref(null);  // Ref for the Toast component
+
+onMounted(() => {
+    if (route.query.showToast) {
+        if (toastRef.value) {
+            toastRef.value.showToast(route.query.status, route.query.message);
+        }
+    }
+});
+
+
+const id = localStorage.getItem('c_id');
+const profiles = ref([]); // Holds shelter and email data
+const profileUrl = ref(null); // Holds the image URL
+
+// profile
+async function loadProfileCard() {
+    try {
+        const response = await axios.post("http://localhost:5000/edit_shelterprofile", {
+            shelterid: id
+        });
+
+        if (response.data && response.data.length > 0) {
+            response.data.forEach(item => {
+                profiles.value.push({
+                    shelter: item.shelter,
+                    email: item.email,
+                    profileurl: item.profile
+                });
+            });
+
+            profileUrl.value = profiles.value[0]?.profileurl;
+            console.log("profile url", profileUrl.value)
+        } else {
+            console.error("No profile data received:", response);
+        }
+    } catch (err) {
+        console.error("An error occurred getting shelter details:", err);
+    }
+}
+
+onMounted(() => {
+    loadProfileCard();
+});
+
+
+// details
+const bio = ref([])
+const sociallink = ref([])
+const details = ref([])
+
+async function loadProfileDetails() {
+    //const id = localStorage.getItem('c_id');
+
+    try {
+        const response = await axios.post("http://localhost:5000/edit_shelterprofile", {
+            shelterid: id
+        });
+
+        // Assuming response.data is an array and you need the first item
+        const data = response.data[0];
+        console.log(data);
+
+        // Update bio
+        bio.value = [
+            {
+                info: data.bio || 'No bio available.'
+            }
+        ];
+
+        // Update social links
+        sociallink.value = [
+            {
+                link: data.link || 'No social link available.'
+            },
+        ];
+
+        // Update details
+        details.value = [
+            {
+                icon: MapPinIcon,
+                label: data.address || 'No address available.',
+            },
+            {
+                icon: PhoneIcon,
+                label: data.contact ? data.contact.toString() : 'No contact available.',
+            },
+            {
+                icon: EnvelopeIcon,
+                label: data.email || 'No email available.',
+            },
+        ];
+
+    } catch (err) {
+        console.error("Error loading profile details:", err);
+        // Optionally, you can set default or error messages in your reactive variables here
+    }
+}
+
+
+onMounted(() => {
+    loadProfileDetails();
+});
+
+import gridPostImages from '@/components/Shelter/shelter_Myshelter_GridPosts.vue'
+
+// tab grid display
+const tabs = ref([
+    { name: 'Posts', icon: RectangleStackIcon, current: true },
+    { name: 'Events', icon: SparklesIcon, current: false },
+])
+
+const currentTab = ref(tabs.value[0].name)
+
+const updateCurrentTab = (tabName) => {
+    currentTab.value = tabName
+    tabs.value.forEach((tab) => {
+        tab.current = tab.name === tabName
+    })
+}
+
+</script>
+
 <template>
     <div class="aspect-auto">
         <Toast ref="toastRef" @closed="refreshRoute($router)" /> <!-- prompt message -->
@@ -132,145 +266,3 @@
         </footer>
     </div>
 </template>
-<script setup>
-import { onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
-import axios from "axios";
-import { PencilIcon, PhoneIcon, LinkIcon, EnvelopeIcon, MapPinIcon } from '@heroicons/vue/20/solid'
-import { SparklesIcon, RectangleStackIcon } from '@heroicons/vue/24/outline'
-
-import linkfooter from '@/components/footerLink.vue'; // footer
-
-import Toast from '@/components/toast.vue';  // Ensure correct case for the file name
-const route = useRoute();
-const toastRef = ref(null);  // Ref for the Toast component
-
-onMounted(() => {
-    if (route.query.showToast) {
-        if (toastRef.value) {
-            toastRef.value.showToast(route.query.status, route.query.message);
-        }
-    }
-});
-
-
-const id = localStorage.getItem('c_id');
-const profiles = ref([]); // Holds shelter and email data
-const profileUrl = ref(null); // Holds the image URL
-
-// profile
-async function loadProfileCard() {
-    try {
-        const response = await axios.post("http://localhost:5000/edit_shelterprofile", {
-            shelterid: id
-        });
-
-        if (response.data && response.data.length > 0) {
-            response.data.forEach(item => {
-                profiles.value.push({
-                    shelter: item.shelter,
-                    email: item.email,
-                    profileurl: item.profile
-                });
-            });
-
-            try {
-                let url = profiles.value[0]?.profileurl;
-                const imgResponse = await axios.post("http://localhost:5000/image", {
-                    profileUrl: url // Assuming you're using shelterid to fetch the image
-                });
-                console.log(imgResponse)
-                profileUrl.value = imgResponse.data.data; // Set the profile image URL
-            } catch (err) {
-                console.error("Error fetching image:", err);
-                profileUrl.value = require('@/assets/images/default-profile.png'); // Default image
-            }
-        } else {
-            console.error("No profile data received:", response);
-        }
-    } catch (err) {
-        console.error("An error occurred getting shelter details:", err);
-    }
-}
-
-onMounted(() => {
-    loadProfileCard();
-});
-
-
-// details
-const bio = ref([])
-const sociallink = ref([])
-const details = ref([])
-
-async function loadProfileDetails() {
-    //const id = localStorage.getItem('c_id');
-
-    try {
-        const response = await axios.post("http://localhost:5000/edit_shelterprofile", {
-            shelterid: id
-        });
-
-        // Assuming response.data is an array and you need the first item
-        const data = response.data[0];
-        console.log(data);
-
-        // Update bio
-        bio.value = [
-            {
-                info: data.bio || 'No bio available.'
-            }
-        ];
-
-        // Update social links
-        sociallink.value = [
-            {
-                link: data.link || 'No social link available.'
-            },
-        ];
-
-        // Update details
-        details.value = [
-            {
-                icon: MapPinIcon,
-                label: data.address || 'No address available.',
-            },
-            {
-                icon: PhoneIcon,
-                label: data.contact ? data.contact.toString() : 'No contact available.',
-            },
-            {
-                icon: EnvelopeIcon,
-                label: data.email || 'No email available.',
-            },
-        ];
-
-    } catch (err) {
-        console.error("Error loading profile details:", err);
-        // Optionally, you can set default or error messages in your reactive variables here
-    }
-}
-
-
-onMounted(() => {
-    loadProfileDetails();
-});
-
-import gridPostImages from '@/components/Shelter/shelter_Myshelter_GridPosts.vue'
-
-// tab grid display
-const tabs = ref([
-    { name: 'Posts', icon: RectangleStackIcon, current: true },
-    { name: 'Events', icon: SparklesIcon, current: false },
-])
-
-const currentTab = ref(tabs.value[0].name)
-
-const updateCurrentTab = (tabName) => {
-    currentTab.value = tabName
-    tabs.value.forEach((tab) => {
-        tab.current = tab.name === tabName
-    })
-}
-
-</script>
