@@ -16,7 +16,8 @@ import {
   getFullName,
   createNewChat,
   getAllShelters, //added getAllShelters from salpocial's code
-  retrieveReports
+  retrieveReports,
+  
 } from "../model/shelterFunctionsModel.js";
 
 export const insertShelterAddress = (req, res) => {

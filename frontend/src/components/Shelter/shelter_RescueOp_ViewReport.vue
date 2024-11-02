@@ -66,7 +66,7 @@ const prevImage = () => {
 
                 <RouterLink class="hover:text-gray-900 hover:underline">
                     <h1 class="text-sm font-semibold">
-                        {{ viewreportpost.name }}
+                        {{ viewreportpost.name }} tite
                     </h1>
                 </RouterLink>
                 <span class="text-[12px] border rounded-xl px-2 text-gray-500">{{ viewreportpost.badge }}</span>

@@ -49,14 +49,14 @@ async function retrieveReports() {
         if (response.data && response.data.length > 0) {
             posts.value = response.data
         }
-        console.log(posts.value)
+        console.log("post value", posts.value)
     }
     catch (err) {
         console.log("error in retrieve reports", err)
     }
 }
 
-onMounted(() => {
+onMounted( async () => {
     retrieveReports()
 })
 </script>
@@ -86,7 +86,11 @@ onMounted(() => {
                             <span class="hover:underline cursor-pointer">{{ report.posted_by }}</span>
                         </div>
                         <!-- reportId use to get the id of the hover username para ma compare sa previewhover component side -->
-                        <previewhover v-if="hoveredIndex === index" :reportId="report.id" class="absolute z-10" />
+                        <!-- <previewhover v-if="hoveredIndex === index" :_user_id="report.user_id" class="absolute z-10" /> -->
+                        <div @mouseenter="hoveredIndex = index" @mouseleave="hoveredIndex = null">
+                            <previewhover v-if="hoveredIndex === index" :_user_id="report.user_id"
+                                class="absolute z-10" />
+                        </div>
                         <!-- <span class="text-[12px] font-medium border rounded-xl ml-3 px-2">badge</span> -->
                     </RouterLink>
                 </span>

@@ -16,6 +16,7 @@ import {
   addVaccineCategory, //admin
   getAdminPosition,
   insertAdminAccount,
+  getUserDetails
 } from "../controllers/user.js";
 
 import {
@@ -123,5 +124,9 @@ router.post("/getbuddypost", upload2.any(), getBuddyPost)
 
 //shelter function 
 router.post("/getereports", getReports) 
+
+//all 
+router.post("/getusedetails", getUserDetails) 
+
 
 export default router;

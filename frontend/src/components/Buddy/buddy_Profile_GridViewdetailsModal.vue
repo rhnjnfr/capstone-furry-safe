@@ -1,6 +1,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import axios from "axios"
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { ChevronLeftIcon, ChevronRightIcon, EllipsisHorizontalIcon } from "@heroicons/vue/20/solid";
 import CreateReportModal from '@/components/Buddy/buddy_CreateReportPost_Modal.vue' // for edit modal
@@ -20,11 +21,6 @@ const props = defineProps({
         required: true,
     },
 });
-
-onMounted(() => {
-    selectedPost.value = props.selectedPostDetails
-    // console.log("selected Post", selectedPost.value)
-})
 
 // Reactive state
 const currentIndex = ref(0);
@@ -66,9 +62,35 @@ const prevImage = () => {
         currentIndex.value--;
     }
 };
+//functions 
+let _user_id = ref(null)
+let userdetails = ref([])
+async function getUserDetailsOnHover() {
+    console.log("on hover")
+    try {
+        const response = await axios.post("http://localhost:5000/getusedetails", {
+            _id: _user_id.value
+        });
+
+        if (response.data.success && response.data.data.length > 0) {
+            userdetails.value = response.data.data;
+
+            console.log("value", userdetails.value[0].profile_url)
+        }
+    }
+    catch (err) {
+        console.log("error in retrieve reports", err)
+    }
+
+}
+onMounted (async () => {
+    selectedPost.value = props.selectedPostDetails
+    _user_id.value = selectedPost.value.user_id
+
+    await getUserDetailsOnHover()
+})
 
 const emit = defineEmits(['close']) // for closing the modal
-
 const open = ref(true)
 </script>
 
@@ -105,11 +127,11 @@ const open = ref(true)
                                     <!-- display username on small screen -->
                                     <div
                                         class="flex items-center justify-between text-gray-700 md:hidden gap-x-2 border-b px-[2rem] py-4">
-                                        <div class="flex items-center gap-x-2">
-                                            <img :src="viewpostdetials.profile" alt="profile"
+                                        <div v-if="userdetails[0]" class="flex items-center gap-x-2">
+                                            <img :src="userdetails[0].profile_url" alt="profile"
                                                 class="w-10 h-10 rounded-full object-cover" />
                                             <span class="font-bold sm:text-base xl:text-xl">
-                                                {{ viewpostdetials.username }}</span>
+                                                {{ selectedPost.posted_by }}</span>
                                         </div>
 
                                         <!-- dropdown buttons -->
@@ -159,11 +181,11 @@ const open = ref(true)
                                         <!-- display details in large screen -->
                                         <div
                                             class="flex items-center justify-between sm:hidden md:flex gap-x-2 border-b px-[2rem] pb-4">
-                                            <div class="flex items-center gap-x-2">
-                                                <img :src="viewpostdetials.profile" alt="profile"
+                                            <div v-if="userdetails[0]" class="flex items-center gap-x-2">
+                                                <img :src="userdetails[0].profile_url" alt="profile"
                                                     class="w-10 h-10 rounded-full object-cover" />
                                                 <span class="font-bold sm:text-base xl:text-xl">{{
-                                                    viewpostdetials.username }}</span>
+                                                    selectedPost.posted_by }}</span>
                                             </div>
 
                                             <!-- dropdown buttons -->
