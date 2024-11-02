@@ -15,7 +15,6 @@ const user = ref({})
 
 
 onMounted(() => { //pag load sa page mag load ni =)
-  console.log("D:")
   getUserDetails()
   getBuddyPost()
 })
@@ -69,29 +68,6 @@ async function getBuddyPost() {
     console.log("error", err)
   }
 }
-
-const feedImages = ref([ //predefined by joey
-  {
-    id: 1,
-    imageUrl: [
-      require('@/assets/images/eric.png'),
-      require('@/assets/images/eric.png'),
-      require('@/assets/images/eric.png')
-    ]
-  },
-  {
-    id: 2,
-    imageUrl: require('@/assets/images/charles.png')
-  },
-  {
-    id: 3,
-    imageUrl: [
-      require('@/assets/images/bals.png'),
-      require('@/assets/images/eric.png'),
-      require('@/assets/images/eric.png')
-    ]
-  }
-]);
 </script>
 <template>
   <div class="flex h-screen">

@@ -16,6 +16,7 @@ import {
   getFullName,
   createNewChat,
   getAllShelters, //added getAllShelters from salpocial's code
+  retrieveReports
 } from "../model/shelterFunctionsModel.js";
 
 export const insertShelterAddress = (req, res) => {
@@ -66,8 +67,9 @@ export const getUserFullName = (req, res) => {
 export const insertNewChat = (req, res) => {
   createNewChat(req, res);
 };
-
-// New function to fetch all shelters for the map - from salpocial's code
 export const fetchAllShelters = (req, res) => {
   getAllShelters(req, res);
+};
+export const getReports = (req, res) => {
+  retrieveReports(req, res);
 };

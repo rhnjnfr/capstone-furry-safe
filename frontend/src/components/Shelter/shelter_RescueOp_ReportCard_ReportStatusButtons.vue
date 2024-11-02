@@ -47,15 +47,11 @@
     </div>
 </template>
 
-<script>
-export default {
-    data() {
-        return {
-            showRescueCancelButtons: false,
-            showSuccessMessage: false,
-            showConfirmRescue: false,
-            showConfirmCancel: false
-        }
-    }
-}
+<script setup>
+import { ref } from 'vue';
+
+const showRescueCancelButtons = ref(false);
+const showSuccessMessage = ref(false);
+const showConfirmRescue = ref(false);
+const showConfirmCancel = ref(false);
 </script>

@@ -36,6 +36,7 @@ import {
   getUserFullName,
   insertNewChat,
   fetchAllShelters, //added fetchAllShelters
+  getReports
 } from "../controllers/shelter_functions.js";
 
 import {
@@ -120,5 +121,7 @@ router.post("/getbuddydetails", upload2.any(), getBuddyDetails)
 router.post("/setbuddydetails", upload2.any(), setBuddyDetails) 
 router.post("/getbuddypost", upload2.any(), getBuddyPost) 
 
+//shelter function 
+router.post("/getereports", getReports) 
 
 export default router;

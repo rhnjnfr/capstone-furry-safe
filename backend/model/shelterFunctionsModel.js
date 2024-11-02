@@ -92,7 +92,7 @@ export const saveShelter_and_Link = async (req, res) => {
         const { data: profileUrlData } = supabase.storage
           .from("images")
           .getPublicUrl(filePath);
-          filePath = profileUrlData.publicUrl; // Profile photo URL
+        filePath = profileUrlData.publicUrl; // Profile photo URL
 
         console.error("Profile uploaded:", filePath);
       } else {
@@ -799,5 +799,28 @@ export const getAllShelters = async (req, res) => {
   }
 };
 // end of added from salpocial's code
+
+//fetch reports in shelter
+export const retrieveReports = async (req, res) => {
+  try {
+    let { _post_id, _post_type } = req.body
+
+    _post_id = (_post_id == null) ? null : _post_id
+
+    const { data, error } = await supabase.rpc("get_filtered_posts", {
+      _post_id: _post_id,
+      _post_type: _post_type,
+    });
+    if(!error){
+      res.status(200).send(data);
+    }
+    else{
+      
+    }
+  }
+  catch (err) {
+    console.log("error occured in retrieveReports", err)
+  }
+}
 
 export default { addShelterAddress };

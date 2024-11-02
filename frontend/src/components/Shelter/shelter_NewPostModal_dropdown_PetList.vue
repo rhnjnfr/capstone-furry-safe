@@ -44,8 +44,6 @@ async function retrieveProfile() {
             profile: profile.profileurl
           }
         )
-        console.log("options", options.value)
-
       })
     }
   }
@@ -59,6 +57,8 @@ const selectedPetInfo = ref([])
 
 // Emit the selected pet id when the selection changes
 function handleSelectionChange(event) {
+  selectedPetInfo.value = []
+
   selectedPetid.value = event.target.value;
   options.value.forEach(pet => {
     if (pet.id == selectedPetid.value) {
