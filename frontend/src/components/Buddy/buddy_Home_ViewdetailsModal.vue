@@ -1,6 +1,108 @@
+<script setup>
+import { ref, reactive, computed, onMounted } from 'vue'
+import axios from "axios"
+import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
+
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/20/solid";
+
+// Reactive state
+const currentIndex = ref(0);
+
+const viewpostdetials = {
+    id: 1,
+    sheltername: 'Shelter Ni Eric',
+    profile: [ require("@/assets/images/eric.png"),  require("@/assets/images/eric.png")],
+    name: "Eric",
+    nickname: "ric",
+    rehomed: "10/22/2024",
+    type: "Dog",
+    breed: "Bulldog",
+    gender: "Male",
+    age: '2 yrs old',
+    size: "50 pounds",
+    coat: "Medium Fur",
+    energylvl: "high",
+    about: "jdsjdsjdsjd;l yehhhh dshd hdsahdo  idsoidh disj hsoi ihhs ihuh hsa gu hgp  ihdhasoh  ihuidgsa  ugui gdsugd ugug dus usgduia",
+    vacstatus: "rabies",
+    surgerystatus: "Chemical Sterilazation",
+    medcondition: "none",
+    needs: "Lambing ni Rhe...",
+
+};
+
+const healthAndMedical = reactive([
+    {
+        label: 'Vaccinations Status',
+        status: "Up-to-date",
+        details: "including rabies and FVRCP"
+    },
+    {
+        label: 'Spay / Neuter',
+        status: "Neuter"
+    },
+    {
+        label: 'Medical Conditions',
+        status: "None known",
+        details: "but has a slight dental issue that requires regular cleaning"
+    },
+    {
+        label: 'Special Needs',
+        status: "None"
+    }
+]);
+
+let selectedPostDetails = ref([])
+const props = defineProps({ // for reuse form defines mode if either edit or create - joey
+    selectedPostDetails: {
+        type: Object,
+        required: false
+    }
+});
+
+// Combine the profile image with the imageUrls array if they exist if wla kay iyakkkk
+const combinedImages = [
+    viewpostdetials.profile ? viewpostdetials.profile : null, // Include the profile image if it exists, otherwise null
+    ...(viewpostdetials.imageUrls || []) // Spread the imageUrls into the array; if imageUrls is null or undefined, use an empty array
+].filter(image => image !== null); // Filter out any null values, resulting in an array of valid image URLs
+
+// Computed properties
+const currentImageUrl = computed(() => viewpostdetials.profile[currentIndex.value]); // Get the current image URL based on the current index
+const hasPrev = computed(() => currentIndex.value > 0); // Check if there is a previous image available
+const hasNext = computed(() => currentIndex.value < viewpostdetials.profile.length - 1); // Check if there is a next image available
+// Check if there are any images to display (either profile or imageUrls) if wla kay and span mo display
+const hasImages = computed(() => viewpostdetials.profile.length > 0 || (viewpostdetials.profile !== null && (viewpostdetials.imageUrls && viewpostdetials.imageUrls.length > 0)));
+
+// Methods
+const nextImage = () => {
+    if (hasNext.value) {
+        currentIndex.value++; // Increment the current index to show the next image
+    }
+};
+const prevImage = () => {
+    if (hasPrev.value) {
+        currentIndex.value--; // Decrement the current index to show the previous image
+    }
+};
+
+//functions 
+async function getPetPostDetails(){
+    console.log("arajklgsjkafgrsa")
+}
+
+onMounted(async ()=>{
+    selectedPostDetails.value = props.selectedPostDetails
+
+    await getPetPostDetails()
+})
+
+const emit = defineEmits(['close']) // for closing the modal
+const open = ref(true)
+</script>
+
 <template>
     <TransitionRoot as="template" :show="open">
         <Dialog as="div" class="relative z-50" @click.self="$emit('close')">
+            diri?
             <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
                 leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
                 <div class="fixed inset-0 bg-gray-500 bg-opacity-70 transition-opacity" />
@@ -25,6 +127,37 @@
                                 </button>
                             </div>
 
+                            <div>
+                                <!-- image preview -->
+                                <div class="flex mt-8 justify-center bg-white">
+                                    <div v-if="hasImages"
+                                        class="relative md:rounded-l-2xl flex justify-center items-center">
+                                        <div
+                                            class="absolute sm:-left-7 lg:-left-11 z-10 bg-gray-300 bg-opacity-40 w-fit rounded-full flex items-center hover:bg-gray-100 hover:bg-opacity-50">
+                                            <button v-if="hasPrev" @click="prevImage">
+                                                <ChevronLeftIcon
+                                                    class="sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-gray-500 sm:hover:text-gray-700" />
+                                            </button>
+                                        </div>
+                                        <div class="flex sm:h-fit xl:h-[35rem] w-full mt-8">
+
+                                            <img v-if="currentImageUrl" :src="currentImageUrl" alt="Image post"
+                                                class="flex-shrink-0 object-contain" />
+
+                                        </div>
+                                        <div
+                                            class="absolute sm:-right-7 lg:-right-11 z-10 bg-gray-300 bg-opacity-40 w-fit rounded-full flex items-center hover:bg-gray-100 hover:bg-opacity-50">
+                                            <button v-if="hasNext" @click="nextImage">
+                                                <ChevronRightIcon
+                                                    class="sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-gray-500 sm:hover:text-gray-700" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div v-else class="sm:text-sm md:text-base font-semibold text-gray-600">
+                                        <span>No images to preview</span>
+                                    </div>
+                                </div>
+                            </div>
                             <div
                                 class="overflow-hidden bg-white shadow sm:rounded-lg text-start sm:px-[1rem]  xl:px-[5rem] sm:w-fit xl:w-[70rem]">
                                 <div class="px-4 py-6 sm:px-6">
@@ -184,59 +317,3 @@
         </Dialog>
     </TransitionRoot>
 </template>
-<script setup>
-import { ref, reactive, computed } from 'vue'
-import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
-
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/20/solid";
-
-// Reactive state
-const currentIndex = ref(0);
-
-const viewpostdetials = {
-    id: 1,
-    sheltername: 'Shelter Ni Eric',
-    profile: require("@/assets/images/eric.png"),
-    name: "Eric",
-    nickname: "ric",
-    rehomed: "10/22/2024",
-    type: "Dog",
-    breed: "Bulldog",
-    gender: "Male",
-    age: '2 yrs old',
-    size: "50 pounds",
-    coat: "Medium Fur",
-    energylvl: "high",
-    about: "jdsjdsjdsjd;l yehhhh dshd hdsahdo  idsoidh disj hsoi ihhs ihuh hsa gu hgp  ihdhasoh  ihuidgsa  ugui gdsugd ugug dus usgduia",
-    vacstatus: "rabies",
-    surgerystatus: "Chemical Sterilazation",
-    medcondition: "none",
-    needs: "Lambing ni Rhe...",
-
-};
-
-const healthAndMedical = reactive([
-    {
-        label: 'Vaccinations Status',
-        status: "Up-to-date",
-        details: "including rabies and FVRCP"
-    },
-    {
-        label: 'Spay / Neuter',
-        status: "Neuter"
-    },
-    {
-        label: 'Medical Conditions',
-        status: "None known",
-        details: "but has a slight dental issue that requires regular cleaning"
-    },
-    {
-        label: 'Special Needs',
-        status: "None"
-    }
-]);
-
-const emit = defineEmits(['close']) // for closing the modal
-
-const open = ref(true)
-</script>

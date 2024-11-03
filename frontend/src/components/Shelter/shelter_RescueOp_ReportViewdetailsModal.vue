@@ -19,31 +19,13 @@ const currentIndex = ref(0);
 const postImageUrl = computed(() => selectedReportDetails.value.photos[currentIndex.value]);
 
 const selectedReportDetails = ref([])
-const viewpostdetials = {
-    id: 1,
-    username: 'Username who reported',
-    profile: require("@/assets/images/homepage.png"),
-    reportstatus: "Pending Action",
-    reporttype: "Missing Dog",
-    location: "#506 Lim Building J.P. Laurel Avenue, Corner Acacia, Davao City, Philippines",
-    petcategory: 'Dog',
-    petcondition: "Abandoned and injured",
-    reportdetails: "Found this dog at abandoned lot near STI College Davao please rescue it...",
-    reportdate: "Oct, 31, 2024",
-    imageUrls: [
-        require("@/assets/images/homepage.png"),
-        require("@/assets/images/charles.png"),
-        require("@/assets/images/eric.png"),
-        require("@/assets/images/bals.png"),
-    ],
-};
+
 const props = defineProps({ // for reuse form defines mode if either edit or create - joey
     selectedPostDetails: {
         type: Object,
         required: false
     }
 });
-
 // Computed properties
 const currentImageUrl = computed(() => selectedReportDetails.value.photos[currentIndex.value]);
 const hasPrev = computed(() => currentIndex.value > 0);

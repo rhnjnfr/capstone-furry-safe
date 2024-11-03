@@ -21,18 +21,6 @@ const toggleModalViewDetails = (id) => {
         console.log("found post", selectedPostDetails.value)
     }
 };
-const reports = ref([
-    {
-        id: 1,
-        username: 'Eric Jr.',
-        type: 'Missing Dog',
-        caption: 'Found this dog at abandoned lot near STI College Davao',
-        location: '#506 Lim Building J.P. Laurel Avenue, Corner Acacia, Davao City, Philippines',
-        animalstatus: 'Severe',
-        photos: [require('@/assets/images/eric.png')],
-        badge: 'rescuer',
-    }
-]);
 
 //functions 
 let selectedPost = ref(null)
@@ -56,7 +44,7 @@ async function retrieveReports() {
     }
 }
 
-onMounted( async () => {
+onMounted(async () => {
     retrieveReports()
 })
 </script>
