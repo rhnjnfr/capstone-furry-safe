@@ -11,7 +11,7 @@ const currentIndex = ref(0);
 const viewpostdetials = {
     id: 1,
     sheltername: 'Shelter Ni Eric',
-    profile: [ require("@/assets/images/eric.png"),  require("@/assets/images/eric.png")],
+    profile: [require("@/assets/images/eric.png"), require("@/assets/images/talldog.webp"), require("@/assets/images/smalldog.jpg")],
     name: "Eric",
     nickname: "ric",
     rehomed: "10/22/2024",
@@ -27,7 +27,6 @@ const viewpostdetials = {
     surgerystatus: "Chemical Sterilazation",
     medcondition: "none",
     needs: "Lambing ni Rhe...",
-
 };
 
 const healthAndMedical = reactive([
@@ -85,11 +84,11 @@ const prevImage = () => {
 };
 
 //functions 
-async function getPetPostDetails(){
+async function getPetPostDetails() {
     console.log("arajklgsjkafgrsa")
 }
 
-onMounted(async ()=>{
+onMounted(async () => {
     selectedPostDetails.value = props.selectedPostDetails
 
     await getPetPostDetails()
@@ -127,29 +126,30 @@ const open = ref(true)
                                 </button>
                             </div>
 
-                            <div>
+                            <!-- content start -->
+                            <div
+                                class="overflow-hidden bg-white shadow sm:rounded-lg text-start sm:px-[1rem] md:px-[2rem] pt-8 xl:px-[5rem] sm:w-fit xl:w-[70rem]">
                                 <!-- image preview -->
-                                <div class="flex mt-8 justify-center bg-white">
+                                <div class="flex mt-8 sm:mt-0 justify-center">
+
                                     <div v-if="hasImages"
-                                        class="relative md:rounded-l-2xl flex justify-center items-center">
+                                        class="relative container md:rounded-l-2xl flex justify-center items-center">
                                         <div
                                             class="absolute sm:-left-7 lg:-left-11 z-10 bg-gray-300 bg-opacity-40 w-fit rounded-full flex items-center hover:bg-gray-100 hover:bg-opacity-50">
                                             <button v-if="hasPrev" @click="prevImage">
                                                 <ChevronLeftIcon
-                                                    class="sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-gray-500 sm:hover:text-gray-700" />
+                                                    class="sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-gray-500 sm:hover:text-gray-700" />
                                             </button>
                                         </div>
-                                        <div class="flex sm:h-fit xl:h-[35rem] w-full mt-8">
-
+                                        <div class="flex justify-center sm:h-[20rem] md:h-[35rem] w-full">
                                             <img v-if="currentImageUrl" :src="currentImageUrl" alt="Image post"
                                                 class="flex-shrink-0 object-contain" />
-
                                         </div>
                                         <div
                                             class="absolute sm:-right-7 lg:-right-11 z-10 bg-gray-300 bg-opacity-40 w-fit rounded-full flex items-center hover:bg-gray-100 hover:bg-opacity-50">
                                             <button v-if="hasNext" @click="nextImage">
                                                 <ChevronRightIcon
-                                                    class="sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-gray-500 sm:hover:text-gray-700" />
+                                                    class="sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-gray-500 sm:hover:text-gray-700" />
                                             </button>
                                         </div>
                                     </div>
@@ -157,9 +157,6 @@ const open = ref(true)
                                         <span>No images to preview</span>
                                     </div>
                                 </div>
-                            </div>
-                            <div
-                                class="overflow-hidden bg-white shadow sm:rounded-lg text-start sm:px-[1rem]  xl:px-[5rem] sm:w-fit xl:w-[70rem]">
                                 <div class="px-4 py-6 sm:px-6">
                                     <h3 class="text-base font-semibold leading-7 text-gray-900">Owner's Name
                                     </h3>
@@ -233,81 +230,6 @@ const open = ref(true)
                                     </dl>
                                 </div>
                             </div>
-
-
-
-
-
-                            <!-- context start -->
-                            <!-- <div class="bg-white w-[80rem] h-fit text-start">
-                                <div class="px-4 py-4 sm:px-6">
-                                    <h3 class="text-base font-semibold leading-7 text-gray-900">Owner's Name</h3>
-                                    <p class="mt-.5 max-w-2xl text-sm leading-6 text-gray-500">{{
-                                        viewpostdetials.sheltername }}</p>
-                                </div>
-                                <dl class="divide-y divide-gray-100">
-                                    <div class="px-4 py-4 sm:grid sm:grid-cols-2 sm:gap-4 sm:px-6">
-                                        <dt class="text-sm font-medium text-gray-900">Pet Name</dt>
-                                        <dd class=" text-sm leading-6 text-gray-700 sm:col-span-1 ">
-                                            {{ viewpostdetials.name }}</dd>
-                                    </div>
-                                </dl>
-                            </div> -->
-
-                            <!-- <div class="overflow-hidden bg-white shadow sm:rounded-lg text-left xl:px-[5rem] w-[80rem]">
-                                <div class="px-4 py-4 sm:px-6">
-                                    <h3 class="text-base font-semibold leading-7 text-gray-900">Owner's Name</h3>
-                                    <p class="mt-.5 max-w-2xl text-sm leading-6 text-gray-500">{{
-                                        viewpostdetials.sheltername }}</p>
-                                </div>
-                                <div class="border-t border-gray-100">
-                                    <dl class="divide-y divide-gray-100">
-                                        <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                            <dt class="text-sm font-medium text-gray-900">Pet Name</dt>
-                                            <dd class=" text-sm leading-6 text-gray-700 sm:col-span-2 ">
-                                                {{ viewpostdetials.name }}</dd>
-                                        </div>
-                                        <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                            <dt class="text-sm font-medium text-gray-900">Date-Rehomed</dt>
-                                            <dd class=" text-sm leading-6 text-gray-700 sm:col-span-2 ">
-                                                {{ viewpostdetials.rehomed }}</dd>
-                                        </div>
-                                        <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                            <dt class="text-sm font-medium text-gray-900">Pet Type</dt>
-                                            <dd class=" text-sm leading-6 text-gray-700 sm:col-span-2 ">
-                                                {{ viewpostdetials.type }}</dd>
-                                        </div>
-                                        <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                            <dt class="text-sm font-medium text-gray-900">Breed / Mix</dt>
-                                            <dd class=" text-sm leading-6 text-gray-700 sm:col-span-2 ">
-                                                {{ viewpostdetials.breed }}</dd>
-                                        </div>
-                                        <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                            <dt class="text-sm font-medium text-gray-900">Size</dt>
-                                            <dd class=" text-sm leading-6 text-gray-700 sm:col-span-2 ">
-                                                {{ viewpostdetials.size }}</dd>
-                                        </div>
-                                        <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                            <dt class="text-sm font-medium text-gray-900">About</dt>
-                                            <dd class=" text-sm leading-6 text-gray-700 sm:col-span-2 ">
-                                                {{ viewpostdetials.about }}</dd>
-                                        </div>
-                                       
-                                        <div class="border-t border-gray-100 px-4 py-4 sm:col-span-2 sm:px-0">
-                                            <span class="text-sm font-semibold leading-6 text-gray-900">Health and
-                                                Medical</span>
-                                            <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0"
-                                                v-for="(item, index) in healthAndMedical" :key="index">
-                                                <dt class="text-sm font-normal  leading-6 text-gray-900 mr-[2rem]">{{
-                                                    item.label }}</dt>
-                                                <dd class=" text-sm leading-6 text-gray-700 sm:col-span-2 ">
-                                                    {{ item.status }} {{ item.details ? `(${item.details})` : '' }}</dd>
-                                            </div>
-                                        </div>
-                                    </dl>
-                                </div>
-                            </div> -->
-
                             <!-- content end -->
 
                         </DialogPanel>

@@ -78,24 +78,25 @@ onMounted(async () => {
                     <previewhover v-if="hoveredIndex === post.post_id" :_user_id="post.user_id" class="absolute z-10" />
                 </div>
             </RouterLink>
-            <span class="text-[11px] border py-1 px-3 font-medium rounded-full bg-gray-50"> {{ post.post_type }}</span>
-            <!-- <span :class="{
+            <!-- <span class="text-[11px] border py-1 px-3 font-medium rounded-full bg-gray-50"> {{ post.post_type }}</span> -->
+            <span :class="{
                 'text-[10px] border py-1 px-3 font-medium rounded-full': true,
-                'bg-amber-200 border-amber-300': post.badge === 'Shelter',
-                'bg-teal-200 border-teal-300': post.badge === 'Buddy',
-                'bg-gray-50': post.badge !== 'Shelter' && post.badge !== 'Buddy',
-            }">{{ post.badge }}</span> -->
+                'bg-amber-50 border-amber-300 text-amber-500': post.post_type === 'Missing Report',
+                'bg-red-50 border-red-300 text-red-500': post.post_type === 'Stray Report',
+                'bg-teal-50 border-teal-300 text-teal-500': post.post_type === 'Adoption',
+                'bg-gray-50': post.post_type !== 'Missing Report' && post.post_type !== 'Stray Report' && post.post_type !== 'Adoption',
+            }">{{ post.post_type }}</span>
         </div>
 
         <div class="w-full h-fit rounded-xl bg-black flex flex-col items-center relative group">
             <div v-if="post.post_type == 'Adoption'">
                 <img @click="toggleModalViewImagePreview(post.post_id)"
-                    class="mx-auto flex-shrink-0 w-[50rem] h-[30rem] object-cover rounded-xl object-contain cursor-pointer"
+                    class="mx-auto flex-shrink-0 w-[50rem] h-[30rem] object-cover rounded-xl  cursor-pointer"
                     :src="post.photos[0]" alt="image post" />
             </div>
             <div v-else>
                 <img @click="toggleModalViewDetails(post.post_id)"
-                    class="mx-auto flex-shrink-0 w-[50rem] h-[30rem] object-cover rounded-xl object-contain cursor-pointer"
+                    class="mx-auto flex-shrink-0 w-[50rem] h-[30rem] object-cover rounded-xl  cursor-pointer"
                     :src="post.photos[0]" alt="image post" />
             </div>
 

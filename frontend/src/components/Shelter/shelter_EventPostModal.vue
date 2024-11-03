@@ -26,7 +26,8 @@
                 </div>
                 <DialogTitle as="h3"
                   class="mb-[1.5rem] text-[1.3rem] font-semibold leading-6 text-gray-700 flex justify-center">
-                  Post New Event
+                  <!-- if edit "Edit event.." if create "create event..."- joey -->
+                  {{ mode === 'edit' ? 'Edit Shelter Event' : 'Post New Event' }}
                 </DialogTitle>
                 <div
                   class="overflow-hidden rounded-lg border border-gray-300 shadow-sm focus-within:border-teal-300 focus-within:ring-1 focus-within:ring-indigo-500">
@@ -103,9 +104,9 @@
                 </div>
 
                 <div class="flex justify-center mt-2">
-                  <button type="button"
-                    class="flex rounded-lg px-[46%] bgteal justify-center py-2 text-sm font-semibold text-white shadow-sm hover:bg-bgteal sm:w-auto">
-                    Post</button>
+                  <button @click="handleSubmit" type="button"
+                    class="flex rounded-lg w-full bgteal justify-center py-2 text-sm font-semibold text-white shadow-sm hover:bg-lightteal">
+                    {{ mode === 'edit' ? 'Save Changes' : 'Post' }}</button>
                 </div>
               </div>
             </DialogPanel>
@@ -118,6 +119,29 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
+
+// joey added
+import { defineProps } from 'vue'; // for reusing the form defining mode receive either edit or create yeahhh - joey
+
+const props = defineProps({ // for reuse form defines mode if either edit or create - joey
+  mode: {
+    type: String,
+    required: true
+  }
+});
+
+// Function to handle submission based on mode ( if edit button or create button) - joey
+const handleSubmit = () => {
+  if (props.mode === 'edit') {
+    // Logic for editing
+    console.log('Editing event...');
+  } else {
+    // Logic for creating
+    console.log('Creating event...');
+  }
+};
+// end of reuse the modal
+
 
 const emit = defineEmits(['close']) // for closing the modal
 

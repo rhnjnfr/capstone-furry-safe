@@ -48,7 +48,7 @@ onMounted(async () => {
     <div class="border rounded-lg py-4 bg-white shadow-sm sm:w-[20rem] md:w-[25rem] xl:w-[37rem]">
         <div v-if="userdetails[0]" class="px-[2rem] py-[10px] xl:flex gap-x-4 text-gray-600 mb-2">
             <div class="flex justify-center">
-                <img class="flex-shrink-0 sm:w-44 xl:w-72 rounded-full object-cover" :src="userdetails[0].profile_url"
+                <img class="flex-shrink-0 sm:w-44 sm:h-44 xl:w-72 xl:h-72 rounded-full object-cover" :src="userdetails[0].profile_url"
                     alt="image post" />
             </div>
             <div class="flex flex-col gap-y-1 my-auto">

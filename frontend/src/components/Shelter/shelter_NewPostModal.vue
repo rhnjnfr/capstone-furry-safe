@@ -26,7 +26,8 @@
                 </div>
                 <DialogTitle as="h3"
                   class="mb-[1.5rem] text-[1.3rem] font-semibold leading-6 text-gray-700 flex justify-center">
-                  Create New Post
+                  <!-- if edit "Edit report.." if create "create report..."- joey -->
+                  {{ mode === 'edit' ? 'Edit Shelter Post' : 'Create New Post' }}
                 </DialogTitle>
                 <div>
                   <PetList @petSelected="handlePetSelected" />
@@ -81,16 +82,16 @@
                   <div class="flex justify-between mb-3">
                     <span class="text-gray-400 text-[14px]">Add to your post</span>
                     <label for="file-input" class="cursor-pointer flex gap-3 items-center">
-                      <input type="file" multiple @change="handleFileChange" id="file-input" ref="fileInput" @click="imageclicked"
-                        class="hidden" />
+                      <input type="file" multiple @change="handleFileChange" id="file-input" ref="fileInput"
+                        @click="imageclicked" class="hidden" />
                       <img :src="images" alt="Images Icon" class="h-[2rem] w-[2rem]" />
                     </label>
                   </div>
                 </div>
                 <div class="flex justify-center">
-                  <button type="button"
-                    class="flex rounded-lg px-[46%] bgteal justify-center py-2 text-sm font-semibold text-white shadow-sm hover:bg-bgteal sm:w-auto">
-                    Post</button>
+                  <button @click="handleSubmit" type="button"
+                    class="flex rounded-lg w-full bgteal justify-center py-2 text-sm font-semibold text-white shadow-sm hover:bg-lightteal">
+                    {{ mode === 'edit' ? 'Save Changes' : 'Post' }}</button>
                 </div>
               </div>
 
@@ -106,8 +107,27 @@ import { ref } from 'vue'
 import PetList from '@/components/Shelter/shelter_NewPostModal_dropdown_PetList.vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 
-// Component registration
-const components = { PetList, Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot };
+// joey added
+import { defineProps } from 'vue'; // for reusing the form defining mode receive either edit or create yeahhh - joey
+
+const props = defineProps({ // for reuse form defines mode if either edit or create - joey
+  mode: {
+    type: String,
+    required: true
+  }
+});
+
+// Function to handle submission based on mode ( if edit button or create button) - joey
+const handleSubmit = () => {
+  if (props.mode === 'edit') {
+    // Logic for editing
+    console.log('Editing post...');
+  } else {
+    // Logic for creating
+    console.log('Creating post...');
+  }
+};
+// end of reuse the modal
 
 const emit = defineEmits(['close']) // for closing the modal with close button - joey added
 // Reactive state
@@ -130,7 +150,7 @@ const handleFileChange = (event) => {
   }
   fileInput.value.value = null;
 }
-function imageclicked(){
+function imageclicked() {
   console.log("clicked")
 }
 

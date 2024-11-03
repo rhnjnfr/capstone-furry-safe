@@ -128,7 +128,7 @@ const open = ref(true)
                                         </div>
                                     </div>
                                     <div
-                                        class="relative bg-black flex justify-center items-center sm:w-full md:w-[60%] xl:w-[70%]">
+                                        class="relative overflow-hidden bg-black flex justify-center items-center sm:w-full md:w-[60%] xl:w-[70%]">
                                         <div
                                             class="absolute left-4 z-10 bg-white bg-opacity-40 rounded-full flex items-center hover:bg-gray-100 hover:bg-opacity-50">
                                             <button v-if="hasPrev" @click="prevImage">
@@ -138,7 +138,7 @@ const open = ref(true)
                                         </div>
                                         <div class="flex">
                                             <img :src="postImageUrl" alt="Image post"
-                                                class="flex-shrink-0 aspect-auto sm:w-full xl:w-[80rem] xl:h-[50rem] object-contain" />
+                                                class="flex-shrink-0 aspect-auto sm:w-full xl:w-[80rem] xl:h-[55rem] object-contain" />
                                         </div>
                                         <div
                                             class="absolute right-4 z-10 bg-white bg-opacity-40 rounded-full flex items-center hover:bg-gray-100 hover:bg-opacity-50">
