@@ -104,7 +104,8 @@
                 </div>
 
                 <div class="flex justify-center mt-2">
-                  <button @click="handleSubmit" type="button"
+                  <!-- Nov5 @click="handleSubmit" replace to -->
+                  <button type="button" @click="submitEvent"
                     class="flex rounded-lg w-full bgteal justify-center py-2 text-sm font-semibold text-white shadow-sm hover:bg-lightteal">
                     {{ mode === 'edit' ? 'Save Changes' : 'Post' }}</button>
                 </div>
@@ -224,4 +225,45 @@ onBeforeUnmount(() => {
     endDateInput.value.removeEventListener('input', handleEndDateTimeInput);
   }
 });
+
+// Nov5 salpocial's code
+
+// New function to submit the event
+const submitEvent = async () => {
+  try {
+    const formData = new FormData();
+    formData.append('host_id', localStorage.getItem('c_id'));
+    formData.append('event_name', eventTitle.value);
+    formData.append('date_time_start', startDateTime.value);
+    formData.append('date_time_end', endDateTime.value);
+    formData.append('location_lat', latitude.value || '0');
+    formData.append('location_long', longitude.value || '0');
+    formData.append('caption', caption.value);
+
+    // Append multiple photos
+    imageUrls.value.forEach((image, index) => {
+      formData.append(`photos`, image.file);
+    });
+
+    console.log("Submitting event data:", Object.fromEntries(formData));
+
+    const response = await axios.post('http://localhost:5000/create-event', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+
+    console.log("Server response:", response.data);
+
+    if (response.data.success) {
+      console.log('Event created successfully');
+      console.log('Photo URLs:', response.data.photoUrls);
+      emit('close');
+    } else {
+      console.error("Event creation failed:", response.data.message);
+    }
+  } catch (err) {
+    console.error("Error creating event:", err.response ? err.response.data : err.message);
+  }
+};
 </script>

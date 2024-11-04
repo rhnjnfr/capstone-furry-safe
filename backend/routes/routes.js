@@ -37,7 +37,10 @@ import {
   getUserFullName,
   insertNewChat,
   fetchAllShelters, //added fetchAllShelters
-  getReports
+  getReports,
+  insertShelterPost, // Nov5 added insertShelterPost, insertShelterRescue, insertShelterEvent from salpocial's code
+  insertShelterRescue,
+  insertShelterEvent
 } from "../controllers/shelter_functions.js";
 
 import {
@@ -103,6 +106,13 @@ router.post("/sterilization", getSterilization);
 router.get("/pet_status", getPetStatus);
 router.post("/save_pet_profile", upload2.any(), insertPetProfile);
 router.post("/update_pet_profile", upload2.any(), updatePetProfile);
+
+// Nov5 start of salpocial's new code
+router.post("/insertshelterpost", upload2.any(), insertShelterPost);  //New route for shelter post
+router.post("/accept-rescue", insertShelterRescue); // New route for rescue operations
+router.post("/create-event", upload2.any(), insertShelterEvent); // new route for shelter event
+// Nov5 end of salpocial's new code
+
 //chat
 router.post("/search", searchUserName);
 router.post("/loadinbox", loadInboxMessages);

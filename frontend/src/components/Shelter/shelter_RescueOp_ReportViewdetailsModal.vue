@@ -31,15 +31,15 @@ const currentImageUrl = computed(() => selectedReportDetails.value.photos[curren
 const hasPrev = computed(() => currentIndex.value > 0);
 const hasNext = computed(() => currentIndex.value < selectedReportDetails.value.photos.length - 1);
 const formattedDate = computed(() => {
-  if (selectedReportDetails.value.date) {
-    const date = new Date(selectedReportDetails.value.date);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric"
-    });
-  }
-  return "Invalid date";
+    if (selectedReportDetails.value.date) {
+        const date = new Date(selectedReportDetails.value.date);
+        return date.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+        });
+    }
+    return "Invalid date";
 });
 
 // Methods
@@ -76,7 +76,7 @@ async function getUserDetailsOnHover() {
     }
 
 }
-onMounted (async () => {
+onMounted(async () => {
     selectedReportDetails.value = props.selectedPostDetails;
     console.log("props", selectedReportDetails.value);
     _user_id.value = selectedReportDetails.value.user_id
@@ -118,6 +118,18 @@ const open = ref(true)
                             <div class="flex flex-col bg-white sm:rounded-2xl md:rounded-none">
                                 <div class="flex sm:flex-col md:flex-row">
                                     <!-- display username on small screen -->
+                                    <!-- Nov5 salpocial's replacement -->
+                                    <!-- <div
+                                        class="flex items-center justify-between text-gray-700 md:hidden gap-x-2 border-b px-[2rem] py-4">
+                                        <div class="flex items-center gap-x-2">
+                                            <img :src="viewpostdetials.profile" alt="profile"
+                                                class="w-10 h-10 rounded-full object-cover" />
+                                            <span class="font-bold sm:text-base xl:text-xl">
+                                                {{ selectedReportDetails.posted_by }}</span>
+                                        </div> -->
+                                    <!-- Nov5 salpocial's replacement but not use-->
+
+                                    <!-- orig code -->
                                     <div v-if="userdetails[0]"
                                         class="flex items-center justify-between text-gray-700 md:hidden gap-x-2 border-b px-[2rem] py-4">
                                         <div class="flex items-center gap-x-2">
@@ -153,6 +165,16 @@ const open = ref(true)
                                         <!-- display details in large screen -->
                                         <div
                                             class="flex items-center justify-between sm:hidden md:flex gap-x-2 border-b px-[2rem] pb-4">
+                                            <!-- Nov5 salpocial's replacement -->
+                                            <!-- <div class="flex items- center gap-x-3">
+                                                <img :src="viewpostdetials.profile" alt="profile"
+                                                    class="w-10 h-10 rounded-full object-cover" />
+                                                <span class="font-bold sm:text-base xl:text-xl">{{
+                                                    selectedReportDetails.posted_by }}</span>
+                                            </div> -->
+                                            <!-- Nov5 salpocial's replacement but not use-->
+
+                                            <!-- orig code -->
                                             <div v-if="userdetails[0]" class="flex items-center gap-x-3">
                                                 <img :src="userdetails[0].profile_url" alt="profile"
                                                     class="w-10 h-10 rounded-full object-cover" />

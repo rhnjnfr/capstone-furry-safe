@@ -89,9 +89,12 @@
                   </div>
                 </div>
                 <div class="flex justify-center">
-                  <button @click="handleSubmit" type="button"
+                  <!-- Nov5 @click="handleSubmit replace to -->
+                  <button type="button" :disabled="isLoading" @click="submitPost"
                     class="flex rounded-lg w-full bgteal justify-center py-2 text-sm font-semibold text-white shadow-sm hover:bg-lightteal">
-                    {{ mode === 'edit' ? 'Save Changes' : 'Post' }}</button>
+                    <!-- {{ mode === 'edit' ? 'Save Changes' : 'Post' }} Nov5 orig code replace to salpocial's-->
+                    {{ isLoading ? 'Posting...' : mode === 'edit' ? 'Save Changes' : 'Post' }}
+                  </button>
                 </div>
               </div>
 
@@ -103,38 +106,59 @@
   </TransitionRoot>
 </template>
 <script setup>
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 import PetList from '@/components/Shelter/shelter_NewPostModal_dropdown_PetList.vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 
-// joey added
-import { defineProps } from 'vue'; // for reusing the form defining mode receive either edit or create yeahhh - joey
+// joey added not use because of Salpocial's new code Nov5
+// import { defineProps } from 'vue'; // for reusing the form defining mode receive either edit or create yeahhh - joey
 
-const props = defineProps({ // for reuse form defines mode if either edit or create - joey
-  mode: {
-    type: String,
-    required: true
-  }
-});
+// const props = defineProps({ // for reuse form defines mode if either edit or create - joey
+//   mode: {
+//     type: String,
+//     required: true
+//   }
+// });
 
 // Function to handle submission based on mode ( if edit button or create button) - joey
-const handleSubmit = () => {
-  if (props.mode === 'edit') {
-    // Logic for editing
-    console.log('Editing post...');
-  } else {
-    // Logic for creating
-    console.log('Creating post...');
-  }
-};
+// const handleSubmit = () => {
+//   if (props.mode === 'edit') {
+//     // Logic for editing
+//     console.log('Editing post...');
+//   } else {
+//     // Logic for creating
+//     console.log('Creating post...');
+//   }
+// };
 // end of reuse the modal
 
-const emit = defineEmits(['close']) // for closing the modal with close button - joey added
+
+// Nov5 added 'post-created' - salpocial's code
+// Emit events for modal control and post creation
+const emit = defineEmits(['close', 'post-created']) // for closing the modal with close button - joey added
+
 // Reactive state
 const open = ref(true);
 const fileInput = ref(null);
 const imageUrls = ref([]);
 const images = 'https://img.icons8.com/fluency/48/stack-of-photos.png';
+
+// Nov5 start 
+const isLoading = ref(false)
+const newpost = ref('')
+const selectedPetInfo = ref([])
+const nickname = ref('')
+const breed = ref('')
+const daterehomed = ref('')
+const post = reactive({
+  user_id: localStorage.getItem('u_id'),
+  pet_id: null,
+  content: '',
+  latitude: null,
+  longitude: null,
+  photo_urls: []
+})
+// end
 
 // Handle file change and load images
 const handleFileChange = (event) => {
@@ -148,8 +172,9 @@ const handleFileChange = (event) => {
     };
     reader.readAsDataURL(file);
   }
-  fileInput.value.value = null;
+  // fileInput.value.value = null; not in salpocial's code Nov5
 }
+
 function imageclicked() {
   console.log("clicked")
 }
@@ -159,25 +184,96 @@ const removeImage = (index) => {
   imageUrls.value.splice(index, 1);
 }
 
-const selectedPetInfo = ref([]);
-const name = ref('');
-const nickname = ref('');
-const breed = ref('');
-const daterehomed = ref('');
+// Jeneh's code replace by salpocial's code Nov5 replace code below
+// const selectedPetInfo = ref([]);
+// const name = ref('');
+// const nickname = ref('');
+// const breed = ref('');
+// const daterehomed = ref('');
 
 // Handle the event from the child component
-function handlePetSelected(info) {
-  console.log("selection change")
-  imageUrls.value = []
-  console.log(imageUrls.value)
+// function handlePetSelected(info) {
+//   console.log("selection change")
+//   imageUrls.value = []
+//   console.log(imageUrls.value)
 
-  selectedPetInfo.value = info;
-  name.value = selectedPetInfo.value[0].name
-  nickname.value = selectedPetInfo.value[0].nickname
-  breed.value = selectedPetInfo.value[0].breed
-  daterehomed.value = selectedPetInfo.value[0].rehomed
-  imageUrls.value.push(
-    selectedPetInfo.value[0].profile
-  )
+//   selectedPetInfo.value = info;
+//   name.value = selectedPetInfo.value[0].name
+//   nickname.value = selectedPetInfo.value[0].nickname
+//   breed.value = selectedPetInfo.value[0].breed
+//   daterehomed.value = selectedPetInfo.value[0].rehomed
+//   imageUrls.value.push(
+//     selectedPetInfo.value[0].profile
+//   )
+// }
+
+// Nov5 Salpocial's replacement
+// Handle pet selection from the PetList component
+function handlePetSelected(info) {
+  console.log("Selected Pet Info:", info); // Debugging line
+  selectedPetInfo.value = info
+
+  if (selectedPetInfo.value.length > 0) {
+    imageUrls.value = []
+    const selectedPet = selectedPetInfo.value[0]
+    post.pet_id = selectedPet.id
+    nickname.value = selectedPet.nickname
+    breed.value = selectedPet.breed
+    daterehomed.value = selectedPet.rehomed
+    imageUrls.value.push(selectedPet.profile)
+    console.log("Pet ID set to:", post.pet_id); // Debugging line
+  } else {
+    post.pet_id = null
+  }
+}
+
+// Submit Post
+async function submitPost() {
+  console.log("User ID:", post.user_id);
+  console.log("Pet ID:", post.pet_id);
+  console.log("Content:", newpost.value);
+
+  if (isLoading.value) return
+
+  // Check for required fields
+  if (!post.user_id || !post.pet_id || !newpost.value) {
+    alert("Please complete all required fields.")
+    return
+  }
+
+  try {
+    isLoading.value = true
+
+    const formData = new FormData()
+    formData.append('user_id', post.user_id.toString())
+    formData.append('pet_id', post.pet_id)
+    formData.append('content', newpost.value)
+    formData.append('photo_urls', JSON.stringify(imageUrls.value))
+
+    const fileInput = document.getElementById('file-input')
+    if (fileInput && fileInput.files) {
+      Array.from(fileInput.files).forEach((file) => {
+        formData.append('photos', file)
+      })
+    }
+
+    const response = await axios.post('http://localhost:5000/insertshelterpost', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+
+    if (response.data.success) {
+      emit('post-created')
+      emit('close')
+    } else {
+      throw new Error(response.data.message || 'Failed to create post')
+    }
+  } catch (error) {
+    console.error('Error submitting post:', error)
+    alert('Error submitting post: ' + error.message)
+  } finally {
+    isLoading.value = false
+  }
 }
 </script>

@@ -17,7 +17,9 @@ import {
   createNewChat,
   getAllShelters, //added getAllShelters from salpocial's code
   retrieveReports,
-  
+  addShelterPost, //Nov5 added addShelterPost, acceptRescueReport, addShelterEvent from salpocial's code
+  acceptRescueReport,
+  addShelterEvent
 } from "../model/shelterFunctionsModel.js";
 
 export const insertShelterAddress = (req, res) => {
@@ -74,3 +76,20 @@ export const fetchAllShelters = (req, res) => {
 export const getReports = (req, res) => {
   retrieveReports(req, res);
 };
+
+// Nov5 start of salpocial's new code
+// Function for shelter create new post
+export const insertShelterPost = (req, res) => {
+  addShelterPost(req, res);
+};
+
+// Function for shelter create new post
+export const insertShelterEvent = (req, res) => {
+  addShelterEvent(req, res);
+};
+
+// In progresss Shelter Rescue Operations
+export const insertShelterRescue = (req, res) => {
+  acceptRescueReport(req, res);
+};
+// Nov5 end of salpocial's new code
