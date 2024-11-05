@@ -27,6 +27,7 @@ const toggleModalViewDetails = (id) => {
 let _user_id = localStorage.getItem('u_id')
 let _shelter_id = localStorage.getItem('c_id')
 let events = ref([])
+let photos = ref([])
 async function retrieveReports() {
     try {
         const response = await axios.post("http://localhost:5000/getevents", {
@@ -35,8 +36,8 @@ async function retrieveReports() {
 
         if (response.data && response.data.length > 0) {
             events.value = response.data
+            photos.value = response.data.photo_urls
         }
-        console.log("event value", events.value)
     }
     catch (err) {
         console.log("error in retrieve events", err)
@@ -46,8 +47,11 @@ async function retrieveReports() {
 function getFirstPhoto(photo_display_url) {
     try {
         // Double parse to handle stringified JSON
-        const photos = JSON.parse(JSON.parse(`"${photo_display_url}"`));
-        return Array.isArray(photos) && photos.length > 0 ? photos[0] : null;
+        console.log("photo_display_url", photo_display_url)
+        // const photos = JSON.parse(JSON.parse(`"${photo_display_url}"`));
+        return Array.isArray(photo_display_url) && photo_display_url.length > 0
+            ? photo_display_url[0]
+            : null;
     } catch (e) {
         console.error("Error parsing photos:", e);
         return null;
@@ -56,9 +60,10 @@ function getFirstPhoto(photo_display_url) {
 
 function hasMultiplePhotos(photo_display_url) {
     try {
-        // Double parse to handle stringified JSON
-        const photos = JSON.parse(JSON.parse(`"${photo_display_url}"`));
-        return Array.isArray(photos) && photos.length > 1;
+        // // Double parse to handle stringified JSON
+        // const photos = JSON.parse(JSON.parse(`"${photo_display_url}"`));
+        // return Array.isArray(photos) && photos.length > 1;
+        return Array.isArray(photo_display_url) && photo_display_url.length > 1
     } catch (e) {
         console.error("Error parsing photos:", e);
         return false;
@@ -93,13 +98,12 @@ onMounted(async () => {
             <li v-for="event in events" :key="event.event_id" class="relative">
                 <button @click="toggleModalViewDetails(event.event_id)"
                     class="group block w-full overflow-hidden bg-white">
-                    <!-- Display the image (single or first in array) -->
-                    <img :src="getFirstPhoto(event.photo_display_url)" alt="Event image"
-                        class="pointer-events-none aspect-square object-cover group-hover:opacity-75" />
-
                     <!-- Display the overlay icon if there are multiple images -->
-                    <Square2StackIcon v-if="hasMultiplePhotos(event.photo_display_url)"
+                    <Square2StackIcon v-if="hasMultiplePhotos(event.photo_urls)"
                         class="absolute top-2 right-2 h-5 w-5 text-white group-hover:opacity-75" />
+                    <!-- Display the image (single or first in array) -->
+                    <img :src="getFirstPhoto(event.photo_urls)" alt="Event image"
+                        class="pointer-events-none aspect-square object-cover group-hover:opacity-75" />
                 </button>
                 <viewpostdetials v-if="selectedPostViewDetailsId === event.event_id"
                     @close="toggleModalViewDetails(event.event_id)" />

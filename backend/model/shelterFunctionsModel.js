@@ -1046,20 +1046,31 @@ export const addShelterEvent = async (req, res) => {
     }
 
     console.log("Inserting event into database");
-
+    console.log(photoUrls)
     // Insert into tbl_events
-    const { data, error } = await supabase.from("tbl_events").insert([
-      {
-        host_id: parseInt(host_id),
-        event_name: event_name,
-        date_time_start: date_time_start,
-        date_time_end: date_time_end,
-        location_lat: parseFloat(location_lat),
-        location_long: parseFloat(location_long),
-        caption: caption,
-        photo_display_url: photoUrls, // Store array of URLs
-      },
-    ]);
+    const { data, error } = await supabase.rpc("insert_event", {
+      _host_id: parseInt(host_id),
+      _event_name: event_name,
+      _date_time_start: date_time_start,
+      _date_time_end: date_time_end,
+      _lat: parseFloat(location_lat),
+      _long: parseFloat(location_long),
+      _caption: caption,
+      _photo_url: photoUrls
+    })
+
+    // from("tbl_events").insert([
+    //   {
+    //     host_id: parseInt(host_id),
+    //     event_name: event_name,
+    //     date_time_start: date_time_start,
+    //     date_time_end: date_time_end,
+    //     location_lat: parseFloat(location_lat),
+    //     location_long: parseFloat(location_long),
+    //     caption: caption,
+    //     photo_display_url: photoUrls, // Store array of URLs
+    //   },
+    // ]);
 
     if (error) {
       console.error("Database insert error:", error);
@@ -1070,7 +1081,6 @@ export const addShelterEvent = async (req, res) => {
       });
     }
 
-    console.log("Event created successfully");
     res.status(200).send({
       success: true,
       message: "Event created successfully",

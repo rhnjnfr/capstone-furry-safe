@@ -33,7 +33,7 @@
                   class="overflow-hidden rounded-lg border border-gray-300 shadow-sm focus-within:border-teal-300 focus-within:ring-1 focus-within:ring-indigo-500">
                   <div>
                     <label for="title" class="sr-only">Event Title</label>
-                    <input type="text" name="title" id="title"
+                    <input type="text" name="title" id="title" v-model="eventTitle"
                       class="w-full py-2.5 px-[1rem] text-lg font-medium placeholder:text-gray-400 focus:outline-none"
                       placeholder="Event Title" />
                   </div>
@@ -86,10 +86,10 @@
                 <div v-if="imageUrls.length > 0" class="border border-dashed my-2">
                   <div class="px-4 my-2 mx-2 sm:col-span-2 sm:px-0">
                     <ul role="list" class="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-3">
-                      <li v-for="(imageUrl, index) in imageUrls" :key="index" class="relative">
+                      <li v-for="(image, index) in imageUrls" :key="image.source" class="relative">
                         <div
                           class="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-teal-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
-                          <img :src="imageUrl" alt="" class="pointer-events-none w-full h-44 object-cover" />
+                          <img :src="image.url" alt="" class="pointer-events-none w-full h-44 object-cover" />
                           <button @click.prevent="removeImage(index)"
                             class="absolute top-0 right-0 p-1 text-red-500 hover:text-red-700">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
@@ -105,7 +105,7 @@
 
                 <div class="flex justify-center mt-2">
                   <!-- Nov5 @click="handleSubmit" replace to -->
-                  <button type="button" @click="submitEvent"
+                  <button type="button" @click="handleSubmit"
                     class="flex rounded-lg w-full bgteal justify-center py-2 text-sm font-semibold text-white shadow-sm hover:bg-lightteal">
                     {{ mode === 'edit' ? 'Save Changes' : 'Post' }}</button>
                 </div>
@@ -119,6 +119,7 @@
 </template>
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
+import axios from 'axios';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
 
 // joey added
@@ -138,7 +139,7 @@ const handleSubmit = () => {
     console.log('Editing event...');
   } else {
     // Logic for creating
-    console.log('Creating event...');
+    createNewPost()
   }
 };
 // end of reuse the modal
@@ -152,17 +153,43 @@ const imageUrls = ref([]);
 const images = 'https://img.icons8.com/fluency/48/stack-of-photos.png';
 const startDateTime = ref('');
 const endDateTime = ref('');
+const eventTitle = ref('')
+const latitude = ref(null)
+const longitude = ref(null)
+const caption = ref(null)
+
 
 const handleFileChange = (event) => {
   const files = event.target.files;
+
+  // for (let i = 0; i < files.length; i++) {
+  //   const file = files[i];
+  //   const reader = new FileReader();
+  //   reader.onload = (event) => {
+  //     imageUrls.value.push(event.target.result);
+  //   };
+  //   reader.readAsDataURL(file);
+  // }
+
   for (let i = 0; i < files.length; i++) {
-    const file = files[i];
-    const reader = new FileReader();
+    const file = files[i]
+    const reader = new FileReader()
     reader.onload = (event) => {
-      imageUrls.value.push(event.target.result);
-    };
-    reader.readAsDataURL(file);
+      // files.value.push({ source: file.name, url: event.target.result })
+      imageUrls.value.push({ file: file, url: event.target.result });
+    }
+    reader.readAsDataURL(file)
   }
+
+  // const file = event.target.files[0]; 
+  // // profileToUpload.value = file;
+
+
+  // const reader = new FileReader(); 
+  // reader.onload = (event) => { 
+  //   imageUrls.value = event.target.result;
+  // };
+  // reader.readAsDataURL(file)
 };
 
 const removeImage = (index) => {
@@ -227,9 +254,7 @@ onBeforeUnmount(() => {
 });
 
 // Nov5 salpocial's code
-
-// New function to submit the event
-const submitEvent = async () => {
+async function createNewPost() {
   try {
     const formData = new FormData();
     formData.append('host_id', localStorage.getItem('c_id'));
@@ -243,6 +268,11 @@ const submitEvent = async () => {
     // Append multiple photos
     imageUrls.value.forEach((image, index) => {
       formData.append(`photos`, image.file);
+    });
+
+    console.log("image url value", imageUrls.value)
+    formData.forEach((value, key) => {
+      console.log(`Key: ${key}, Value: ${value}`);
     });
 
     console.log("Submitting event data:", Object.fromEntries(formData));
@@ -265,5 +295,5 @@ const submitEvent = async () => {
   } catch (err) {
     console.error("Error creating event:", err.response ? err.response.data : err.message);
   }
-};
+}
 </script>

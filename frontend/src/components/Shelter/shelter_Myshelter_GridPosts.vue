@@ -5,12 +5,6 @@ import { Square2StackIcon } from '@heroicons/vue/20/solid'
 import popupNewpost from '@/components/Shelter/shelter_NewPostModal.vue'
 const showModalCreatePost = ref(false)
 import viewpostdetials from '@/components/Shelter/shelter_Myshelter_GridPostViewdetailsModal.vue';
-const postImages = [
-    {
-        id: 1,
-        imageUrl: [require('@/assets/images/eric.png'), require('@/assets/images/eric.png'), require('@/assets/images/eric.png')]
-    },
-];
 
 // view detials on grid images
 const selectedPostViewDetailsId = ref(null);
@@ -38,10 +32,21 @@ async function retrieveReports() {
     }
 }
 
+function hasMultiplePhotos(photo_display_url) {
+    try {
+        // // Double parse to handle stringified JSON
+        // const photos = JSON.parse(JSON.parse(`"${photo_display_url}"`));
+        // return Array.isArray(photos) && photos.length > 1;
+        return Array.isArray(photo_display_url) && photo_display_url.length > 1
+    } catch (e) {
+        console.error("Error parsing photos:", e);
+        return false;
+    }
+}
+
 onMounted(async () => {
     await retrieveReports()
 })
-
 </script>
 <template>
     <div v-if="posts && posts.length > 0" class="xl:container mx-auto my-2">
@@ -54,7 +59,7 @@ onMounted(async () => {
                         class="pointer-events-none aspect-square object-cover group-hover:opacity-75" />
 
                     <!-- Display the overlay icon if there are multiple images -->
-                    <Square2StackIcon v-if="Array.isArray(post.profile) && post.profile.length > 1"
+                    <Square2StackIcon  v-if="hasMultiplePhotos(post.photos)"
                         class="absolute top-2 right-2 h-5 w-5 text-white group-hover:opacity-75" />
                 </button>
                 <viewpostdetials v-if="selectedPostViewDetailsId === post.post_id"
