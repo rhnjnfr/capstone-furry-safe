@@ -34,15 +34,32 @@ async function retrieveReports() {
             _post_type: -1
         });
 
+        // if (response.data && response.data.length > 0) { jeneh's code
+        //     posts.value = response.data
+        // }
+        // console.log("post value", posts.value) end of jeneh's code
+
+        // Nov5 start of salpocial's new code replace jeneh's old code
         if (response.data && response.data.length > 0) {
-            posts.value = response.data
-        }
-        console.log("post value", posts.value)
+            // Filter out reports that are already rescued
+            posts.value = response.data.filter(report => report.report_status !== 'Rescued');
+        } ``
+        console.log(posts.value)
+        // Nov5 end of salpocial's new code
     }
     catch (err) {
         console.log("error in retrieve reports", err)
     }
 }
+
+// Nov5 start of salpocial's new code
+// Add a function to handle status updates
+const handleStatusUpdate = () => {
+    // Refresh the reports list
+    retrieveReports();
+}
+// Nov5 end of salpocial's new code
+
 
 onMounted(async () => {
     retrieveReports()
@@ -93,8 +110,8 @@ onMounted(async () => {
                 </span>
 
             </div>
-            <div>
-                <statusbuttons />
+            <div> <!-- Nov5 added :postId="report.post_id" @statusUpdated="handleStatusUpdate"-->
+                <statusbuttons :postId="report.post_id" @statusUpdated="handleStatusUpdate" />
             </div>
         </div>
     </div>
