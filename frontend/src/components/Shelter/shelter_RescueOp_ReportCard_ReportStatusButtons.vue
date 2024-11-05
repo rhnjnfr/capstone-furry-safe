@@ -4,12 +4,12 @@
             type="button"
             class="flex justify-center py-4 font-semibold w-full text-red-600 bg-slate-50 hover:bg-red-500 hover:text-white rounded-b-lg"
             @click="showRescueCancelButtons = true">
-            Take Action
+            Take Action 
         </button>
 
         <div v-else-if="showRescueCancelButtons" class="flex justify-between font-semibold text-gray-600 rounded-b-lg">
             <button type="button" class="bg-green-100 py-4 w-full hover:bg-green-500 hover:text-white rounded-bl-lg"
-                @click="showRescueCancelButtons = false; showConfirmRescue = true">
+                @click=" showRescueCancelButtons = false; showConfirmRescue = true">
                 Rescued
             </button>
             <button type="button" class="bg-red-100 py-4 w-full hover:bg-red-500 hover:text-white rounded-br-lg"
@@ -54,4 +54,5 @@ const showRescueCancelButtons = ref(false);
 const showSuccessMessage = ref(false);
 const showConfirmRescue = ref(false);
 const showConfirmCancel = ref(false);
+
 </script>

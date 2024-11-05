@@ -17,6 +17,8 @@ import {
   createNewChat,
   getAllShelters, //added getAllShelters from salpocial's code
   retrieveReports,
+  retrieveEvents,
+  addShelterPost
   
 } from "../model/shelterFunctionsModel.js";
 
@@ -73,4 +75,10 @@ export const fetchAllShelters = (req, res) => {
 };
 export const getReports = (req, res) => {
   retrieveReports(req, res);
+};
+export const insertShelterPost = (req, res) => {
+  addShelterPost(req, res);
+};
+export const getEvents = (req, res) => {
+  retrieveEvents(req, res);
 };

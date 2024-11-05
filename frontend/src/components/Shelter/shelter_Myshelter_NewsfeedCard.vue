@@ -90,7 +90,7 @@ onMounted(async () => {
 
         <div class="w-full h-fit rounded-xl bg-black flex flex-col items-center relative group">
             <div v-if="post.post_type == 'Adoption'">
-                <img @click="toggleModalViewImagePreview(post.post_id)"
+                <img @click="toggleModalViewDetails(post.post_id)"
                     class="mx-auto flex-shrink-0 w-[50rem] h-[30rem] object-cover rounded-xl  cursor-pointer"
                     :src="post.photos[0]" alt="image post" />
             </div>
@@ -111,8 +111,8 @@ onMounted(async () => {
                         <InformationCircleIcon class="sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-gray-100 hover:text-white" />
                     </button>
                     <div v-if="post.post_type == 'Adoption'">
-                        <viewshelterpostdetials v-if="selectedPostViewDetailsId === post.post_id"
-                            @close="toggleModalViewDetails(post.post_id)" />
+                        <viewshelterpostdetials v-if="selectedPostViewDetailsId === post.post_id" :selectedPostDetails="selectedPostDetails"
+                            @close="toggleModalViewDetails(post.post_id)" /> 
                     </div>
                     <div v-else>
                         <viewbuddypostdetials v-if="selectedPostViewDetailsId === post.post_id"

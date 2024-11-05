@@ -99,3 +99,45 @@ onMounted(async () => {
         </div>
     </div>
 </template>
+
+<!-- 
+<template>
+    <div>
+        <div v-for="(report, index) in posts" :key="index" class="bg-white shadow-md rounded-lg mb-4">
+            <div class="h-[2rem] bg-white border-b-2 rounded-t-lg" />
+            <div class="w-full bg-gray-50 border-b-2 relative group">
+                <img class="mx-auto flex-shrink-0 w-[20rem] group-hover:filter group-hover:blur-sm"
+                    :src="report.photos[0]" alt="image post" />
+                <RouterLink to="/viewreportdetails"
+                    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 hidden group-hover:block">
+                    <span class="font-semibold text-sm text-white">View Details </span>
+                </RouterLink>
+            </div>
+            <div class="my-[1rem] px-[2rem] py-3 text-gray-700 grid gap-y-1">
+                <span class="flex gap-5 text-sm items-center">
+                    Reported by:
+                    <RouterLink to="" class="font-bold text-base">
+                        <div @mouseenter="hoveredIndex = index" @mouseleave="hoveredIndex = null"
+                            class="relative inline-block">
+                            <span class="hover:underline cursor-pointer">{{ report.posted_by }}</span>
+                            <previewhover v-if="hoveredIndex === index" class="absolute z-10" />
+                        </div>
+                    </RouterLink>
+                </span>
+                <span class="flex gap-5 text-sm">Report Type:
+                    <h1 class="font-bold text-sm flex gap-3">{{ report.post_type }}</h1>
+                </span>
+                <span class="flex text-sm gap-3">Animal Status:
+                    <span class="font-semibold text-[15px]">{{ report.pet_condition }}</span>
+                </span>
+                <span class="flex gap-10 text-sm">Location:
+                    <p class="font-semibold text-sm">{{ report.report_address_location }}</p>
+                </span>
+
+            </div>
+            <div>
+                <statusbuttons />
+            </div>
+        </div>
+    </div>
+</template> -->

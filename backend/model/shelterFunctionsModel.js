@@ -176,16 +176,20 @@ export const saveShelter_and_Link = async (req, res) => {
 };
 //retrieve pet details and EVERYTHING KATUNG FOCKING 14??? TABLE QUERY
 export const retrievePetProfile = async (req, res) => {
-  const { _userid, _petid } = req.body;
+  let { _userid, _petid, _post_id } = req.body;
+
+  _post_id = (_post_id == null || _post_id == 'null') ? null : _post_id
 
   try {
     const { data, error } = await supabase.rpc("retrieve_pet_profiles", {
       _user_id: _userid,
       _pet_id: _petid,
+      _post_id: _post_id
     });
     if (error) {
       console.log("Error:", error);
     } else {
+      console.log(data)
       return res.status(200).json(data);
     }
   } catch (err) {
@@ -803,24 +807,54 @@ export const getAllShelters = async (req, res) => {
 //fetch reports in shelter
 export const retrieveReports = async (req, res) => {
   try {
-    let { _post_id, _post_type } = req.body
+    let { _post_id, _post_type, _user_id } = req.body
 
-    _post_id = (_post_id == null) ? null : _post_id
+    _post_id = (_post_id == null || _post_id == '') ? null : _post_id
+    _user_id = (_user_id == null || _user_id == '') ? null : _user_id
+    _post_type = (_post_type == null || _post_type == '') ? null : _post_type
 
     const { data, error } = await supabase.rpc("get_filtered_posts", {
       _post_id: _post_id,
       _post_type: _post_type,
+      _user_id: _user_id
     });
-    if(!error){
+    if (!error) {
       res.status(200).send(data);
     }
-    else{
-      
+    else {
+      res.status(500).send({ success: false, error: error.message, message: 'An Error Occured' });
     }
   }
   catch (err) {
     console.log("error occured in retrieveReports", err)
   }
 }
+//fetch events in shelter 
+export const retrieveEvents = async (req, res) => {
+  try {
+    let { _event_id, _shelter_id } = req.body
+
+    _event_id = (_event_id == null || _event_id == '') ? null : _event_id
+    _shelter_id = (_shelter_id == null || _shelter_id == '') ? null : _shelter_id
+
+    const { data, error } = await supabase.rpc("get_events_by_shelter", {
+      _shelter_id: _shelter_id,
+      _event_id: _event_id
+    });
+    if (!error) {
+      res.status(200).send(data);
+    }
+    else {
+      res.status(500).send({ success: false, error: error.message, message: 'An Error Occured' });
+    }
+  }
+  catch (err) {
+    console.log("an error occured in the backend | retrieve Events")
+  }
+}
+// Add new shelter post
+export const addShelterPost = async (req, res) => {
+  console.log("add Shelter Post")
+};
 
 export default { addShelterAddress };

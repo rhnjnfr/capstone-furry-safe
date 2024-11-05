@@ -30,6 +30,7 @@ async function retrieveProfile() {
       _userid: id,
     });
     if (response.data && response.data.length > 0) {
+      console.log("response", response.data)
       response.data.forEach(profile => {
         const _name_nickname = profile.name_nickname;
         const [name, nickname] = _name_nickname.split('/');
@@ -64,6 +65,7 @@ function handleSelectionChange(event) {
     if (pet.id == selectedPetid.value) {
       selectedPetInfo.value.push(
         {
+          id: pet.id,
           name: pet.name,
           nickname: pet.nickname,
           rehomed: pet.rehomed,
@@ -73,6 +75,8 @@ function handleSelectionChange(event) {
       )
     }
   });
+
+  console.log("selected pet info value", selectedPetInfo.value)
   emit('petSelected', selectedPetInfo.value);
 }
 
