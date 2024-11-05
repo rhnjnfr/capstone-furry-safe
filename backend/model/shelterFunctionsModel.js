@@ -930,7 +930,7 @@ export const addShelterPost = async (req, res) => {
       _pet_category: null,
       _other_pet_category: null,
       _pet_id: pet_id,
-      _report_status: reportStatus, // Pass the report status here
+      _report_status: null, // Pass the report status here
     });
 
     if (error) throw error;
@@ -951,43 +951,40 @@ export const addShelterPost = async (req, res) => {
 export const acceptRescueReport = async (req, res) => {
   try {
     const { post_id, shelter_id, status } = req.body;
-
     // First, update the report status in tbl_post_details
-    const { data: updateData, error: updateError } = await supabase
-      .from("tbl_post_details")
-      .update({ report_status: status })
-      .eq("post_id", post_id);
 
-    if (updateError) {
-      console.error("Error updating report status:", updateError);
+    const { data: handlerData, error: handlerError } = await supabase  //insert to tbl_report_handler
+      .from("tbl_report_handler")
+      .insert([
+        {
+          post_id: post_id,
+          handled_by: shelter_id
+        },
+      ]);
+
+    if (handlerError) {
+      console.error("Error creating handler record:", handlerError);
       return res
         .status(500)
-        .json({ success: false, message: "Failed to update report status" });
+        .json({ success: false, message: "Failed to create handler record" });
     }
+    else {
+      const { data: updateData, error: updateError } = await supabase //update in post_Details
+        .from("tbl_post_details")
+        .update({ report_status: "Pending" })
+        .eq("post_id", post_id);
 
-    // If status is "Rescued", create an entry in tbl_report_handler
-    if (status === "Rescued") {
-      const { data: handlerData, error: handlerError } = await supabase
-        .from("tbl_report_handler")
-        .insert([
-          {
-            post_id: post_id,
-            handled_by: shelter_id,
-            created_at: new Date(),
-          },
-        ]);
-
-      if (handlerError) {
+      if (updateError) {
         console.error("Error creating handler record:", handlerError);
         return res
           .status(500)
-          .json({ success: false, message: "Failed to create handler record" });
+          .json({ success: false, message: "Failed to update record" });
       }
     }
 
     return res.status(200).json({
       success: true,
-      message: `Report ${status === "Rescued" ? "accepted" : "cancelled"
+      message: `Report ${status === "Rescued" ? "Accepted" : "Cancelled"
         } successfully`,
     });
   } catch (err) {
@@ -997,6 +994,54 @@ export const acceptRescueReport = async (req, res) => {
       .json({ success: false, message: "Internal server error" });
   }
 };
+
+export const confirmRescue = async (req, res) => {
+  try {
+    const { post_id, shelter_id } = req.body;
+    // First, update the report status in tbl_post_details
+    const { data: updateData, error: updateError } = await supabase
+      .from("tbl_post_details")
+      .update({ report_status: 'Rescued' })
+      .eq("post_id", post_id);
+
+    if (updateError) {
+      console.error("Error updating report status:", updateError);
+      return res
+        .status(500)
+        .json({ success: false, message: "Failed to update report status" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: `Rescued successfully`,
+    });
+  }
+  catch (err) {
+    console.error("Error in acceptRescueReport:", err);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
+  }
+};
+export const cancelOperation = async (req, res)=>{
+  try {
+    const { _shelter_id, _post_id} = req.body
+
+    const { data, error } = await supabase.rpc("cancel_operation", {
+      input_handled_by: _shelter_id,
+      input_post_id: _post_id
+    });
+    if (!error) {
+      res.status(200).send({success: true});
+    }
+    else {
+      res.status(500).send({ success: false, error: error.message, message: 'An Error Occured' });
+    }
+  }
+  catch (err) {
+    console.log("An error occured: Cancel Operation", err)
+  }
+}
 
 // Create new event function
 export const addShelterEvent = async (req, res) => {
@@ -1095,4 +1140,23 @@ export const addShelterEvent = async (req, res) => {
     });
   }
 };
-// Nov5 end of salpocial's new code
+
+export const getOngoingOperations = async (req, res) => {
+  try {
+    const { _shelter_id, _status} = req.body
+
+    const { data, error } = await supabase.rpc("get_handled_reports", {
+      handled_by_id: _shelter_id,
+      _status: _status
+    });
+    if (!error) {
+      res.status(200).send(data);
+    }
+    else {
+      res.status(500).send({ success: false, error: error.message, message: 'An Error Occured' });
+    }
+  }
+  catch (err) {
+
+  }
+}

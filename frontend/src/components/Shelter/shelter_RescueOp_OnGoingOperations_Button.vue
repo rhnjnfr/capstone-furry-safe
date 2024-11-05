@@ -1,13 +1,13 @@
 <template>
     <div class="font-semibold border-t text-sm rounded-b-lg">
         <!-- Nov5 change v-if="!showRescueCancelButtons && !showSuccessMessage && !showConfirmRescue && !showConfirmCancel" to -->
-        <button v-if="!showRescueCancelButtons && !showSuccessMessage && !showConfirmDialog" type="button"
+        <!-- <button v-if="!showRescueCancelButtons && !showSuccessMessage && !showConfirmDialog" type="button"
             class="flex justify-center py-4 font-semibold w-full text-red-600 bg-slate-50 hover:bg-red-500 hover:text-white rounded-b-lg"
             @click="showRescueCancelButtons = true; confirmAction()">
-            Take Action
-        </button>
+            Take Action v-else-if="showRescueCancelButtons || props.operation == 'ongoing'" 
+        </button> -->
 
-        <div v-else-if="showRescueCancelButtons || props.operation == 'ongoing'" class="flex justify-between font-semibold text-gray-600 rounded-b-lg">
+        <div class="flex justify-between font-semibold text-gray-600 rounded-b-lg">
             <button type="button" class="bg-green-100 py-4 w-full hover:bg-green-500 hover:text-white rounded-bl-lg"
                 @click="handleAction('Rescued')"> <!-- Nov5 -->
                 Rescued
@@ -48,8 +48,6 @@
 
 <script setup>
 import { onMounted, ref } from 'vue';
-
-// Nov5 start of salpocial's new code
 import axios from 'axios';
 
 // converted into <script setup> salpocial's code below
@@ -78,23 +76,6 @@ const handleAction = (action) => {
     showConfirmDialog.value = true;
 };
 
-const confirmAction = async () => { //upon click
-    try {
-        const response = await axios.post('http://localhost:5000/accept-report', {
-            post_id: props.postId,
-            shelter_id: localStorage.getItem('c_id')
-        });
-
-        if (response.data.success) {
-            showConfirmDialog.value = false;
-            emit('statusUpdated');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        // Handle error (show error message)
-    }
-};
-
 const confirmRescued = async () => { //rescued => yes
     try {
         const response = await axios.post('http://localhost:5000/confirmRescue', {
@@ -111,7 +92,6 @@ const confirmRescued = async () => { //rescued => yes
         // Handle error (show error message)
     }
 }
-
 const cancelRescue = async () => { //rescued => yes
     try {
         const response = await axios.post('http://localhost:5000/cancelOperation', {
@@ -128,7 +108,6 @@ const cancelRescue = async () => { //rescued => yes
         // Handle error (show error message)
     }
 }
-
 
 const cancelAction = () => {
     showConfirmDialog.value = false;

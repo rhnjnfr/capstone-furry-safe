@@ -26,7 +26,7 @@ const toggleModalViewDetails = (id) => {
 let selectedPost = ref(null)
 let posts = ref([])
 let selectedPostDetails = ref([])
-async function retrieveReports() {
+async function retrieveReports() { //display
     try {
         console.log("retrieveReports")
         const response = await axios.post("http://localhost:5000/getereports", {

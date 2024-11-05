@@ -20,7 +20,10 @@ import {
   retrieveEvents,
   addShelterPost, //Nov5 added addShelterPost, acceptRescueReport, addShelterEvent from salpocial's code
   acceptRescueReport,
-  addShelterEvent
+  addShelterEvent,
+  getOngoingOperations,
+  confirmRescue,
+  cancelOperation
 } from "../model/shelterFunctionsModel.js";
 
 export const insertShelterAddress = (req, res) => {
@@ -80,7 +83,8 @@ export const getReports = (req, res) => {
 
 // Nov5 start of salpocial's new code
 // Function for shelter create new post
-export const insertShelterPost = (req, res) => {``
+export const insertShelterPost = (req, res) => {
+  ``
   addShelterPost(req, res);
 };
 
@@ -96,4 +100,13 @@ export const insertShelterRescue = (req, res) => {
 // Nov5 end of salpocial's new codeexport 
 export const getEvents = (req, res) => {
   retrieveEvents(req, res);
+};
+export const getongoingoperation = (req, res) => {
+  getOngoingOperations(req, res);
+};
+export const setConfirmRescued = (req, res) => {
+  confirmRescue(req, res);
+};
+export const setCancelOperation = (req, res) => {
+  cancelOperation(req, res);
 };

@@ -5,7 +5,7 @@ import ongoing_operations from '@/components/Shelter/shelter_RescueOp_OnGoingOpe
 import { ref } from 'vue'
 
 const tabs = ref([
-    { name: 'Rescue Operation', current: true },
+    { name: 'Community Reports', current: true },
     { name: 'Ongoing Operations', current: false }
     // { name: 'Chats', current: false },
 ])
@@ -32,7 +32,7 @@ const updateCurrentTab = (tabName) => {
                 </nav>
             </div>
         </div>
-        <div v-show="currentTab === 'Rescue Operation'">
+        <div v-show="currentTab === 'Community Reports'">
             <div class="pt-4 mx-auto flex justify-center">
                 <div class="w-fit">
                     <reports />

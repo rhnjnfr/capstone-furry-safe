@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import statusbuttons from '@/components/Shelter/shelter_RescueOp_ReportCard_ReportStatusButtons.vue';
+import statusbuttons from '@/components/Shelter/shelter_RescueOp_OnGoingOperations_Button.vue';
 import previewhover from '@/components/Shelter/shelter_HoverName.vue';
 import axios from "axios";
 
@@ -21,17 +21,22 @@ const toggleModalViewDetails = (id) => {
         console.log("found post", selectedPostDetails.value)
     }
 };
+const handleStatusUpdate = () => {
+    // Refresh the reports list
+    retrieveReports();
+}
 
 //functions 
 let selectedPost = ref(null)
 let posts = ref([])
 let selectedPostDetails = ref([])
+let _shelter_id = localStorage.getItem('c_id')
 async function retrieveReports() {
     try {
         console.log("retrieveReports")
-        const response = await axios.post("http://localhost:5000/getereports", {
-            _post_id: selectedPost.value,
-            _post_type: -1
+        const response = await axios.post("http://localhost:5000/getongoingoperations", {
+            _shelter_id: _shelter_id,
+            _status: 'Pending'
         });
 
         if (response.data && response.data.length > 0) {
@@ -40,7 +45,7 @@ async function retrieveReports() {
         console.log("post value", posts.value)
     }
     catch (err) {
-        console.log("error in retrieve reports", err)
+        console.log("error in retrieve operations", err)
     }
 }
 
@@ -94,7 +99,7 @@ onMounted(async () => {
 
             </div>
             <div>
-                <statusbuttons />
+                <statusbuttons :postId="report.post_id" @statusUpdated="handleStatusUpdate"/>
             </div>
         </div>
     </div>
