@@ -105,7 +105,7 @@ onMounted(async () => {
                     <img :src="getFirstPhoto(event.photo_urls)" alt="Event image"
                         class="pointer-events-none aspect-square object-cover group-hover:opacity-75" />
                 </button>
-                <viewpostdetials v-if="selectedPostViewDetailsId === event.event_id"
+                <vieweventdetials v-if="selectedPostViewDetailsId === event.event_id"
                     @close="toggleModalViewDetails(event.event_id)" />
             </li>
         </ul>

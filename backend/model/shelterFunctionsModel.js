@@ -388,6 +388,7 @@ export const savepetprofie = async (req, res) => {
       (pet_type || other_pet_category) &&
       (other_sterilization || sterilization_id_int)
     ) {
+
       const { data, error } = await supabase.rpc("insert_pet_data", {
         _about_pet: about,
         _age: age,
@@ -555,8 +556,8 @@ export const updatepetprofile = async (req, res) => {
       // Handle the case where vaccines is null
       vaccines = null;
     }
-    console.log("vaccine", vaccines);
-
+    console.log("date rehomed here", daterehomed);
+ 
     const { data, err } = await supabase.rpc("update_animal_profile_details", {
       _pet_id: pet_id,
       _gender: gender,
@@ -823,6 +824,7 @@ export const retrieveReports = async (req, res) => {
     _user_id = (_user_id == null || _user_id == '') ? null : _user_id
     _post_type = (_post_type == null || _post_type == '') ? null : _post_type
 
+    console.log("here", _post_id, _post_type, _user_id)
     const { data, error } = await supabase.rpc("get_filtered_posts", {
       _post_id: _post_id,
       _post_type: _post_type,
@@ -975,7 +977,7 @@ export const acceptRescueReport = async (req, res) => {
         .eq("post_id", post_id);
 
       if (updateError) {
-        console.error("Error creating handler record:", handlerError);
+        console.error("Error updating record:", handlerError);
         return res
           .status(500)
           .json({ success: false, message: "Failed to update record" });

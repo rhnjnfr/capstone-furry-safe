@@ -107,6 +107,7 @@
 </template>
 <script setup>
 import { ref, reactive } from 'vue'
+import axios from "axios"
 import PetList from '@/components/Shelter/shelter_NewPostModal_dropdown_PetList.vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 
@@ -251,6 +252,7 @@ async function submitPost() {
     formData.append('photo_urls', JSON.stringify(imageUrls.value))
 
     const fileInput = document.getElementById('file-input')
+
     if (fileInput && fileInput.files) {
       Array.from(fileInput.files).forEach((file) => {
         formData.append('photos', file)
