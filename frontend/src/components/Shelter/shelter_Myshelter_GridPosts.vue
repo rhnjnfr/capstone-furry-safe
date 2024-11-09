@@ -6,11 +6,11 @@ import popupNewpost from '@/components/Shelter/shelter_NewPostModal.vue'
 const showModalCreatePost = ref(false)
 import viewpostdetials from '@/components/Shelter/shelter_Myshelter_GridPostViewdetailsModal.vue';
 
-// view detials on grid images
+// view detials on grid post images
 const selectedPostViewDetailsId = ref(null);
 let selectedPostDetails = ref([])
 
-const toggleModalViewDetails = (id) => {
+const toggleModalViewPostDetails = (id) => {
     selectedPostViewDetailsId.value = selectedPostViewDetailsId.value === id ? null : id;
     const foundPost = posts.value.find(post => post.post_id === selectedPostViewDetailsId.value);
 
@@ -63,7 +63,7 @@ onMounted(async () => {
     <div v-if="posts && posts.length > 0" class="xl:container mx-auto my-2">
         <ul role="list" class="grid grid-cols-3 gap-x-2 gap-y-2 md:grid-cols-3 xl:grid-cols-4">
             <li v-for="post in posts" :key="post.post_id" class="relative">
-                <button @click="toggleModalViewDetails(post.post_id)"
+                <button @click="toggleModalViewPostDetails(post.post_id)"
                     class="group block w-full overflow-hidden bg-white">
                     <!-- Display the image (single or first in array) -->
                     <img :src="Array.isArray(post.photos) ? post.photos[0] : post.photos" alt="Post image"
@@ -74,7 +74,7 @@ onMounted(async () => {
                         class="absolute top-2 right-2 h-5 w-5 text-white group-hover:opacity-75" />
                 </button>
                 <viewpostdetials v-if="selectedPostViewDetailsId === post.post_id"  :selectedPostDetails="selectedPostDetails"
-                    @close="toggleModalViewDetails(post.post_id)" />
+                    @close="toggleModalViewPostDetails(post.post_id)" />
             </li>
         </ul>
     </div>
