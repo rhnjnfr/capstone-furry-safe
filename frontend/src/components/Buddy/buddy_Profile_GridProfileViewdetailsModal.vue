@@ -56,28 +56,12 @@ onMounted(() => {
         if (Array.isArray(post_photos) && post_photos[0] !== 'No post photos') {
             allPhotos.value = allPhotos.value.concat(post_photos);
         }
+
+        console.log("photos", allPhotos.value)
     }
 });
 
 const viewpostdetials = {
-    id: 1,
-    username: 'June',
-    profile: require("@/assets/images/eric.png"),
-    name: "Eric",
-    nickname: "ric",
-    rehomed: "10/22/2024",
-    type: "Dog",
-    breed: "Bulldog",
-    gender: "Male",
-    age: '2 yrs old',
-    size: "50 pounds",
-    coat: "Medium Fur",
-    energylvl: "high",
-    about: "This is all about me, idk what to say okey byeeee",
-    vacstatus: "rabies",
-    surgerystatus: "Chemical Sterilazation",
-    medcondition: "none",
-    needs: "Lambing ni Rhe...",
     imageUrls: [
         require("@/assets/images/homepage.png"),
         require("@/assets/images/charles.png"),
@@ -86,29 +70,6 @@ const viewpostdetials = {
         require("@/assets/images/bert.png"),
     ],
 };
-
-
-// const healthAndMedical = ref([
-//     {
-//         label: 'Vaccinations Status',
-//         status: "Up-to-date",
-//         details: "including rabies and FVRCP"
-//     },
-//     {
-//         label: 'Spay / Neuter',
-//         status: "Neuter"
-//     },
-//     {
-//         label: 'Medical Conditions',
-//         status: "None known",
-//         details: "but has a slight dental issue that requires regular cleaning"
-//     },
-//     {
-//         label: 'Special Needs',
-//         status: "None"
-//     }
-// ]);
-
 
 import viewimagepreview from '@/components/Buddy/buddy_Profile_GridProfileImagePreview.vue';
 // view image preview
@@ -164,30 +125,28 @@ const open = ref(true)
 
                                 <!-- display image styling -->
                                 <!-- if one image -->
-                                <div v-if="viewpostdetials.imageUrls.length === 1"
+                                <div v-if="allPhotos.length === 1"
                                     class="flex my-4 h-[30rem] rounded-2xl bg-black">
-                                    <img :src="viewpostdetials.imageUrls[0]" alt="first image"
+                                    <img :src="allPhotos[0]" alt="first image"
                                         class="w-full object-contain rounded-l-2xl" />
                                 </div>
-                                <!-- if two image -->
-                                <div v-else-if="viewpostdetials.imageUrls.length === 2"
+                                <div v-else-if="allPhotos.length === 2"
                                     class="grid grid-flow-col gap-2 my-4 h-[35rem]">
-                                    <img :src="viewpostdetials.imageUrls[0]" alt="first image"
+                                    <img :src="allPhotos[0]" alt="first image"
                                         class="col-span-3 w-full h-full object-cover rounded-l-2xl bg-black" />
-                                    <img :src="viewpostdetials.imageUrls[1]" alt="second image"
+                                    <img :src="allPhotos[1]" alt="second image"
                                         class="col-span-3 object-cover w-full h-full rounded-tr-2xl bg-black" />
                                 </div>
-                                <!-- if three or more images -->
-                                <div v-else-if="viewpostdetials.imageUrls.length >= 3"
-                                    @click="toggleModalViewImagePreview(viewpostdetials.id)"
+                                <div v-else-if="allPhotos.length >= 3"
+                                    @click="toggleModalViewImagePreview(selectedProfile.id)"
                                     class="grid grid-rows-6 grid-flow-col gap-2 my-4 aspect-auto sm:h-[20rem] md:h-[30rem] lg:h-[50rem]">
-                                    <img :src="viewpostdetials.imageUrls[0]" alt="first image"
+                                    <img :src="allPhotos[0]" alt="first image"
                                         class="sm:col-span-3 lg:col-span-3 row-span-6 w-full h-full object-cover rounded-l-2xl bg-black cursor-pointer" />
-                                    <img :src="viewpostdetials.imageUrls[1]" alt="second image"
+                                    <img :src="allPhotos[1]" alt="second image"
                                         class="row-span-3 sm:col-span-2 lg:col-span-3 object-cover w-full h-full rounded-tr-2xl bg-black cursor-pointer" />
 
                                     <div class="relative row-span-3 sm:col-span-2 lg:col-span-3 w-full h-full">
-                                        <img :src="viewpostdetials.imageUrls[2]" alt="third image"
+                                        <img :src="allPhotos[2]" alt="third image"
                                             :class="['w-full h-full object-cover rounded-br-2xl bg-black', { 'brightness-50': hasUndisplayedImages }]" />
 
                                         <button v-if="hasUndisplayedImages"
@@ -195,8 +154,8 @@ const open = ref(true)
                                             {{ remainingImagesText }}
                                         </button>
                                     </div>
-                                    <viewimagepreview v-if="selectedViewImagePreviewId === viewpostdetials.id"
-                                        @close="toggleModalViewImagePreview(viewpostdetials.id)" />
+                                    <viewimagepreview v-if="selectedViewImagePreviewId === selectedProfile.id"
+                                        @close="toggleModalViewImagePreview(selectedProfile.id)" />
                                 </div>
 
                                 <!-- buttons with edit and archive-->

@@ -16,20 +16,19 @@ const openCreateModal = ref(false) // for create report modal
 import viewprofiledetials from '@/components/Buddy/buddy_Profile_GridProfileViewdetailsModal.vue'; // for view profile details
 // view detials on grid profile images
 let viewpostflag = ref(false)
+
+const selectedProfileViewDetails = ref(null);
 const selectedProfileViewDetailsId = ref(null);
 const toggleModalProfileViewDetails = (id) => {
-  console.log("id", id, petprofiles.value)
-  selectedProfileViewDetailsId.value = selectedProfileViewDetailsId.value === id ? null : id;
-  const pet = petprofiles.value.find(pet => pet.id === selectedProfileViewDetailsId.value);
-
-  if (pet) {
-    selectedProfileViewDetailsId.value = pet
-    console.log("found pet in buddy pet", selectedProfileViewDetailsId.value)
-    viewpostflag.value = true
+  if (selectedProfileViewDetailsId.value === id) {
+    selectedProfileViewDetailsId.value = null;
+    viewpostflag.value = false;
+    console.log("Profile modal closed");
   } else {
-    if (toastRef.value) {
-      toastRef.value.showToast('error', 'Something went wrong');
-    }
+    selectedProfileViewDetailsId.value = id;
+    const pet = petprofiles.value.find(pet => pet.id === selectedProfileViewDetailsId.value);
+    if (pet) selectedProfileViewDetails.value = pet;
+    viewpostflag.value = true;
   }
 };
 // end
@@ -54,12 +53,13 @@ const selectTab = (tab) => {
   selectedTab.value = tab; // Update the selected tab
 };
 const toggleModalViewDetails = (id) => {
-  selectedPostViewDetailsId.value = selectedPostViewDetailsId.value === id ? null : id;
-  const foundPost = buddyPosts.value.find(post => post.post_id === selectedPostViewDetailsId.value);
-
-  if (foundPost) {
-    selectedPostDetails.value = foundPost
-    console.log(selectedPostDetails.value)
+  if (selectedPostViewDetailsId.value === id) {
+    selectedPostViewDetailsId.value = null;
+    console.log("Modal closed");
+  } else {
+    selectedPostViewDetailsId.value = id;
+    const foundPost = buddyPosts.value.find(post => post.post_id === selectedPostViewDetailsId.value);
+    if (foundPost) selectedPostDetails.value = foundPost;
   }
 };
 
@@ -239,7 +239,7 @@ function hasMultiplePhotos(photo_display_url) {
                       && Profile.profileurl != 1"
                       class="absolute top-2 right-2 h-5 w-5 text-white group-hover:opacity-75" />
                   </button>
-                  <viewprofiledetials v-if="viewpostflag == true" :selectedProfileDetails="selectedProfileViewDetailsId"
+                  <viewprofiledetials v-if="viewpostflag == true" :selectedProfileDetails="selectedProfileViewDetails"
                     @close="toggleModalProfileViewDetails(Profile.id)" />
                 </li>
               </ul>
