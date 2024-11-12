@@ -32,7 +32,7 @@ async function retrieveReports() { //display
         const response = await axios.post("http://localhost:5000/getereports", {
             _post_id: selectedPost.value,
             _post_type: -1,
-            _report_status: "In progress"
+            _report_status: 'Pending' // Nov12 'In progress'  change to 'Pending'
         });
 
         // if (response.data && response.data.length > 0) { jeneh's code
@@ -43,7 +43,7 @@ async function retrieveReports() { //display
         // Nov5 start of salpocial's new code replace jeneh's old code
         if (response.data && response.data.length > 0) {
             // Filter out reports that are already rescued
-            posts.value = response.data.filter(report => report.report_status !== 'Rescued');
+            posts.value = response.data.filter(report => report.report_status !== 'Rescued' && report.report_status !== 'In progress'); // Nov12 added ( && report.report_status !== 'In progress' )
         } ``
         console.log(posts.value)
         // Nov5 end of salpocial's new code

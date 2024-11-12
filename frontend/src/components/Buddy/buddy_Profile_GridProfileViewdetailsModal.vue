@@ -2,11 +2,11 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
 
-// to close press esc
+// Nov12 to close press esc - Joey
 onMounted(() => {
-  const closeModalOnEsc = (e) => e.key === 'Escape' && emit('close')
-  window.addEventListener('keydown', closeModalOnEsc)
-  onBeforeUnmount(() => window.removeEventListener('keydown', closeModalOnEsc))
+    const closeModalOnEsc = (e) => e.key === 'Escape' && emit('close')
+    window.addEventListener('keydown', closeModalOnEsc)
+    onBeforeUnmount(() => window.removeEventListener('keydown', closeModalOnEsc))
 })
 
 const selectedPost = ref()
@@ -18,61 +18,51 @@ const props = defineProps({
     },
 });
 
+// Nov12
+const name = ref(null)
+const nickname = ref(null)
+const healthAndMedical = reactive([])
+const allPhotos = ref([]);
+
 onMounted(() => {
     selectedPost.value = props.selectedPostDetails
-    // console.log("selected Post", selectedPost.value)
-})
+    // Nov12
+    if (selectedProfile.value && selectedProfile.value.name_nickname) {
+        const [firstName, nickName] = selectedProfile.value.name_nickname.split('/');
+        name.value = firstName.charAt(0).toUpperCase() + firstName.slice(1);
+        nickname.value = nickName.charAt(0).toUpperCase() + nickName.slice(1);
 
-const viewpostdetials = {
-    id: 1,
-    username: 'June',
-    profile: require("@/assets/images/eric.png"),
-    name: "Eric",
-    nickname: "ric",
-    rehomed: "10/22/2024",
-    type: "Dog",
-    breed: "Bulldog",
-    gender: "Male",
-    age: '2 yrs old',
-    size: "50 pounds",
-    coat: "Medium Fur",
-    energylvl: "high",
-    about: "This is all about me, idk what to say okey byeeee",
-    vacstatus: "rabies",
-    surgerystatus: "Chemical Sterilazation",
-    medcondition: "none",
-    needs: "Lambing ni Rhe...",
-    imageUrls: [
-        require("@/assets/images/homepage.png"),
-        require("@/assets/images/charles.png"),
-        require("@/assets/images/eric.png"),
-        require("@/assets/images/bals.png"),
-        require("@/assets/images/bert.png"),
-    ],
-};
+        healthAndMedical.length = 0;
+        healthAndMedical.push(
+            {
+                label: 'Vaccinations Status',
+                details: selectedProfile.value.vaccinename || "Not vaccinated"
+            },
+            {
+                label: 'Spay / Neuter',
+                status: selectedProfile.value.sterilization || "Unknown"
+            },
+            {
+                label: 'Medical Conditions',
+                status: selectedProfile.value.condition || "None known"
+            },
+            {
+                label: 'Special Needs',
+                status: selectedProfile.value.need || "None"
+            }
+        );
 
+        const { profileurl, post_photos } = selectedProfile.value;
 
-const healthAndMedical = ref([
-    {
-        label: 'Vaccinations Status',
-        status: "Up-to-date",
-        details: "including rabies and FVRCP"
-    },
-    {
-        label: 'Spay / Neuter',
-        status: "Neuter"
-    },
-    {
-        label: 'Medical Conditions',
-        status: "None known",
-        details: "but has a slight dental issue that requires regular cleaning"
-    },
-    {
-        label: 'Special Needs',
-        status: "None"
+        // Ensure profile URL is added if it exists
+        allPhotos.value = profileurl ? [profileurl] : [];
+
+        // Add additional photos if they exist and aren't just "No additional photos"
+        if (Array.isArray(post_photos) && post_photos[0] !== 'No post photos') {
+            allPhotos.value = allPhotos.value.concat(post_photos);
+        }
     }
-]);
-
+});
 
 import viewimagepreview from '@/components/Buddy/buddy_Profile_GridProfileImagePreview.vue';
 // view image preview
@@ -183,47 +173,61 @@ const open = ref(true)
                                     <div
                                         class="border rounded-xl border-gray-100 text-start sm:w-full lg:w-[45%] sm:text-sm md:text-base">
                                         <dl class="divide-y divide-gray-100">
+                                            <!-- Nov12 -->
                                             <div
                                                 class="bg-gray-50 rounded-t-xl px-4 py-4 sm:grid md:grid-cols-3 sm:gap-y-2 sm:px-6">
                                                 <dt class="font-medium text-gray-900">Date Re-homed</dt>
                                                 <dd class="leading-6 text-gray-700">
-                                                    {{ viewpostdetials.rehomed }}"</dd>
+                                                    {{ selectedProfile.date_rehomed }}</dd>
                                             </div>
                                             <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                                 <dt class="font-medium text-gray-900">Given-Name</dt>
                                                 <dd class="leading-6 text-gray-700 sm:col-span-2">
-                                                    {{ viewpostdetials.name }}, "{{ viewpostdetials.nickname }}"</dd>
+                                                    {{ name }}, "{{ nickname }}"</dd>
                                             </div>
                                             <div class="bg-gray-50 px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                                 <dt class="font-medium text-gray-900">Pet Type</dt>
                                                 <dd class="leading-6 text-gray-700 sm:col-span-2 ">
-                                                    {{ viewpostdetials.type }}</dd>
+                                                    {{ selectedProfile.pet_category }}</dd>
                                             </div>
                                             <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                                 <dt class="font-medium text-gray-900">Breed / Mix</dt>
                                                 <dd class="leading-6 text-gray-700 sm:col-span-2 ">
-                                                    {{ viewpostdetials.breed }}</dd>
+                                                    {{ selectedProfile.breed }}</dd>
                                             </div>
                                             <div class="bg-gray-50 px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                                 <dt class="font-medium text-gray-900">Age / Gender</dt>
                                                 <dd class="leading-6 text-gray-700 sm:col-span-2 ">
-                                                    {{ viewpostdetials.age }}, {{ viewpostdetials.gender }}</dd>
+                                                    {{ selectedProfile.age }}
+                                                    <span v-if="selectedProfile.age > 1">
+                                                        years old
+                                                    </span>
+                                                    <span v-if="selectedProfile.age == 1">
+                                                        year old
+                                                    </span>
+                                                    <span class="i" v-else>
+                                                        To be Confirmed
+                                                    </span>
+                                                    <span v-if="selectedProfile.gender == 'f'">Female</span>
+                                                    <span v-else>Male</span>
+                                                </dd>
                                             </div>
                                             <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                                 <dt class="font-medium text-gray-900">Size</dt>
                                                 <dd class="leading-6 text-gray-700 sm:col-span-2 ">
-                                                    {{ viewpostdetials.size }}</dd>
+                                                    {{ selectedProfile.size }}</dd>
                                             </div>
                                             <div class="bg-gray-50 px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                                 <dt class="font-medium text-gray-900">Coat / Fur</dt>
                                                 <dd class="leading-6 text-gray-700 sm:col-span-2 ">
-                                                    {{ viewpostdetials.coat }}</dd>
+                                                    {{ selectedProfile.coat }}</dd>
                                             </div>
                                             <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                                 <dt class="font-medium text-gray-900">Energy Level</dt>
                                                 <dd class="leading-6 text-gray-700 sm:col-span-2 ">
-                                                    {{ viewpostdetials.energylvl }}</dd>
+                                                    {{ selectedProfile.energylevel }}</dd>
                                             </div>
+                                            <!-- Nov12 end line changes -->
                                         </dl>
                                     </div>
 
@@ -231,14 +235,15 @@ const open = ref(true)
                                         <div class="border rounded-xl text-start">
                                             <div
                                                 class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 bg-gray-100 rounded-t-xl">
+                                                <!-- Nov12 name -->
                                                 <span
                                                     class="text-lg font-semibold leading-6 text-gray-900 sm:col-span-3">
-                                                    About Me</span>
+                                                    About {{ name }}</span>
                                             </div>
                                             <div class="px-4 py-4 sm:gap-y-2 sm:px-6">
-
+                                                <!-- Nov12 selectedProfile.about -->
                                                 <dd class="leading-6 text-gray-700">
-                                                    {{ viewpostdetials.about }}"</dd>
+                                                    {{ selectedProfile.about }}"</dd>
                                             </div>
                                         </div>
 

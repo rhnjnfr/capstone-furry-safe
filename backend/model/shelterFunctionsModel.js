@@ -857,13 +857,11 @@ export const retrieveEvents = async (req, res) => {
     if (!error) {
       res.status(200).send(data);
     } else {
-      res
-        .status(500)
-        .send({
-          success: false,
-          error: error.message,
-          message: "An Error Occured",
-        });
+      res.status(500).send({
+        success: false,
+        error: error.message,
+        message: "An Error Occured",
+      });
     }
   } catch (err) {
     console.log("an error occured in the backend | retrieve Events");
@@ -980,7 +978,7 @@ export const acceptRescueReport = async (req, res) => {
     } else {
       const { data: updateData, error: updateError } = await supabase //update in post_Details
         .from("tbl_post_details")
-        .update({ report_status: "Pending" })
+        .update({ report_status: "In progress" }) // Nov12 "Pending" change to "In progress"
         .eq("post_id", post_id);
 
       if (updateError) {
@@ -1032,29 +1030,59 @@ export const confirmRescue = async (req, res) => {
       .json({ success: false, message: "Internal server error" });
   }
 };
+// export const cancelOperation = async (req, res) => {
+//   try {
+//     const { _shelter_id, _post_id } = req.body;
+
+//     const { data, error } = await supabase.rpc("cancel_operation", {
+//       input_handled_by: _shelter_id,
+//       input_post_id: _post_id,
+//     });
+//     if (!error) {
+//       res.status(200).send({ success: true });
+//     } else {
+//       res
+//         .status(500)
+//         .send({
+//           success: false,
+//           error: error.message,
+//           message: "An Error Occured",
+//         });
+//     }
+//   } catch (err) {
+//     console.log("An error occured: Cancel Operation", err);
+//   }
+// }; comment on Nov12
+
+// Nov12 Replacement based on Salpocials code
 export const cancelOperation = async (req, res) => {
   try {
-    const { _shelter_id, _post_id } = req.body;
+    const { _post_id } = req.body; // Assuming you only need the post_id to update the status
 
-    const { data, error } = await supabase.rpc("cancel_operation", {
-      input_handled_by: _shelter_id,
-      input_post_id: _post_id,
-    });
-    if (!error) {
-      res.status(200).send({ success: true });
-    } else {
-      res
+    // Update the report_status to 'Pending' in the tbl_post_details table
+    const { data: updateData, error: updateError } = await supabase
+      .from("tbl_post_details")
+      .update({ report_status: "Pending" })
+      .eq("post_id", _post_id);
+
+    if (updateError) {
+      console.error("Error updating report status:", updateError);
+      return res
         .status(500)
-        .send({
-          success: false,
-          error: error.message,
-          message: "An Error Occured",
-        });
+        .json({ success: false, message: "Failed to update report status" });
     }
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Operation cancelled successfully" });
   } catch (err) {
-    console.log("An error occured: Cancel Operation", err);
+    console.error("Error in cancelOperation:", err);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
   }
 };
+// end of new added replacement
 
 // Create new event function
 export const addShelterEvent = async (req, res) => {
@@ -1165,13 +1193,11 @@ export const getOngoingOperations = async (req, res) => {
     if (!error) {
       res.status(200).send(data);
     } else {
-      res
-        .status(500)
-        .send({
-          success: false,
-          error: error.message,
-          message: "An Error Occured",
-        });
+      res.status(500).send({
+        success: false,
+        error: error.message,
+        message: "An Error Occured",
+      });
     }
   } catch (err) {}
 };

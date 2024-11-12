@@ -2,18 +2,26 @@
 import { onMounted, ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from "axios";
-import { PencilIcon, PhoneIcon, LinkIcon, EnvelopeIcon, MapPinIcon } from '@heroicons/vue/20/solid'
 import { SparklesIcon, RectangleStackIcon } from '@heroicons/vue/24/outline'
 
 import vieweventdetials from '@/components/Shelter/shelter_Myshelter_GridEventViewdetailsModal.vue';
 // view detials on grid images
 const selectedEventViewDetailsId = ref(null);
+
+const selectedEventViewDetails = ref(null); // Nov12
+
 const toggleModalEventViewDetails = (id) => {
+    // Nov12
     selectedEventViewDetailsId.value = selectedEventViewDetailsId.value === id ? null : id;
-    console.log(id);
+    const foundevent = events.value.find(event => event.event_id === selectedEventViewDetailsId.value);
+
+    if (foundevent) {
+        selectedEventViewDetails.value = foundevent
+        console.log("found post in event shelter", selectedEventViewDetailsId.value)
+    }
 };
 
-const showModalCreatePost = ref(false)
+
 import viewpostdetials from '@/components/Shelter/shelter_Myshelter_GridPostViewdetailsModal.vue';
 /// view detials on grid post images
 const selectedPostViewDetailsId = ref(null);
@@ -178,6 +186,8 @@ async function retrieveEvents() {
         if (response.data && response.data.length > 0) {
             events.value = response.data
             photos.value = response.data.photo_urls
+
+            console.log("events", events.value) // Nov12
         }
     }
     catch (err) {
@@ -371,6 +381,7 @@ const updateCurrentTab = (tabName) => {
                                         class="pointer-events-none aspect-square object-cover group-hover:opacity-75" />
                                 </button>
                                 <vieweventdetials v-if="selectedEventViewDetailsId === event.event_id"
+                                    :selectedPetDetails="selectedEventViewDetails"
                                     @close="toggleModalEventViewDetails(event.event_id)" :mode="pov" />
                             </li>
                         </ul>

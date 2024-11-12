@@ -92,54 +92,6 @@ async function getBuddyPost() {
         console.log("error", err)
     }
 }
-
-
-const petprofiles = ref([ //predefined by joey
-    // {
-    //     id: 1,
-    //     imageUrl: [
-    //         require('@/assets/images/eric.png'),
-    //         require('@/assets/images/eric.png'),
-    //         require('@/assets/images/eric.png')
-    //     ]
-    // },
-    // {
-    //     id: 2,
-    //     imageUrl: require('@/assets/images/charles.png')
-    // },
-    // {
-    //     id: 3,
-    //     imageUrl: [
-    //         require('@/assets/images/bals.png'),
-    //         require('@/assets/images/eric.png'),
-    //         require('@/assets/images/eric.png')
-    //     ]
-    // },
-    // {
-    //     id: 4,
-    //     imageUrl: [
-    //         require('@/assets/images/bals.png'),
-    //         require('@/assets/images/eric.png'),
-    //         require('@/assets/images/eric.png')
-    //     ]
-    // },
-    // {
-    //     id: 5,
-    //     imageUrl: [
-    //         require('@/assets/images/bals.png'),
-    //         require('@/assets/images/eric.png'),
-    //         require('@/assets/images/eric.png')
-    //     ]
-    // },
-    // {
-    //     id: 6,
-    //     imageUrl: [
-    //         require('@/assets/images/bals.png'),
-    //         require('@/assets/images/eric.png'),
-    //         require('@/assets/images/eric.png')
-    //     ]
-    // }
-]);
 </script>
 <template>
     <div class="my-4">

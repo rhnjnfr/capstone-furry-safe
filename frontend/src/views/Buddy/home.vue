@@ -9,7 +9,7 @@ import viewbuddypostdetials from '@/components/Shelter/shelter_RescueOp_ReportVi
 
 import default_avatar from '@/assets/images/buddy_default.jpg'
 
-import viewpostdetials from '@/components/Buddy/buddy_Home_ViewdetailsModal.vue';
+// import viewpostdetials from '@/components/Buddy/buddy_Home_ViewdetailsModal.vue';
 import viewpostimagepreview from '@/components/Buddy/buddy_Home_ImagePreviewModal.vue';
 
 import previewhover from '@/components/Buddy/buddy_HoverName.vue';
