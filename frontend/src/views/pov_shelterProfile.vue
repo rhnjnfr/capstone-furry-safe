@@ -34,16 +34,23 @@ import linkfooter from '@/components/footerLink.vue'; // footer
 // const shelterId = ref(null);
 const props = defineProps({
     shelterId: {
-        type: String,
+        type: Number,
         required: true,  // Make sure the ID is passed
+    },
+    shelterUserID: {
+        type: Number,
+        required: true,
     }
 });
 const route = useRoute(); // Get the current route object
-const shelterId = route.query.shelterId;  // Access the shelterId from the route parameters
+const shelterId = route.query.shelterId;  // Access the shelterId from the route parameters (geh kuha sa HoverName)
+const shelterUserID = route.query.shelterUserID; // for post kasi user_id gah base
 
 console.log('View Profile of ShelterID:', shelterId);
+console.log('View Profile of UserID???:', shelterUserID);
 
 const id = shelterId;
+const userId = shelterUserID; // for post kasi user_id gah base
 
 const profiles = ref([]); // Holds shelter and email data
 const profileUrl = ref(null); // Holds the image URL
@@ -74,11 +81,6 @@ async function loadProfileCard() {
         console.error("An error occurred getting shelter details:", err);
     }
 }
-
-onMounted(() => {
-    loadProfileCard();
-    console.log(id)
-});
 
 
 // details
@@ -134,17 +136,13 @@ async function loadProfileDetails() {
     }
 }
 
-
-onMounted(() => {
-    loadProfileDetails();
-});
-
 // gridpost
+let _user_id = userId;
 let posts = ref([])
 async function retrieveReports() {
     try {
         const response = await axios.post("http://localhost:5000/getereports", {
-            id
+            _user_id
         });
 
         if (response.data && response.data.length > 0) {
@@ -167,11 +165,6 @@ function posthasMultiplePhotos(photo_display_url) {
         return false;
     }
 }
-
-onMounted(async () => {
-    await retrieveReports()
-    console.log("ID being sent:", id);
-})
 
 // grid event
 let events = ref([])
@@ -215,7 +208,11 @@ function eventhasMultiplePhotos(photo_display_url) {
     }
 }
 
+
 onMounted(async () => {
+    loadProfileCard();
+    loadProfileDetails();
+    await retrieveReports()
     await retrieveEvents()
 })
 
@@ -233,15 +230,12 @@ const updateCurrentTab = (tabName) => {
         tab.current = tab.name === tabName
     })
 }
-
 </script>
 
 <template>
     <div class="aspect-auto">
         <!-- user profile details -->
-
-        <p>Shelter ID: {{ shelterId }}</p>
-
+        <!-- <p>Shelter ID: {{ shelterId }}</p> -->
         <main class="h-screen" v-for="(profile, index) in profiles" :key="index">
             <div>
                 <div class="lg:container mx-auto py-8 rounded-xl flex flex-col items-center gap-2 md:w-fit">
@@ -348,7 +342,7 @@ const updateCurrentTab = (tabName) => {
                                         class="absolute top-2 right-2 h-5 w-5 text-white group-hover:opacity-75" />
                                 </button>
                                 <viewpostdetials v-if="selectedPostViewDetailsId === post.post_id"
-                                    :selectedPostDetails="selectedPostDetails"
+                                    :selectedPostDetails="selectedPostDetails" :mode="'pov'"
                                     @close="toggleModalViewPostDetails(post.post_id)" />
                             </li>
                         </ul>
@@ -377,7 +371,7 @@ const updateCurrentTab = (tabName) => {
                                         class="pointer-events-none aspect-square object-cover group-hover:opacity-75" />
                                 </button>
                                 <vieweventdetials v-if="selectedEventViewDetailsId === event.event_id"
-                                    @close="toggleModalEventViewDetails(event.event_id)" />
+                                    @close="toggleModalEventViewDetails(event.event_id)" :mode="pov" />
                             </li>
                         </ul>
                     </div>

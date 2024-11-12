@@ -74,7 +74,7 @@ onMounted(async () => {
                 <div @mouseenter="hoveredIndex = post.post_id" @mouseleave="hoveredIndex = null"
                     class="relative inline-block">
                     <span class="hover:underline cursor-pointer">{{ post.posted_by }}</span>
-                    <previewhover v-if="hoveredIndex === post.post_id" class="absolute z-10" />
+                    <previewhover v-if="hoveredIndex === post.post_id" :_user_id="post.user_id" class="absolute z-10" />
                 </div>
             </RouterLink>
             <!-- <span class="text-[11px] border py-1 px-3 font-medium rounded-full bg-gray-50">{{ post.post_type }}</span> -->

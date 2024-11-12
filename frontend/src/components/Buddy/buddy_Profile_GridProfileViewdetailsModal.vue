@@ -1,6 +1,13 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
+
+// to close press esc
+onMounted(() => {
+  const closeModalOnEsc = (e) => e.key === 'Escape' && emit('close')
+  window.addEventListener('keydown', closeModalOnEsc)
+  onBeforeUnmount(() => window.removeEventListener('keydown', closeModalOnEsc))
+})
 
 const selectedPost = ref()
 

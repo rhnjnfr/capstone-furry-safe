@@ -19,7 +19,7 @@
                                 <button @click="$emit('close')" ref="cancelButtonRef">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                         stroke="currentColor" stroke-width="2"
-                                        class="w-6 h-6 text-gray-100 hover:text-white">
+                                        class="w-10 h-10 text-gray-100 hover:text-white">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                                     </svg>
                                 </button>
@@ -174,13 +174,20 @@
     </TransitionRoot>
 </template>
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount   } from 'vue'
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
 
 import { ChevronLeftIcon, ChevronRightIcon, EllipsisHorizontalIcon } from "@heroicons/vue/20/solid";
 
 import CreateEventModal from '@/components/Shelter/shelter_EventPostModal.vue' // for edit modal
 const openEditModal = ref(false) // for create Event modal
+
+// to close press esc
+onMounted(() => {
+  const closeModalOnEsc = (e) => e.key === 'Escape' && emit('close')
+  window.addEventListener('keydown', closeModalOnEsc)
+  onBeforeUnmount(() => window.removeEventListener('keydown', closeModalOnEsc))
+})
 
 // dropdown button (edit and delete)
 const isOpen = ref(false);
