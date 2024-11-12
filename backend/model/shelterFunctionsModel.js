@@ -557,7 +557,7 @@ export const updatepetprofile = async (req, res) => {
       vaccines = null;
     }
     console.log("date rehomed here", daterehomed);
- 
+
     const { data, err } = await supabase.rpc("update_animal_profile_details", {
       _pet_id: pet_id,
       _gender: gender,
@@ -818,17 +818,19 @@ export const getAllShelters = async (req, res) => {
 //fetch reports in shelter
 export const retrieveReports = async (req, res) => {
   try {
-    let { _post_id, _post_type, _user_id } = req.body;
+    let { _post_id, _post_type, _user_id, _report_status } = req.body;
 
     _post_id = _post_id == null || _post_id == '' ? null : _post_id;
     _user_id = (_user_id == null || _user_id == '') ? null : _user_id
     _post_type = (_post_type == null || _post_type == '') ? null : _post_type
+    _report_status = (_report_status == null || _report_status == '') ? null : _report_status
 
     console.log("here", _post_id, _post_type, _user_id)
     const { data, error } = await supabase.rpc("get_filtered_posts", {
       _post_id: _post_id,
       _post_type: _post_type,
-      _user_id: _user_id
+      _user_id: _user_id,
+      _report_status: _report_status
     });
     if (!error) {
       res.status(200).send(data);
@@ -1025,16 +1027,16 @@ export const confirmRescue = async (req, res) => {
       .json({ success: false, message: "Internal server error" });
   }
 };
-export const cancelOperation = async (req, res)=>{
+export const cancelOperation = async (req, res) => {
   try {
-    const { _shelter_id, _post_id} = req.body
+    const { _shelter_id, _post_id } = req.body
 
     const { data, error } = await supabase.rpc("cancel_operation", {
       input_handled_by: _shelter_id,
       input_post_id: _post_id
     });
     if (!error) {
-      res.status(200).send({success: true});
+      res.status(200).send({ success: true });
     }
     else {
       res.status(500).send({ success: false, error: error.message, message: 'An Error Occured' });
@@ -1145,7 +1147,7 @@ export const addShelterEvent = async (req, res) => {
 
 export const getOngoingOperations = async (req, res) => {
   try {
-    const { _shelter_id, _status} = req.body
+    const { _shelter_id, _status } = req.body
 
     const { data, error } = await supabase.rpc("get_handled_reports", {
       handled_by_id: _shelter_id,

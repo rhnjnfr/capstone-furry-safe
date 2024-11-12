@@ -115,50 +115,49 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="flex flex-col text-left mx-8 my-4 md:my-auto xl:my-8 sm:text-sm md:text-base">
+                                        <div
+                                            class="flex flex-col text-left mx-8 my-4 md:my-auto xl:my-8 sm:text-sm md:text-base">
 
-                                                <!-- <div>
+                                            <!-- <div>
                                                     <h3 class="text-base font-semibold leading-7 text-gray-900">
                                                         Event's Information</h3>
                                                 </div> -->
-                                                <div>
-                                                    <dl class="divide-y divide-gray-100">
-                                                        <div
-                                                            class="bg-gray-50 px-4 py-6 sm:grid xl:grid-cols-3 sm:gap-y-2 gap-x-4 sm:px-3">
-                                                            <dt class="text-sm font-medium leading-6 text-gray-900">
-                                                                Title
-                                                            </dt>
-                                                            <dd
-                                                                class="mt-1 text-sm leading-6 text-gray-700 xl:col-span-2 sm:mt-0">
-                                                                {{ viewpostdetials.eventTitle }}</dd>
-                                                        </div>
-                                                        <div
-                                                            class="bg-white px-4 py-6 sm:grid xl:grid-cols-3 sm:gap-y-2 gap-x-4 sm:px-3">
-                                                            <dt class="text-sm font-medium leading-6 text-gray-900">
-                                                                Time</dt>
-                                                            <dd
-                                                                class="mt-1 text-sm leading-6 text-gray-700 xl:col-span-2 sm:mt-0">
-                                                                {{ viewpostdetials.eventstart }} to {{
-                                                                    viewpostdetials.eventend }} </dd>
-                                                        </div>
-                                                        <div
-                                                            class="bg-white px-4 py-6 sm:grid xl:grid-cols-3 sm:gap-y-2 gap-x-4 sm:px-3">
-                                                            <dt class="text-sm font-medium leading-6 text-gray-900">
-                                                                Location</dt>
-                                                            <dd
-                                                                class="mt-1 text-sm leading-6 text-gray-700 xl:col-span-2 sm:mt-0">
-                                                                {{ viewpostdetials.location }}</dd>
-                                                        </div>
-                                                        <div
-                                                            class="bg-gray-50 px-4 py-6 sm:grid xl:grid-cols-3 gap-y-1 gap-x-4 sm:px-3">
-                                                            <dt class="text-sm font-medium leading-6 text-gray-900">
-                                                                Details</dt>
-                                                            <dd
-                                                                class="mt-1 text-sm leading-6 xl:col-span-2 text-gray-700">
-                                                                {{ viewpostdetials.eventcaption }}</dd>
-                                                        </div>
-                                                    </dl>
-                                              
+                                            <div>
+                                                <dl class="divide-y divide-gray-100">
+                                                    <div
+                                                        class="bg-gray-50 px-4 py-6 sm:grid xl:grid-cols-3 sm:gap-y-2 gap-x-4 sm:px-3">
+                                                        <dt class="text-sm font-medium leading-6 text-gray-900">
+                                                            Title
+                                                        </dt>
+                                                        <dd
+                                                            class="mt-1 text-sm leading-6 text-gray-700 xl:col-span-2 sm:mt-0">
+                                                            {{ selectedPetDetails.event_name }}</dd>
+                                                    </div>
+                                                    <div
+                                                        class="bg-white px-4 py-6 sm:grid xl:grid-cols-3 sm:gap-y-2 gap-x-4 sm:px-3">
+                                                        <dt class="text-sm font-medium leading-6 text-gray-900">
+                                                            Time</dt>
+                                                        <dd
+                                                            class="mt-1 text-sm leading-6 text-gray-700 xl:col-span-2 sm:mt-0">
+                                                            {{date}}</dd>
+                                                    </div>
+                                                    <div
+                                                        class="bg-white px-4 py-6 sm:grid xl:grid-cols-3 sm:gap-y-2 gap-x-4 sm:px-3">
+                                                        <dt class="text-sm font-medium leading-6 text-gray-900">
+                                                            Location</dt>
+                                                        <dd
+                                                            class="mt-1 text-sm leading-6 text-gray-700 xl:col-span-2 sm:mt-0">
+                                                            location placeholder =)</dd>
+                                                    </div>
+                                                    <div
+                                                        class="bg-gray-50 px-4 py-6 sm:grid xl:grid-cols-3 gap-y-1 gap-x-4 sm:px-3">
+                                                        <dt class="text-sm font-medium leading-6 text-gray-900">
+                                                            Details</dt>
+                                                        <dd class="mt-1 text-sm leading-6 xl:col-span-2 text-gray-700">
+                                                            {{ selectedPetDetails.caption }}</dd>
+                                                    </div>
+                                                </dl>
+
                                             </div>
                                         </div>
                                     </div>
@@ -174,7 +173,7 @@
     </TransitionRoot>
 </template>
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
 
 import { ChevronLeftIcon, ChevronRightIcon, EllipsisHorizontalIcon } from "@heroicons/vue/20/solid";
@@ -188,30 +187,41 @@ const toggleDropdown = () => {
     isOpen.value = !isOpen.value;
 };
 
+let date = ref(null)
+onMounted(async () => {
+    selectedPetDetails.value = props.selectedPetDetails
+
+    date.value = formatDateRange(selectedPetDetails.value.date_time_start, selectedPetDetails.value.date_time_end)
+    console.log("=)", selectedPetDetails.value)
+})
+
+let selectedPetDetails = ref([])
+const props = defineProps({ // for reuse form defines mode if either edit or create - joey
+    selectedPetDetails: {
+        type: Object,
+        required: false
+    }
+})
+
+function formatDateRange(start, end) {
+    const options = {
+         year: 'numeric', month: 'long', day: 'numeric',
+        hour: 'numeric', minute: 'numeric'
+    };
+
+    const startDate = new Date(start).toLocaleString('en-US', options);
+    const endDate = new Date(end).toLocaleString('en-US', options);
+
+    return `${startDate} to ${endDate}`;
+}
+
+
 // Reactive state
 const currentIndex = ref(0);
-
-const viewpostdetials = {
-    id: 1,
-    sheltername: 'June',
-    profile: require("@/assets/images/homepage.png"),
-    eventTitle: "Adoption Drive",
-    location: "Acacia Davao City",
-    eventstart: 'Oct, 31 2024',
-    eventend: 'Nov, 2 2024',
-    eventcaption: "Found this dog at abandoned lot near STI College Davao please rescue it...",
-    imageUrls: [
-        require("@/assets/images/homepage.png"),
-        require("@/assets/images/charles.png"),
-        require("@/assets/images/eric.png"),
-        require("@/assets/images/bals.png"),
-    ],
-};
-
 // Computed properties
-const currentImageUrl = computed(() => viewpostdetials.imageUrls[currentIndex.value]);
+const currentImageUrl = computed(() => selectedPetDetails.value.photo_urls[currentIndex.value]);
 const hasPrev = computed(() => currentIndex.value > 0);
-const hasNext = computed(() => currentIndex.value < viewpostdetials.imageUrls.length - 1);
+const hasNext = computed(() => currentIndex.value < selectedPetDetails.value.photo_urls.length - 1);
 
 // Methods
 const nextImage = () => {

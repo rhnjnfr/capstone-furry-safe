@@ -5,22 +5,22 @@ import { Square2StackIcon } from '@heroicons/vue/20/solid'
 
 import popupNewEvent from '@/components/Shelter/shelter_EventPostModal.vue'
 const showModalCreateEvent = ref(false)
-
-const EventImages = [
-    {
-        id: 1,
-        imageUrl: [require('@/assets/images/bals.png'), require('@/assets/images/eric.png'), require('@/assets/images/eric.png')]
-    },
-];
-
-
 import vieweventdetials from '@/components/Shelter/shelter_Myshelter_GridEventViewdetailsModal.vue';
 
 // view detials on grid images
 const selectedEventViewDetailsId = ref(null);
+const selectedEventViewDetails = ref(null);
+
 const toggleModalViewDetails = (id) => {
+    // selectedEventViewDetailsId.value = selectedEventViewDetailsId.value === id ? null : id;
+
     selectedEventViewDetailsId.value = selectedEventViewDetailsId.value === id ? null : id;
-    console.log(id);
+    const foundevent = events.value.find(event => event.event_id === selectedEventViewDetailsId.value);
+
+    if (foundevent) {
+        selectedEventViewDetails.value = foundevent
+        console.log("found post in event shelter", selectedEventViewDetailsId.value)
+    }
 };
 
 //functions 
@@ -37,6 +37,8 @@ async function retrieveReports() {
         if (response.data && response.data.length > 0) {
             events.value = response.data
             photos.value = response.data.photo_urls
+
+            console.log("events", events.value)
         }
     }
     catch (err) {
@@ -47,7 +49,6 @@ async function retrieveReports() {
 function getFirstPhoto(photo_display_url) {
     try {
         // Double parse to handle stringified JSON
-        console.log("photo_display_url", photo_display_url)
         // const photos = JSON.parse(JSON.parse(`"${photo_display_url}"`));
         return Array.isArray(photo_display_url) && photo_display_url.length > 0
             ? photo_display_url[0]
@@ -105,7 +106,7 @@ onMounted(async () => {
                     <img :src="getFirstPhoto(event.photo_urls)" alt="Event image"
                         class="pointer-events-none aspect-square object-cover group-hover:opacity-75" />
                 </button>
-                <vieweventdetials v-if="selectedEventViewDetailsId === event.event_id"
+                <vieweventdetials v-if="selectedEventViewDetailsId === event.event_id" :selectedPetDetails="selectedEventViewDetails"
                     @close="toggleModalViewDetails(event.event_id)" />
             </li>
         </ul>

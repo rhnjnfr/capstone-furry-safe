@@ -1,20 +1,63 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, reactive } from 'vue'
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
 
-const selectedPost = ref()
+const selectedProfile = ref()
 
 const props = defineProps({
-    selectedPostDetails: {
+    selectedProfileDetails: {
         type: Object,
         required: true,
     },
 });
+const name = ref(null)
+const nickname = ref(null)
+const healthAndMedical = reactive([])
+const allPhotos = ref([]);
 
 onMounted(() => {
-    selectedPost.value = props.selectedPostDetails
-    // console.log("selected Post", selectedPost.value)
-})
+    const closeModalOnEsc = (e) => e.key === 'Escape' && emit('close')
+    window.addEventListener('keydown', closeModalOnEsc)
+    onBeforeUnmount(() => window.removeEventListener('keydown', closeModalOnEsc))
+
+    selectedProfile.value = props.selectedProfileDetails
+
+    if (selectedProfile.value && selectedProfile.value.name_nickname) {
+        const [firstName, nickName] = selectedProfile.value.name_nickname.split('/');
+        name.value = firstName.charAt(0).toUpperCase() + firstName.slice(1);
+        nickname.value = nickName.charAt(0).toUpperCase() + nickName.slice(1);
+
+        healthAndMedical.length = 0;
+        healthAndMedical.push(
+            {
+                label: 'Vaccinations Status',
+                details: selectedProfile.value.vaccinename || "Not vaccinated"
+            },
+            {
+                label: 'Spay / Neuter',
+                status: selectedProfile.value.sterilization || "Unknown"
+            },
+            {
+                label: 'Medical Conditions',
+                status: selectedProfile.value.condition || "None known"
+            },
+            {
+                label: 'Special Needs',
+                status: selectedProfile.value.need || "None"
+            }
+        );
+
+        const { profileurl, post_photos } = selectedProfile.value;
+
+        // Ensure profile URL is added if it exists
+        allPhotos.value = profileurl ? [profileurl] : [];
+
+        // Add additional photos if they exist and aren't just "No additional photos"
+        if (Array.isArray(post_photos) && post_photos[0] !== 'No post photos') {
+            allPhotos.value = allPhotos.value.concat(post_photos);
+        }
+    }
+});
 
 const viewpostdetials = {
     id: 1,
@@ -45,26 +88,26 @@ const viewpostdetials = {
 };
 
 
-const healthAndMedical = ref([
-    {
-        label: 'Vaccinations Status',
-        status: "Up-to-date",
-        details: "including rabies and FVRCP"
-    },
-    {
-        label: 'Spay / Neuter',
-        status: "Neuter"
-    },
-    {
-        label: 'Medical Conditions',
-        status: "None known",
-        details: "but has a slight dental issue that requires regular cleaning"
-    },
-    {
-        label: 'Special Needs',
-        status: "None"
-    }
-]);
+// const healthAndMedical = ref([
+//     {
+//         label: 'Vaccinations Status',
+//         status: "Up-to-date",
+//         details: "including rabies and FVRCP"
+//     },
+//     {
+//         label: 'Spay / Neuter',
+//         status: "Neuter"
+//     },
+//     {
+//         label: 'Medical Conditions',
+//         status: "None known",
+//         details: "but has a slight dental issue that requires regular cleaning"
+//     },
+//     {
+//         label: 'Special Needs',
+//         status: "None"
+//     }
+// ]);
 
 
 import viewimagepreview from '@/components/Buddy/buddy_Profile_GridProfileImagePreview.vue';
@@ -159,14 +202,14 @@ const open = ref(true)
                                 <!-- buttons with edit and archive-->
                                 <div
                                     class="flex justify-between mb-4 mx-4 items-center sm:text-sm md:text-base font-bold mt-4 text-gray-700">
-                                    <span class="sm:text-base lg:text-lg">Pet Information</span>
+                                    <span class="sm:text-base lg:text-lg">{{ name }}'s Information</span>
 
                                     <div class="flex sm:gap-x-2 md:gap-x-4">
                                         <RouterLink :to="{ path: '/create_newanimalprofile', query: { mode: 'edit' } }"
                                             class="bg-gray-800 py-1 sm:px-4 md:px-8 rounded-lg text-white hover:bg-gray-700">
                                             Edit Profile</RouterLink>
-                                        <button
-                                            class="border bg-gray-200 py-1 sm:px-4 md:px-8 rounded-lg hover:bg-gray-100">Archive</button>
+                                        <!-- <button
+                                            class="border bg-gray-200 py-1 sm:px-4 md:px-8 rounded-lg hover:bg-gray-100">Archive</button> -->
                                     </div>
                                 </div>
 
@@ -180,42 +223,54 @@ const open = ref(true)
                                                 class="bg-gray-50 rounded-t-xl px-4 py-4 sm:grid md:grid-cols-3 sm:gap-y-2 sm:px-6">
                                                 <dt class="font-medium text-gray-900">Date Re-homed</dt>
                                                 <dd class="leading-6 text-gray-700">
-                                                    {{ viewpostdetials.rehomed }}"</dd>
+                                                    {{ selectedProfile.date_rehomed }}</dd>
                                             </div>
                                             <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                                 <dt class="font-medium text-gray-900">Given-Name</dt>
                                                 <dd class="leading-6 text-gray-700 sm:col-span-2">
-                                                    {{ viewpostdetials.name }}, "{{ viewpostdetials.nickname }}"</dd>
+                                                    {{ name }}, "{{ nickname }}"</dd>
                                             </div>
                                             <div class="bg-gray-50 px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                                 <dt class="font-medium text-gray-900">Pet Type</dt>
                                                 <dd class="leading-6 text-gray-700 sm:col-span-2 ">
-                                                    {{ viewpostdetials.type }}</dd>
+                                                    {{ selectedProfile.pet_category }}</dd>
                                             </div>
                                             <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                                 <dt class="font-medium text-gray-900">Breed / Mix</dt>
                                                 <dd class="leading-6 text-gray-700 sm:col-span-2 ">
-                                                    {{ viewpostdetials.breed }}</dd>
+                                                    {{ selectedProfile.breed }}</dd>
                                             </div>
                                             <div class="bg-gray-50 px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                                 <dt class="font-medium text-gray-900">Age / Gender</dt>
                                                 <dd class="leading-6 text-gray-700 sm:col-span-2 ">
-                                                    {{ viewpostdetials.age }}, {{ viewpostdetials.gender }}</dd>
+                                                    {{ selectedProfile.age }}
+                                                    <span v-if="selectedProfile.age > 1">
+                                                        years old
+                                                    </span>
+                                                    <span v-if="selectedProfile.age == 1">
+                                                        year old
+                                                    </span>
+                                                    <span class="i" v-else>
+                                                        To be Confirmed
+                                                    </span>
+                                                    <span v-if="selectedProfile.gender == 'f'">Female</span>
+                                                    <span v-else>Male</span>
+                                                </dd>
                                             </div>
                                             <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                                 <dt class="font-medium text-gray-900">Size</dt>
                                                 <dd class="leading-6 text-gray-700 sm:col-span-2 ">
-                                                    {{ viewpostdetials.size }}</dd>
+                                                    {{ selectedProfile.size }}</dd>
                                             </div>
                                             <div class="bg-gray-50 px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                                 <dt class="font-medium text-gray-900">Coat / Fur</dt>
                                                 <dd class="leading-6 text-gray-700 sm:col-span-2 ">
-                                                    {{ viewpostdetials.coat }}</dd>
+                                                    {{ selectedProfile.coat }}</dd>
                                             </div>
                                             <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                                 <dt class="font-medium text-gray-900">Energy Level</dt>
                                                 <dd class="leading-6 text-gray-700 sm:col-span-2 ">
-                                                    {{ viewpostdetials.energylvl }}</dd>
+                                                    {{ selectedProfile.energylevel }}</dd>
                                             </div>
                                         </dl>
                                     </div>
@@ -226,12 +281,12 @@ const open = ref(true)
                                                 class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 bg-gray-100 rounded-t-xl">
                                                 <span
                                                     class="text-lg font-semibold leading-6 text-gray-900 sm:col-span-3">
-                                                    About Me</span>
+                                                    About {{ name }}</span>
                                             </div>
                                             <div class="px-4 py-4 sm:gap-y-2 sm:px-6">
 
                                                 <dd class="leading-6 text-gray-700">
-                                                    {{ viewpostdetials.about }}"</dd>
+                                                    {{ selectedProfile.about }}</dd>
                                             </div>
                                         </div>
 
@@ -249,7 +304,7 @@ const open = ref(true)
                                                     <dt class="font-medium leading-6 text-gray-900 mr-[2rem]">{{
                                                         item.label }}</dt>
                                                     <dd class="leading-6 text-gray-700 sm:col-span-2 ">
-                                                        {{ item.status }} {{ item.details ? `(${item.details})` : '' }}
+                                                        {{ item.status }} {{ item.details ? `${item.details}` : '' }}
                                                     </dd>
                                                 </div>
                                             </dl>

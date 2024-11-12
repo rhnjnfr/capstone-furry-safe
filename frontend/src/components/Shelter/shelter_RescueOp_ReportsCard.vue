@@ -31,7 +31,8 @@ async function retrieveReports() { //display
         console.log("retrieveReports")
         const response = await axios.post("http://localhost:5000/getereports", {
             _post_id: selectedPost.value,
-            _post_type: -1
+            _post_type: -1,
+            _report_status: "In progress"
         });
 
         // if (response.data && response.data.length > 0) { jeneh's code
