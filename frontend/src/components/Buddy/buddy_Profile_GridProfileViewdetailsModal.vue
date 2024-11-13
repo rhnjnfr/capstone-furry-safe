@@ -2,6 +2,20 @@
 import { ref, computed, onMounted, onBeforeUnmount, reactive } from 'vue'
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
 
+// Nov12 to close press esc - Joey
+onMounted(() => {
+    const closeModalOnEsc = (e) => e.key === 'Escape' && emit('close')
+    window.addEventListener('keydown', closeModalOnEsc)
+    onBeforeUnmount(() => window.removeEventListener('keydown', closeModalOnEsc))
+})
+
+// Nov12 to close press esc - Joey
+onMounted(() => {
+    const closeModalOnEsc = (e) => e.key === 'Escape' && emit('close')
+    window.addEventListener('keydown', closeModalOnEsc)
+    onBeforeUnmount(() => window.removeEventListener('keydown', closeModalOnEsc))
+})
+
 const selectedProfile = ref()
 
 const props = defineProps({
@@ -10,12 +24,52 @@ const props = defineProps({
         required: true,
     },
 });
+
+// Nov12
 const name = ref(null)
 const nickname = ref(null)
 const healthAndMedical = reactive([])
 const allPhotos = ref([]);
 
 onMounted(() => {
+    // selectedPost.value = props.selectedPostDetails
+    // Nov12
+//     if (selectedProfile.value && selectedProfile.value.name_nickname) {
+//         const [firstName, nickName] = selectedProfile.value.name_nickname.split('/');
+//         name.value = firstName.charAt(0).toUpperCase() + firstName.slice(1);
+//         nickname.value = nickName.charAt(0).toUpperCase() + nickName.slice(1);
+
+//         healthAndMedical.length = 0;
+//         healthAndMedical.push(
+//             {
+//                 label: 'Vaccinations Status',
+//                 details: selectedProfile.value.vaccinename || "Not vaccinated"
+//             },
+//             {
+//                 label: 'Spay / Neuter',
+//                 status: selectedProfile.value.sterilization || "Unknown"
+//             },
+//             {
+//                 label: 'Medical Conditions',
+//                 status: selectedProfile.value.condition || "None known"
+//             },
+//             {
+//                 label: 'Special Needs',
+//                 status: selectedProfile.value.need || "None"
+//             }
+//         );
+
+//         const { profileurl, post_photos } = selectedProfile.value;
+
+//         // Ensure profile URL is added if it exists
+//         allPhotos.value = profileurl ? [profileurl] : [];
+
+//         // Add additional photos if they exist and aren't just "No additional photos"
+//         if (Array.isArray(post_photos) && post_photos[0] !== 'No post photos') {
+//             allPhotos.value = allPhotos.value.concat(post_photos);
+//         }
+//     }
+// });
     const closeModalOnEsc = (e) => e.key === 'Escape' && emit('close')
     window.addEventListener('keydown', closeModalOnEsc)
     onBeforeUnmount(() => window.removeEventListener('keydown', closeModalOnEsc))
@@ -178,6 +232,7 @@ const open = ref(true)
                                     <div
                                         class="border rounded-xl border-gray-100 text-start sm:w-full lg:w-[45%] sm:text-sm md:text-base">
                                         <dl class="divide-y divide-gray-100">
+                                            <!-- Nov12 -->
                                             <div
                                                 class="bg-gray-50 rounded-t-xl px-4 py-4 sm:grid md:grid-cols-3 sm:gap-y-2 sm:px-6">
                                                 <dt class="font-medium text-gray-900">Date Re-homed</dt>
@@ -215,6 +270,7 @@ const open = ref(true)
                                                     <span v-if="selectedProfile.gender == 'f'">Female</span>
                                                     <span v-else>Male</span>
                                                 </dd>
+                                                 
                                             </div>
                                             <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                                 <dt class="font-medium text-gray-900">Size</dt>
@@ -231,6 +287,7 @@ const open = ref(true)
                                                 <dd class="leading-6 text-gray-700 sm:col-span-2 ">
                                                     {{ selectedProfile.energylevel }}</dd>
                                             </div>
+                                            <!-- Nov12 end line changes -->
                                         </dl>
                                     </div>
 
@@ -238,14 +295,15 @@ const open = ref(true)
                                         <div class="border rounded-xl text-start">
                                             <div
                                                 class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 bg-gray-100 rounded-t-xl">
+                                                <!-- Nov12 name -->
                                                 <span
                                                     class="text-lg font-semibold leading-6 text-gray-900 sm:col-span-3">
                                                     About {{ name }}</span>
                                             </div>
                                             <div class="px-4 py-4 sm:gap-y-2 sm:px-6">
-
+                                                <!-- Nov12 selectedProfile.about -->
                                                 <dd class="leading-6 text-gray-700">
-                                                    {{ selectedProfile.about }}</dd>
+                                                    {{ selectedProfile.about }}"</dd>
                                             </div>
                                         </div>
 

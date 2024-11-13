@@ -5,15 +5,17 @@ import axios from 'axios';
 import Linkfooter from '@/components/footerLink.vue'
 import viewpostdetials from '@/components/Buddy/buddy_Profile_GridReportViewdetailsModal.vue';
 import default_avatar from '@/assets/images/buddy_default.jpg'
+
+// Nov12
 import Toast from '@/components/toast.vue';  // Ensure correct case for the file name
 const toastRef = ref(null);  // Create a ref for the Toast component
-
 
 // joey added
 import CreateReportModal from '@/components/Buddy/buddy_CreateReportPost_Modal.vue'
 const openCreateModal = ref(false) // for create report modal
 
 import viewprofiledetials from '@/components/Buddy/buddy_Profile_GridProfileViewdetailsModal.vue'; // for view profile details
+
 // view detials on grid profile images
 let viewpostflag = ref(false)
 
@@ -46,7 +48,7 @@ const user = ref({})
 onMounted(() => { //pag load sa page mag load ni =)
   getUserDetails()
   getBuddyPost()
-  getBuddyPets()
+  getBuddyPets() // Nov12
 })
 
 const selectTab = (tab) => {
@@ -100,6 +102,7 @@ async function getBuddyPost() {
   }
 }
 
+// Nov12
 const petprofiles = ref([])
 const id = localStorage.getItem('u_id');
 const petid = null;

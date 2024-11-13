@@ -28,7 +28,8 @@ const handleSubmit = () => {
   } else {
     // Logic for creating
     console.log('Creating profile...');
-    retrieveData()
+    retrieveData() // Nov12
+
   }
 };
 // jeneh's code from shelter create new profile geh reuse nlng nkong form...
@@ -380,6 +381,7 @@ async function retrieveData() {
     const steril_ = formData.get('other_sterilization');
     const steril2_ = formData.get('sterilization_id');
 
+    // Nov12
     if (name_ && gender_ && status_ && (pet_ || pet2_) && (steril_ || steril2_) &&  currentMode == 'create') {
         console.log("=)")
         savePetProfile(formData)
@@ -394,6 +396,7 @@ async function retrieveData() {
         // console.log("empty isa heee", name_, gender_, status_, pet_, pet2_, steril_,steril2_)
     }
 }
+
 async function savePetProfile(formData) { //Save pet profile, pet profile photo, and additional images
     console.log("profile picture to save", profileToUpload.value)
     console.log("extra photos", files.value)

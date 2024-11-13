@@ -19,7 +19,7 @@
                                 <button @click="$emit('close')" ref="cancelButtonRef">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                         stroke="currentColor" stroke-width="2"
-                                        class="w-6 h-6 text-gray-100 hover:text-white">
+                                        class="w-7 h-7 text-gray-100 hover:text-white">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                                     </svg>
                                 </button>
@@ -117,11 +117,6 @@
                                         </div>
                                         <div
                                             class="flex flex-col text-left mx-8 my-4 md:my-auto xl:my-8 sm:text-sm md:text-base">
-
-                                            <!-- <div>
-                                                    <h3 class="text-base font-semibold leading-7 text-gray-900">
-                                                        Event's Information</h3>
-                                                </div> -->
                                             <div>
                                                 <dl class="divide-y divide-gray-100">
                                                     <div
@@ -139,7 +134,7 @@
                                                             Time</dt>
                                                         <dd
                                                             class="mt-1 text-sm leading-6 text-gray-700 xl:col-span-2 sm:mt-0">
-                                                            {{date}}</dd>
+                                                            {{ date }}</dd>
                                                     </div>
                                                     <div
                                                         class="bg-white px-4 py-6 sm:grid xl:grid-cols-3 sm:gap-y-2 gap-x-4 sm:px-3">
@@ -173,7 +168,7 @@
     </TransitionRoot>
 </template>
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
 
 import { ChevronLeftIcon, ChevronRightIcon, EllipsisHorizontalIcon } from "@heroicons/vue/20/solid";
@@ -187,6 +182,7 @@ const toggleDropdown = () => {
     isOpen.value = !isOpen.value;
 };
 
+// Nov12
 let date = ref(null)
 onMounted(async () => {
     selectedPetDetails.value = props.selectedPetDetails
@@ -205,7 +201,7 @@ const props = defineProps({ // for reuse form defines mode if either edit or cre
 
 function formatDateRange(start, end) {
     const options = {
-         year: 'numeric', month: 'long', day: 'numeric',
+        year: 'numeric', month: 'long', day: 'numeric',
         hour: 'numeric', minute: 'numeric'
     };
 
@@ -214,14 +210,15 @@ function formatDateRange(start, end) {
 
     return `${startDate} to ${endDate}`;
 }
-
+// Nov12 end of new added line 
 
 // Reactive state
 const currentIndex = ref(0);
+
 // Computed properties
-const currentImageUrl = computed(() => selectedPetDetails.value.photo_urls[currentIndex.value]);
+const currentImageUrl = computed(() => selectedPetDetails.value.photo_urls[currentIndex.value]); // Nov12
 const hasPrev = computed(() => currentIndex.value > 0);
-const hasNext = computed(() => currentIndex.value < selectedPetDetails.value.photo_urls.length - 1);
+const hasNext = computed(() => currentIndex.value < selectedPetDetails.value.photo_urls.length - 1); // Nov12
 
 // Methods
 const nextImage = () => {
@@ -237,6 +234,13 @@ const prevImage = () => {
 };
 
 const emit = defineEmits(['close']) // for closing the modal
+
+// Nov12 to close press esc
+onMounted(() => {
+    const closeModalOnEsc = (e) => e.key === 'Escape' && emit('close')
+    window.addEventListener('keydown', closeModalOnEsc)
+    onBeforeUnmount(() => window.removeEventListener('keydown', closeModalOnEsc))
+})
 
 const open = ref(true)
 </script>
