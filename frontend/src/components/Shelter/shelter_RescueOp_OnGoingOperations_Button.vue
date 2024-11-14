@@ -12,7 +12,7 @@
                 @click="handleAction('Rescued')"> <!-- Nov5 -->
                 Confirm Rescue
             </button>
-            <RescueFillupFormModal v-if="showform" :postId="postId" @close="showform = false"
+            <RescueFillupFormModal v-if="showform" :postId="postId" :reportedUserId="props.reportedUserId" @close="showform = false" 
                 @statusUpdated="handleAction('Rescued')" /> <!-- Nov12 -->
 
             <button type="button" class="bg-red-100 py-4 w-full hover:bg-red-500 hover:text-white rounded-br-lg"
@@ -24,7 +24,7 @@
         <div v-if="showConfirmRescue" class="flex justify-center py-4 text-[13px] gap-x-6 bg-slate-50">
             <span>Are you sure about this status?</span>
             <!-- Nov12 @click="confirmRescued"-->
-            <button type="button" class="text-green-700" @click="confirmRescued">
+            <button type="button" class="text-green-700" >
                 Yes
             </button>
             <button type="button" class="text-red-700" @click="cancelAction">
@@ -58,6 +58,10 @@ const showform = ref(false); // Nov12
 
 // converted into <script setup> salpocial's code below
 const props = defineProps({
+    reportedUserId:{
+        type: Number, 
+        required: false
+    },
     postId: {
         type: Number,
         required: true
@@ -79,6 +83,9 @@ const selectedAction = ref('');
 
 const handleAction = (action) => { // Nov12
     selectedAction.value = action;
+    console.log("=)")
+    console.log("User Id", props.reportedUserId); // Debug line
+
     if (action === 'Rescued') {
         console.debug('Attempting to rescue with postId:', props.postId); // Debug line
         showform.value = true;

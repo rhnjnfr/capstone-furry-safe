@@ -29,12 +29,13 @@ let selectedPostDetails = ref([])
 async function retrieveReports() { //display
     try {
         console.log("retrieveReports")
-        const response = await axios.post("http://localhost:5000+", {
+        const response = await axios.post("http://localhost:5000/getereports", {
             _post_id: selectedPost.value,
             _post_type: -1,
             _report_status: 'Pending' // Nov12 'In progress'  change to 'Pending'
         });
 
+        console.log(response.data)
         // if (response.data && response.data.length > 0) { jeneh's code
         //     posts.value = response.data
         // }

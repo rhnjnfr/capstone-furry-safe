@@ -459,8 +459,18 @@ import { useRouter } from 'vue-router';
 
 
 const emit = defineEmits(['close', 'post-created']) // for closing the modal with close button - joey added
-const props = defineProps(['postId']);
-console.log('Received postId:', props.postId); // Debug line
+const props = defineProps({
+    postId: {
+        type: Number, // specify type if needed
+        required: true // set required to true if postId is always needed
+    },
+    reportedUserId: {
+        type: Number,
+        required: false
+    }
+});
+
+
 
 // to close press esc
 onMounted(() => {
@@ -756,6 +766,8 @@ async function loadPetStatus() { // load pet status... tf do u want
         console.log("error in loading sterilization", err)
     }
 }
+const currentUser_id = ref(localStorage.getItem('u_id'));
+const receiverId = ref(null)
 async function retrieveData() {
     const formData = new FormData();
     const vaccineArray = getSelectedVaccineIds();
@@ -809,6 +821,9 @@ async function retrieveData() {
     const steril_ = formData.get('other_sterilization');
     const steril2_ = formData.get('sterilization_id');
 
+    console.log("check message convo", receiverId.value, currentUser_id.value)
+    retrieveMessage()
+    return
     if (name_ && gender_ && status_ && (pet_ || pet2_) && (steril_ || steril2_)) {
         try {
             // Save pet profile
@@ -859,9 +874,90 @@ async function retrieveData() {
         });
     }
 }
+const userFullName = ref(null)
+const getUserFullName = async () => {
+    try {
+        const response = await axios.post("http://localhost:5000/getfullname", {
+            id: currentUser_id.value,
+        });
 
-async function sendMessagetoUser(){
-    
+        if (response.data) {
+            userFullName.value = response.data[0].full_name; // Adjust based on your API response structure
+        } else {
+            console.log("No data received for user full name.");
+        }
+    } catch (err) {
+        console.log("Error fetching user full name:", err);
+    }
+};
+async function retrieveMessage() {
+    await getUserFullName()
+    if (!selectedChat_id.value) {
+        await retrieveChatId(); // Await the creation of a new chat
+        // After creating a new chat, selectedChat_id should be set
+    }
+    const formData = new FormData();
+    // const tempurl = [null];
+
+    // files.value.forEach((fileobj) => { //append images
+    //     formData.append(`url`, fileobj.file);
+    // })
+
+    console.log("retrievemessagehere")
+    let messageData = [
+        ["chat_id", selectedChat_id.value],
+        ["user_id", null],
+        ["message", `The Stray Animal you reported was rescued by ` + userFullName.value],
+        ["date", new Date().toISOString()],
+        //     ["sender_name", userFullName],
+        //     ["p1_name", userFullName],
+        //     ["p2_name", receiverName.value] // Ensure receiverName is set
+    ];
+
+    messageData.forEach(([key, value]) => formData.append(key, value));
+
+    // sendMessage(formData)
+    sendMessagetoUser(formData)
+}
+const selectedChat_id = ref(null)
+const retrieveChatId = async () => {
+    try {
+        const response = await axios.post("http://localhost:5000/newchat", {
+            senderid: currentUser_id.value,
+            receiverid: receiverId.value
+        });
+
+        if (response.data) {
+            selectedChat_id.value = response.data[0].chat_id;
+            console.log(selectedChat_id.value)
+
+
+        }
+    }
+    catch (err) {
+        console.log("Error creating new chat:", err);
+    }
+};
+async function sendMessagetoUser(thisformData) {
+    for (let pair of thisformData.entries()) {
+        console.log("send message to user", pair[0], pair[1]);
+    }
+
+    // return
+    try {
+        const response = await axios.post("http://localhost:5000/sendmessage", thisformData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        if (response.data.success) { // true
+            console.log("under response", response.data);
+        } else {
+            console.error("Failed to send message:", response.data.message);
+        }
+    } catch (error) {
+        console.error("Error sending message:", error);
+    }
 }
 
 // async function savePetProfile(formData) {
@@ -985,6 +1081,8 @@ onMounted(() => { //pag load sa page mag load ni =)
     //data rendering :'D
     loadPetCategory()
     loadPetStatus()
+
+    receiverId.value = props.reportedUserId
 })
 // Reactive state
 const open = ref(true);

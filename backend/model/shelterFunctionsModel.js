@@ -678,8 +678,11 @@ export const sendMessage = async (req, res) => {
 
   let url = null;
   let { chat_id, user_id, message } = req.body;
+  chat_id = chat_id == 'null' || chat_id == '' ? null : chat_id;
+  user_id = user_id == 'null' || user_id == '' ? null : user_id;
 
-  console.log(req.body);
+  console.log("user_id", user_id);
+
   try {
     for (const photo of sentimage) {
       const photoPath = `pets_photos/${Date.now()}_${photo.originalname}`;
@@ -723,6 +726,7 @@ export const sendMessage = async (req, res) => {
       console.error("Error sending message 1:", error);
       res.status(500).send({ success: false, error: error.message });
     } else {
+      console.log("success?")
       res.status(200).send({ success: true, url: extraPhotoUrls });
     }
   } catch (err) {

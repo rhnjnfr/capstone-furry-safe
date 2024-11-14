@@ -84,10 +84,10 @@ const confirmAction = async () => { //upon click
             post_id: props.postId,
             shelter_id: localStorage.getItem('c_id')
         });
+        emit('statusUpdated');
 
         if (response.data.success) {
             showConfirmDialog.value = false;
-            emit('statusUpdated');
         }
     } catch (error) {
         console.error('Error:', error);
