@@ -12,8 +12,8 @@
                 @click="handleAction('Rescued')"> <!-- Nov5 -->
                 Confirm Rescue
             </button>
-            <RescueFillupFormModal v-if="showform" :postId="postId" :reportedUserId="props.reportedUserId" @close="showform = false" 
-                @statusUpdated="handleAction('Rescued')" /> <!-- Nov12 -->
+            <RescueFillupFormModal v-if="showform" :postId="postId" :reportedUserId="props.reportedUserId" :reportDetails="selectedPostDetails"
+                @close="showform = false" @statusUpdated="handleAction('Rescued')" /> <!-- Nov12 -->
 
             <button type="button" class="bg-red-100 py-4 w-full hover:bg-red-500 hover:text-white rounded-br-lg"
                 @click="handleAction('Cancelled')"> <!-- Nov5 -->
@@ -24,7 +24,7 @@
         <div v-if="showConfirmRescue" class="flex justify-center py-4 text-[13px] gap-x-6 bg-slate-50">
             <span>Are you sure about this status?</span>
             <!-- Nov12 @click="confirmRescued"-->
-            <button type="button" class="text-green-700" >
+            <button type="button" class="text-green-700">
                 Yes
             </button>
             <button type="button" class="text-red-700" @click="cancelAction">
@@ -58,8 +58,8 @@ const showform = ref(false); // Nov12
 
 // converted into <script setup> salpocial's code below
 const props = defineProps({
-    reportedUserId:{
-        type: Number, 
+    reportedUserId: {
+        type: Number,
         required: false
     },
     postId: {
@@ -70,6 +70,7 @@ const props = defineProps({
         type: String,
         required: false
     }
+    //need to get the post details here = ) 
 });
 
 const emit = defineEmits(['statusUpdated']);
@@ -82,9 +83,8 @@ const successMessage = ref('');
 const selectedAction = ref('');
 
 const handleAction = (action) => { // Nov12
+    toggleModalViewDetails()
     selectedAction.value = action;
-    console.log("=)")
-    console.log("User Id", props.reportedUserId); // Debug line
 
     if (action === 'Rescued') {
         console.debug('Attempting to rescue with postId:', props.postId); // Debug line
@@ -94,23 +94,37 @@ const handleAction = (action) => { // Nov12
     }
 };
 
-// Wla Nov12
-// const confirmRescued = async () => { //rescued => yes 
-//     try {
-//         const response = await axios.post('http://localhost:5000/confirmRescue', {
-//             post_id: props.postId,
-//             shelter_id: localStorage.getItem('c_id')
-//         });
+let selectedPostDetails = ref([])
+function toggleModalViewDetails() {
+    // props.postId = props.postId.value === id ? null : id;
+    const foundPost = posts.value.find(post => post.post_id === props.postId);
 
-//         if (response.data.success) {
-//             showConfirmDialog.value = false;
-//             emit('statusUpdated');
-//         }
-//     } catch (error) {
-//         console.error('Error:', error);
-//         // Handle error (show error message)
-//     }
-// }
+    if (foundPost) {
+        selectedPostDetails.value = foundPost
+        console.log("found post", selectedPostDetails.value)
+    } else { // Nov12 added else
+        console.error("Post not found for ID:", props.postId);
+    }
+};
+let posts = ref([])
+let _shelter_id = localStorage.getItem('c_id')
+async function retrieveReports() {
+    try {
+        console.log("retrieveReports =)")
+        const response = await axios.post("http://localhost:5000/getongoingoperations", {
+            _shelter_id: _shelter_id,
+            _status: 'In progress' // Nov12 'Pending' change to 'In progress' 
+        });
+
+        if (response.data && response.data.length > 0) {
+            posts.value = response.data
+        }
+        console.log("post value", posts.value)
+    }
+    catch (err) {
+        console.log("error in retrieve operations", err)
+    }
+}
 const cancelRescue = async () => { //rescued => yes
     if (!props.postId) {
         console.error('Error: postId is undefined.');
@@ -143,68 +157,11 @@ const cancelAction = () => {
 
 // Nov12 let button_flag = ref('') change to
 const button_flag = ref('');
-onMounted(() => {
+onMounted(async () => {
+    await retrieveReports()
+
     button_flag.value = props.operation
     console.log("flag", button_flag.value)
 })
 
 </script>
-<!-- 
-// Nov5 orig salpocial's code
-// export default {
-//     props: {
-//         postId: {
-//             type: Number,
-//             required: true
-//         }
-//     },
-//     emits: ['statusUpdated'],
-//     setup(props, { emit }) {
-//         const showRescueCancelButtons = ref(false);
-//         const showSuccessMessage = ref(false);
-//         const showConfirmDialog = ref(false);
-//         const successMessage = ref('');
-//         const selectedAction = ref('');
-
-//         const handleAction = (action) => {
-//             selectedAction.value = action;
-//             showRescueCancelButtons.value = false;
-//             showConfirmDialog.value = true;
-//         };
-
-//         const confirmAction = async () => {
-//             try {
-//                 const response = await axios.post('http://localhost:5000/accept-rescue', {
-//                     post_id: props.postId,
-//                     shelter_id: localStorage.getItem('c_id'),
-//                     status: selectedAction.value
-//                 });
-
-//                 if (response.data.success) {
-//                     showConfirmDialog.value = false;
-//                     showSuccessMessage.value = true;
-//                     successMessage.value = `${selectedAction.value} Successfully`;
-//                     emit('statusUpdated');
-//                 }
-//             } catch (error) {
-//                 console.error('Error:', error);
-//                 // Handle error (show error message)
-//             }
-//         };
-
-//         const cancelAction = () => {
-//             showConfirmDialog.value = false;
-//             showRescueCancelButtons.value = true;
-//         };
-
-//         return {
-//             showRescueCancelButtons,
-//             showSuccessMessage,
-//             showConfirmDialog,
-//             successMessage,
-//             handleAction,
-//             confirmAction,
-//             cancelAction
-//         };
-//     }
-// } -->

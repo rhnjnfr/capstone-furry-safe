@@ -5,6 +5,7 @@ import axios from 'axios';
 import { io } from 'socket.io-client';
 
 import default_avatar from '@/assets/images/buddy_default.jpg'
+import viewpostdetials from '@/components/Shelter/shelter_RescueOp_ReportViewdetailsModal.vue';
 
 // Reactive user ID
 const user_id = ref(localStorage.getItem('u_id'));
@@ -142,7 +143,7 @@ const selectConversation = async (conversation) => {
                 profile: response.data[0].profile_url
             };
 
-            console.log("selected convo", response.data[0].profile_url)
+            console.log("selected convo messages", selectedConversation.value.messages)
 
             await nextTick(); // Ensure DOM is updated
             scrollToBottom(); // Scroll after messages are loaded
@@ -286,21 +287,6 @@ const scrollToBottom = async () => {
     //     lastMessage.value.scrollIntoView({ behavior: 'smooth' });
     // }
 }
-// const getUserFullName = async () => {
-//     try {
-//         const response = await axios.post("http://localhost:5000/getfullname", {
-//             id: user_id.value,
-//         });
-
-//         if (response.data) {
-//             userFullName = response.data;
-//         } else {
-//             console.log("No data received.");
-//         }
-//     } catch (err) {
-//         console.log("Error fetching inbox:", err);
-//     }
-// }
 
 const getUserFullName = async () => {
     try {
@@ -319,7 +305,69 @@ const getUserFullName = async () => {
     }
 };
 
-//------------------------------------ this image
+let selectedPost = ref(null)
+let posts = ref([])
+let _shelter_id = localStorage.getItem('c_id')
+async function retrieveInPorgressReports() {
+    try {
+        const response = await axios.post("http://localhost:5000/getongoingoperations", {
+            _shelter_id: _shelter_id,
+            _status: 'In progress'
+        });
+
+        if (response.data && response.data.length > 0) {
+            posts.value = response.data
+        }
+        console.log("post value", posts.value)
+    }
+    catch (err) {
+        console.log("error in retrieve operations", err)
+    }
+}
+let rescuedposts = ref([])
+async function retrieveRescuedReports() {
+    try {
+        const response = await axios.post("http://localhost:5000/getongoingoperations", {
+            _shelter_id: _shelter_id,
+            _status: 'Rescued'
+        });
+
+        if (response.data && response.data.length > 0) {
+            rescuedposts.value = response.data
+        }
+    }
+    catch (err) {
+        console.log("error in retrieve operations", err)
+    }
+}
+let selectedPostDetails = ref([])
+const selectedPostViewDetailsId = ref(null);
+let visible = ref(false)
+const toggleModalViewDetails = (id, flag) => {
+    // selectedPostViewDetailsId.value = selectedPostViewDetailsId.value === id ? null : id;
+    // const foundPost = posts.value.find(post => post.post_id === id);
+    selectedPostViewDetailsId.value = selectedPostViewDetailsId.value === id ? visible.value = false : id;
+    let foundPost = null
+
+    console.log(id, flag)
+    if (flag) {
+        console.log("Rescued?")
+        foundPost = rescuedposts.value.find(post => post.post_id === selectedPostViewDetailsId.value);
+    }
+    else {
+        console.log("Handled?")
+        foundPost = posts.value.find(post => post.post_id === selectedPostViewDetailsId.value);
+    }
+
+    if (foundPost) {
+        selectedPostDetails.value = foundPost
+        console.log("found post", selectedPostDetails.value)
+        visible.value = true
+    } else { // Nov12 added else
+        console.error("Post not found for ID:", id);
+    }
+};
+
 const fileInput = ref(null);
 const files = ref([])
 const handleMultipleFileChange = (event) => {
@@ -343,7 +391,6 @@ const triggerFileInput = () => {
 const removeImage = (index) => {
     files.value.splice(index, 1)
 }
-// --------------------------------- this image functions 
 async function retrieveMessage() {
     const formData = new FormData();
     const tempurl = [null];
@@ -394,23 +441,6 @@ const handleInput = (value) => { //if user types, send a request to the backend 
         fetchData(value);
     }, 500); // 500ms debounce
 };
-// const handleItemClick = (itemId, name) => { // Handle item selection from search
-//     searchValue.value = '';
-//     receiverId.value = itemId;
-//     receiverName.value = name;
-//     selectedChat_id.value = null
-
-//     conversations.value.forEach(chat => {
-//         if (receiverName.value == chat.other_participant_name) {
-//             selectConversation({ chat_id: chat.chat_id })
-//             createConversation.value = false
-//         }
-//         else {
-//             console.log("else")
-//         }
-//     });
-// };
-
 const handleItemClick = (itemId, name) => {
     searchValue.value = '';
     receiverId.value = itemId;
@@ -432,8 +462,14 @@ const sortedMessages = computed(() => {
     if (!selectedConversation.value || !selectedConversation.value.messages) {
         return [];
     }
+    console.log("sorts", selectedConversation.value)
     return [...selectedConversation.value.messages].sort((a, b) => new Date(a.date) - new Date(b.date));
 });
+function containsReportedOrHandled(message) {
+    let messagevalue = message.toLowerCase().includes('rescued') ? true : false
+    // return message.toLowerCase().includes('reported') || message.toLowerCase().includes('handled');
+    return messagevalue
+}
 
 // Function to format time
 function formatTime(dateString) {
@@ -477,6 +513,8 @@ watch(searchValue, (newValue) => {
 onMounted(async () => {
     await getUserFullName();
     await fetchInbox();
+    await retrieveInPorgressReports();
+    await retrieveRescuedReports();
 });
 </script>
 
@@ -556,7 +594,6 @@ onMounted(async () => {
                             <div class="flex items-center gap-x-2">
                                 <img :src="conversation.profile_url || default_avatar" alt="profile"
                                     class="w-10 h-10 object-cover border bg-red-500 rounded-full">
-                                <!-- here jeneh put :scr="" sa <img> -->
                                 <span class="font-medium truncate">{{ conversation.other_participant_name }}</span>
                             </div>
                             <span class="text-[12px] sm:hidden xl:flex">{{ formatTime(conversation.date) }}</span>
@@ -572,6 +609,10 @@ onMounted(async () => {
                         <div v-else>
                             <div v-if="conversation.user_id == user_id">
                                 <p class="text-sm truncate">You: {{ conversation.message }}</p>
+                            </div>
+                            <div v-else-if="conversation.user_id == null">
+                                <p class="text-sm truncate">{{
+                                    conversation.message }}</p>
                             </div>
                             <div v-else>
                                 <p class="text-sm truncate">{{ conversation.other_participant_name }}: {{
@@ -616,16 +657,34 @@ onMounted(async () => {
                                 </div>
                             </div>
                             <div v-else="message.message"
-                                class="mt-1 bg-teal-200 px-4 py-2 rounded-t-2xl rounded-l-2xl">
+                                class="mt-1 bg-teal-200 px-4 py-2 rounded-t-2xl rounded-l-2xl ">
                                 <p>{{ message.message }} </p>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Incomming message sent by the system -->
+                    <div v-else-if="message.user_id == null" class="flex justify-center mb-2">
+                        <div class="text-sm text-gray-600 p-3 underline">
+                            <p>
+                                <!-- Check if message contains " reported" or "handled" -->
+                                <span v-if="containsReportedOrHandled(message.message) === true"
+                                    @click="toggleModalViewDetails(message.this_post_id, true)">
+                                    {{ message.message }} </span>
+                                <span v-else-if="containsReportedOrHandled(message.message) === false"
+                                    @click="toggleModalViewDetails(message.this_post_id, false)">
+                                    {{ message.message }} </span>
+                                <span v-else>
+                                    {{ message.message }}
+                                </span>
+                            </p>
 
+                            <viewpostdetials v-if="visible" :selectedPostDetails="selectedPostDetails"
+                                @close="toggleModalViewDetails(message.this_post_id)" />
+                        </div>
+                    </div>
 
                     <!-- Incoming Messages (Sent by Other Participant) -->
-
                     <div v-else class="flex justify-start mb-2">
                         <div class="text-sm text-gray-600 p-3">
                             <div class="text-left">

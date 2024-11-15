@@ -7,7 +7,8 @@
             Take Action
         </button>
 
-        <div v-else-if="showRescueCancelButtons || props.operation == 'ongoing'" class="flex justify-between font-semibold text-gray-600 rounded-b-lg">
+        <div v-else-if="showRescueCancelButtons || props.operation == 'ongoing'"
+            class="flex justify-between font-semibold text-gray-600 rounded-b-lg">
             <button type="button" class="bg-green-100 py-4 w-full hover:bg-green-500 hover:text-white rounded-bl-lg"
                 @click="handleAction('Rescued')"> <!-- Nov5 -->
                 Rescued
@@ -58,10 +59,14 @@ const props = defineProps({
         type: Number,
         required: true
     },
-    operation:{
+    operation: {
         type: String,
         required: false
-    }
+    },
+    reportedUserId: {
+        type: Number,
+        required: false
+    },
 });
 
 const emit = defineEmits(['statusUpdated']);
@@ -79,16 +84,18 @@ const handleAction = (action) => {
 };
 
 const confirmAction = async () => { //upon click
+
     try {
         const response = await axios.post('http://localhost:5000/accept-report', {
             post_id: props.postId,
             shelter_id: localStorage.getItem('c_id')
         });
-        emit('statusUpdated');
 
         if (response.data.success) {
+            retrieveMessage()
             showConfirmDialog.value = false;
         }
+        emit('statusUpdated');
     } catch (error) {
         console.error('Error:', error);
         // Handle error (show error message)
@@ -128,6 +135,98 @@ const cancelRescue = async () => { //rescued => yes
         // Handle error (show error message)
     }
 }
+const receiverId = ref(null)
+const userFullName = ref(null)
+const currentUser_id = localStorage.getItem('u_id')
+const getUserFullName = async () => {
+    try {
+        const response = await axios.post("http://localhost:5000/getfullname", {
+            id: currentUser_id,
+        });
+
+        if (response.data) {
+            userFullName.value = response.data[0].full_name; // Adjust based on your API response structure
+            console.log(userFullName.value)
+        } else {
+            console.log("No data received for user full name.");
+        }
+    } catch (err) {
+        console.log("Error fetching user full name:", err);
+    }
+};
+async function retrieveMessage() {
+    await getUserFullName()
+    if (!selectedChat_id.value) {
+        await retrieveChatId(); // Await the creation of a new chat
+        // After creating a new chat, selectedChat_id should be set
+    }
+    const formData = new FormData();
+    // const tempurl = [null];
+
+    // files.value.forEach((fileobj) => { //append images
+    //     formData.append(`url`, fileobj.file);
+    // })
+
+    console.log("retrievemessagehere")
+    console.log("props post id",)
+
+    let messageData = [
+        ["chat_id", selectedChat_id.value],
+        ["user_id", null],
+        ["message", `This stray animal report is now handled by ` + userFullName.value],
+        ["date", new Date().toISOString()],
+        ["post_id", props.postId]
+        //     ["sender_name", userFullName],
+        //     ["p1_name", userFullName],
+        //     ["p2_name", receiverName.value] // Ensure receiverName is set
+    ];
+
+    messageData.forEach(([key, value]) => formData.append(key, value));
+
+    // sendMessage(formData)
+    sendMessagetoUser(formData)
+}
+const selectedChat_id = ref(null)
+const retrieveChatId = async () => {
+    try {
+        const response = await axios.post("http://localhost:5000/newchat", {
+            senderid: currentUser_id,
+            receiverid: receiverId.value
+        });
+
+        if (response.data) {
+            selectedChat_id.value = response.data[0].chat_id;
+            console.log(selectedChat_id.value)
+
+
+        }
+    }
+    catch (err) {
+        console.log("Error creating new chat:", err);
+    }
+};
+async function sendMessagetoUser(thisformData) {
+    for (let pair of thisformData.entries()) {
+        console.log("send message to user", pair[0], pair[1]);
+    }
+
+    // return
+    try {
+        const response = await axios.post("http://localhost:5000/sendmessage", thisformData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        if (response.data.success) { // true
+            console.log("under response", response.data);
+        } else {
+            console.error("Failed to send message:", response.data.message);
+        }
+    } catch (error) {
+        console.error("Error sending message:", error);
+    }
+}
+
 
 
 const cancelAction = () => {
@@ -136,9 +235,9 @@ const cancelAction = () => {
 };
 
 let button_flag = ref('')
-onMounted(()=>{
+onMounted(() => {
     button_flag.value = props.operation
-    console.log("flag", button_flag.value)
+    receiverId.value = props.reportedUserId
 })
 
 </script>

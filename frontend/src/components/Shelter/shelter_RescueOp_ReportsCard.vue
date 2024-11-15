@@ -36,12 +36,6 @@ async function retrieveReports() { //display
         });
 
         console.log(response.data)
-        // if (response.data && response.data.length > 0) { jeneh's code
-        //     posts.value = response.data
-        // }
-        // console.log("post value", posts.value) end of jeneh's code
-
-        // Nov5 start of salpocial's new code replace jeneh's old code
         if (response.data && response.data.length > 0) {
             // Filter out reports that are already rescued
             posts.value = response.data.filter(report => report.report_status !== 'Rescued' && report.report_status !== 'In progress'); // Nov12 added ( && report.report_status !== 'In progress' )
@@ -58,11 +52,10 @@ async function retrieveReports() { //display
 // Add a function to handle status updates
 const handleStatusUpdate = () => {
     // Refresh the reports list
+
     retrieveReports();
 }
 // Nov5 end of salpocial's new code
-
-
 onMounted(async () => {
     retrieveReports()
 })
@@ -113,7 +106,7 @@ onMounted(async () => {
 
             </div>
             <div> <!-- Nov5 added :postId="report.post_id" @statusUpdated="handleStatusUpdate"-->
-                <statusbuttons :postId="report.post_id" @statusUpdated="handleStatusUpdate" />
+                <statusbuttons :postId="report.post_id" :reportedUserId="report.user_id"  @statusUpdated="handleStatusUpdate" />
             </div>
         </div>
     </div>

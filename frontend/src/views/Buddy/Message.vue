@@ -1,68 +1,3 @@
-<!-- <script setup>
-import { ref, onMounted, computed, watch, nextTick , reactive} from 'vue';
-import { MagnifyingGlassIcon, PaperAirplaneIcon, PaperClipIcon } from "@heroicons/vue/20/solid";
-import axios from 'axios';
-import { io } from 'socket.io-client';
-
-import default_avatar from '@/assets/images/buddy_default.jpg'
-
-const showNewMessage = ref(false);
-const newMessage = ref('');
-const uploadedFile = ref(null);
-const searchTerm = ref('');
-const isModalVisible = ref(false);
-const selectedUser = ref('');
-const users = ['June Cyril Dolendo', 'afdsafsdafsda', 'afsdafas', 'afsdafsa', 'CAPSTONE : UI | FURSAFE', 'afdsafsad', 'weqrewqrewq', 'zvxczvzvz'];
-const filteredUsers = ref([]);
-const messages = reactive([]);
-
-function toggleModal() {
-  isModalVisible.value = !isModalVisible.value;
-}
-
-function toggleNewMessage() {
-  showNewMessage.value = !showNewMessage.value;
-}
-
-function sendMessage() {
-  if (newMessage.value.trim() || uploadedFile.value) {
-    const message = {
-      text: newMessage.value.trim(),
-      photo: uploadedFile.value ? URL.createObjectURL(uploadedFile.value) : null,
-      isSent: true,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    };
-    messages.push(message);
-    newMessage.value = '';
-    uploadedFile.value = null;
-  }
-}
-
-function handleFileUpload(event) {
-  uploadedFile.value = event.target.files[0];
-}
-
-function triggerFileInput() {
-  document.getElementById('fileInput').click();
-}
-
-function filterUsers() {
-  filteredUsers.value = users.filter(user => user.toLowerCase().includes(searchTerm.value.toLowerCase()));
-}
-
-function selectUser(user) {
-  searchTerm.value = user;
-  filteredUsers.value = [];
-}
-
-function startChat() {
-  if (selectedUser.value) {
-    console.log(`Starting chat with ${selectedUser.value}`);
-    toggleModal();
-  }
-}
-</script> -->
-
 <script setup>
 import { ref, onMounted, computed, watch, nextTick } from 'vue';
 import { MagnifyingGlassIcon, PaperAirplaneIcon, PaperClipIcon } from "@heroicons/vue/20/solid";
@@ -70,6 +5,7 @@ import axios from 'axios';
 import { io } from 'socket.io-client';
 
 import default_avatar from '@/assets/images/buddy_default.jpg'
+import viewpostimagepreview from '@/components/Buddy/buddy_Home_ImagePreviewModal.vue';
 
 // Reactive user ID
 const user_id = ref(localStorage.getItem('u_id'));
@@ -355,6 +291,8 @@ const getUserFullName = async () => {
   }
 };
 
+
+
 //------------------------------------ this image
 const fileInput = ref(null);
 const files = ref([])
@@ -592,6 +530,10 @@ onMounted(async () => {
               <div v-if="conversation.user_id == user_id">
                 <p class="text-sm truncate">You: {{ conversation.message }}</p>
               </div>
+              <div v-else-if="conversation.user_id == null">
+                <p class="text-sm truncate">{{
+                  conversation.message }}</p>
+              </div>
               <div v-else>
                 <p class="text-sm truncate">{{ conversation.other_participant_name }}: {{
                   conversation.message }}</p>
@@ -630,6 +572,14 @@ onMounted(async () => {
             </div>
           </div>
 
+          <!-- Incomming message sent by the system -->
+          <div v-else-if="message.user_id == null" class="flex justify-center mb-2">
+            <div class="text-sm text-gray-600 p-3">
+              <div class="">
+                <p>{{ message.message }} </p>
+              </div>
+            </div>
+          </div>
 
           <div v-else class="flex justify-start mb-2">
             <div class="text-sm text-gray-600 p-3">
