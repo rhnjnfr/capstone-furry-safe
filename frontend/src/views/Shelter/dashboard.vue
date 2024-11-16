@@ -40,7 +40,7 @@ export default {
 // }
 </script>
 <template>
-    <div class="h-screen flex flex-col my-8 mx-4">
+    <div class="h-screen flex flex-col my-8 mx-8">
         <mapoverlay v-if="modalVisible" @close="modalVisible = false" />
         <header class="flex justify-between items-center">
             <div class="graycolor">
