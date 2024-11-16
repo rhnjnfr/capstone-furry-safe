@@ -26,11 +26,13 @@ const toggleModalViewDetails = (id) => {
 let selectedPost = ref(null)
 let posts = ref([])
 let selectedPostDetails = ref([])
+let id = localStorage.getItem('c_id')
 async function retrieveReports() { //display
     try {
         console.log("retrieveReports")
-        const response = await axios.post("http://localhost:5000/getereports", {
-            _report_status: 'Rescued' // Nov12 'In progress'  change to 'Pending'
+        const response = await axios.post("http://localhost:5000/getrescuedhistory", {
+            _report_status: 'Rescued',
+            _handled_by: id // Nov12 'In progress'  change to 'Pending'
         });
         posts.value = response.data
         console.log("response", response.data)

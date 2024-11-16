@@ -81,8 +81,7 @@
                                                 <div class="mt-[1rem] grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                                                     <div class="md:col-span-3 sm:col-span-full">
                                                         <label for="given-name"
-                                                            class="block text-sm font-medium leading-6 text-gray-900">Temporary
-                                                            Name</label>
+                                                            class="block text-sm font-medium leading-6 text-gray-900">Temporary Name</label>
                                                         <div class="mt-2">
                                                             <input v-model="name" type="text" name="given-name"
                                                                 id="given-name" autocomplete="given-name"
@@ -147,8 +146,8 @@
                                                             class="block text-sm font-medium leading-6 text-gray-900">
                                                             Breed / Mix</label>
                                                         <div class="mt-2"> -->
-                                                    <!-- Display the dropdown when selectedAnimalTypeString is not 'Other' -->
-                                                    <!-- <select
+                                                            <!-- Display the dropdown when selectedAnimalTypeString is not 'Other' -->
+                                                            <!-- <select
                                                                 v-if="selectedAnimalTypeString && selectedBreedString !== 'Other'"
                                                                 id="animalbreed" name="animalbreed"
                                                                 v-model="selectedAnimalBreed"
@@ -162,8 +161,8 @@
                                                                 <option value="Other">Other</option>
                                                             </select> -->
 
-                                                    <!-- Display the text input when selectedAnimalTypeString is 'Other' -->
-                                                    <!-- <div v-else class="flex gap-2 items-center">
+                                                            <!-- Display the text input when selectedAnimalTypeString is 'Other' -->
+                                                            <!-- <div v-else class="flex gap-2 items-center">
                                                                 <input type="text" v-model="animalbreed"
                                                                     name="animalbreed" id="animalbreed"
                                                                     :placeholder="selectedBreedString === 'Other' ? 'Type of Furry Animal Breed/Mix' : `Type of ${selectedAnimalTypeString} Breed/Mix`"
@@ -803,8 +802,8 @@ async function retrieveData() {
 
     // Log FormData contents
     for (let [key, value] of formData.entries()) {
-        console.log(key, value);
-    }
+    console.log(key, value);
+}
 
     // Validate required fields
     const name_ = formData.get('name');
@@ -816,62 +815,62 @@ async function retrieveData() {
     const steril2_ = formData.get('sterilization_id');
 
     if (!name.value || !selectedAnimalType.value || !selectedGender.value) {
-        console.error("Required fields are missing");
-        return; // Prevent submission if required fields are missing
-
-    }
+    console.error("Required fields are missing");
+    return; // Prevent submission if required fields are missing
+    
+}
     try {
         // Save pet profile
         const response = await axios.post("http://localhost:5000/save_pet_profile", formData, {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
         console.log("Response from save_pet_profile:", response.data);
-
+        
         if (response.data.success) {
             const postId = props.postId; // Ensure this is correctly returned from the API
             const shelterId = localStorage.getItem('c_id');
-
+            
             console.log("Post ID:", postId);
             console.log("Shelter ID:", shelterId);
-
+            
             if (postId && shelterId) {
                 // Confirm rescue
                 const rescueResponse = await axios.post("http://localhost:5000/confirmRescue", {
                     post_id: postId,
                     shelter_id: shelterId
-                });
-
-                console.log("Response from confirmRescue:", rescueResponse.data);
-
-                if (rescueResponse.data.success) {
-                    emit('close');
-
-                    navigateTo({
-                        path: "/buddy_home",
-                        query: { showToast: true, message: 'Pet Profile Saved and Rescued Successfully', from: 'create' }
                     });
+                    
+                    console.log("Response from confirmRescue:", rescueResponse.data);
+
+                    if (rescueResponse.data.success) {
+                        emit('close');
+                        
+                        navigateTo({
+                            path: "/buddy_home",
+                            query: { showToast: true, message: 'Pet Profile Saved and Rescued Successfully', from: 'create' }
+                        });
 
 
+                    } else {
+                        console.error('Failed to confirm rescue:', rescueResponse.data.message);
+                    }
                 } else {
-                    console.error('Failed to confirm rescue:', rescueResponse.data.message);
+                    console.error('Post ID or Shelter ID is undefined');
                 }
             } else {
-                console.error('Post ID or Shelter ID is undefined');
+                console.error('Failed to save profile:', response.data.message);
             }
-        } else {
-            console.error('Failed to save profile:', response.data.message);
-        }
-    } catch (err) {
-        console.error("Error occurred during the process:", err);
-        if (err.response) {
-            console.error("Response data:", err.response.data); // Log server response
-            console.error("Response status:", err.response.status); // Log status code
-        }
-    }
+        } catch (err) {
+            console.error("Error occurred during the process:", err);
+            if (err.response) {
+                console.error("Response data:", err.response.data); // Log server response
+                console.error("Response status:", err.response.status); // Log status code
+                }
+            }
 }
 
-async function sendMessagetoUser() {
-
+async function sendMessagetoUser(){
+    
 }
 
 // async function savePetProfile(formData) {

@@ -1207,3 +1207,24 @@ export const getOngoingOperations = async (req, res) => {
     console.log("error in backend: getongoingoperations", err)
   }
 };
+export const getRescuedHistory = async (req, res) => {
+  try {
+    const { _report_status, _handled_by } = req.body;
+
+    const { data, error } = await supabase.rpc("get_rescued_reports", {
+      _report_status: _report_status,
+      _handled_by: _handled_by,
+    });
+    if (!error) {
+      res.status(200).send(data);
+    } else {
+      res.status(500).send({
+        success: false,
+        error: error.message,
+        message: "An Error Occured",
+      });
+    }
+  } catch (err) {
+    console.log("error in backend: getongoingoperations", err)
+  }
+}

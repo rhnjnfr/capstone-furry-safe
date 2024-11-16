@@ -82,6 +82,7 @@ const showSuccessMessage = ref(false);
 const showConfirmDialog = ref(false);
 const successMessage = ref('');
 const selectedAction = ref('');
+const showFormModal = ref(false); // State for showing the form modal
 
 // Nov15
 const handleTakeAction = async () => {
