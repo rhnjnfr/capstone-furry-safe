@@ -690,7 +690,7 @@ onMounted(async () => {
                     <div v-else-if="message.user_id == null" class="flex justify-center mb-2 border-y">
                         <div class="text-sm text-gray-600 p-3">
                             <p>
-                                <!-- Check if message contains " reported" or "handled" -->
+                                <!-- Check if message contains "rescued" or "handled" -->
                                 <span v-if="containsReportedOrHandled(message.message) === true"
                                     @click="toggleModalViewDetails(message.this_post_id, true)" class="cursor-pointer text-green-600">
                                     {{ message.message }} </span>

@@ -319,19 +319,21 @@ export const savepetprofie = async (req, res) => {
     // const vaccine_ids = vaccines.map(id => parseInt(id, 10)).filter(id => !isNaN(id));
 
     const files = req.files;
+    let profileUrl = null;
 
     // Upload Profile Photo
     const profileFile = files.find((file) => file.fieldname === "profile");
     const extraPhotos = files.filter(
       (file) => file.fieldname === "extra_photo"
     );
-    console.log("extra photos", extraPhotos);
+    if (!profileFile) {
+      profileUrl = req.body.profile
+    }
 
     if (breed_id == "Other") {
       breed_id = null;
     }
 
-    let profileUrl = null;
     const extraPhotoUrls = [];
 
     if (profileFile) {
@@ -1201,7 +1203,7 @@ export const getOngoingOperations = async (req, res) => {
         message: "An Error Occured",
       });
     }
-  } catch (err) { 
+  } catch (err) {
     console.log("error in backend: getongoingoperations", err)
   }
 };

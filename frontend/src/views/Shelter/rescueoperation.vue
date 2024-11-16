@@ -2,12 +2,15 @@
 import reports from '@/components/Shelter/shelter_RescueOp_ReportsCard.vue'
 import ongoing_operations from '@/components/Shelter/shelter_RescueOp_OnGoingOperations.vue'
 import missing_operations from '@/components/Shelter/shelter_Missingreports.vue'
+import shelter_HistoryOp_ReportsCard from '@/components/Shelter/shelter_HistoryOp_ReportsCard.vue'
 import { ref } from 'vue'
 
 const tabs = ref([
     { name: 'Community Reports', current: true },
     { name: 'Missing Reports', current: false },
     { name: 'Ongoing Operations', current: false },
+    { name: 'Rescued Operations', current: false },
+
 ])
 
 const currentTab = ref(tabs.value[0].name)
@@ -50,6 +53,13 @@ const updateCurrentTab = (tabName) => {
             <div class="pt-4 mx-auto flex justify-center">
                 <div class="w-fit">
                     <missing_operations />
+                </div>
+            </div>
+        </div>
+        <div v-show="currentTab === 'Rescued Operations'">
+            <div class="pt-4 mx-auto flex justify-center">
+                <div class="w-fit">
+                    <shelter_HistoryOp_ReportsCard />
                 </div>
             </div>
         </div>
