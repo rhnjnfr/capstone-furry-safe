@@ -148,6 +148,7 @@ export default {
                 this.userPassword = UserPassword.value; // Get password value
 
                 await this.getUser(); // Call getUser method
+                console.log("cred", this.userEmail, this.userPassword)
             } catch (err) {
                 console.log(err); // Log any errors
             }
