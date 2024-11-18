@@ -81,7 +81,7 @@ onMounted(async () => {
             </RouterLink>
             <!-- <span class="text-[11px] border py-1 px-3 font-medium rounded-full bg-gray-50"> {{ post.post_type }}</span> -->
             <span :class="{
-                'text-[10px] border py-1 px-3 font-medium rounded-full': true,
+                'text-[10px] text-center border py-1 px-3 font-medium rounded-full': true,
                 'bg-amber-50 border-amber-300 text-amber-500': post.post_type === 'Missing Report',
                 'bg-red-50 border-red-300 text-red-500': post.post_type === 'Stray Report',
                 'bg-teal-50 border-teal-300 text-teal-500': post.post_type === 'Adoption',

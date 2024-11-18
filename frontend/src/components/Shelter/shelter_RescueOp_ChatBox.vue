@@ -525,9 +525,9 @@ onMounted(async () => {
     <div class="flex sm:h-[calc(100vh-67px)] lg:md:h-[calc(100vh-0px)] ">
         <!-- Conversations Sidebar -->
         <!-- responsive text by color sm:bg-red-400 md:bg-blue-400 lg:bg-orange-400 xl:bg-green-400 -->
-        <div class="sm:w-[30rem] xl:w-[30rem] border-r-2 text-gray-600 md:pr-6 flex-1">
-            <div class="py-4 mt-4 md:ml-6 flex items-center sm:gap-x-2 sm:justify-center md:justify-between">
-                <span class="sm:text-base md:text-xl font-bold sm:hidden md:block">Chats</span>
+        <div class="sm:w-[20%] xl:w-[30%] border-r-2 text-gray-600 flex-1">
+            <div class="py-4 mt-4 md:mx-6 flex items-center sm:gap-x-2 sm:justify-center md:justify-between">
+                <span class="sm:text-base md:text-xl font-bold sm:hidden md:block">CHAT</span>
                 <button @click="createConversation = true">
                     <PencilSquareIcon class="h-8 w-8 text-gray-500 sm:w-[7rem] md:w-fit hover:text-gray-900" />
                 </button>
@@ -561,17 +561,13 @@ onMounted(async () => {
                     <!-- Create New Conversation Section -->
                     <div v-if="createConversation">
                         <div
-                            class="bgorange border-t p-4 mt-1 mb-2 rounded px-4 cursor-pointer hover:bg-lightorange group">
+                            class="bgorange border-t p-4 m-2 rounded px-4 cursor-pointer hover:bg-lightorange group">
                             <div class="flex justify-between items-center font-medium text-sm truncate text-white">
-                                <span v-if="!receiverId">New Message</span>
-                                <span v-else class="">New Message to {{ receiverName }}</span>
-                                <!-- <img width="25" height="20" src="https://img.icons8.com/pastel-glyph/128/cancel--v1.png"
-                                    alt="cancel--v1" @click="closeNewMessage(); createConversation = false"
-                                    class="hidden group-hover:block" /> -->
+                                <span v-if="!receiverId" class="truncate">New Message</span>
+                                <span v-else class="truncate">New Message to {{ receiverName }}</span>
                                 <button @click="closeNewMessage(); createConversation = false" type="button">
                                     <XMarkIcon class="h-6 w-6 text-white hidden group-hover:block" />
                                 </button>
-
                             </div>
                         </div>
                     </div>
@@ -592,11 +588,10 @@ onMounted(async () => {
                     <!-- Nov15 -joey styling list large screen-->
                     <div v-for="(conversation, index) in conversations" :key="conversation.chat_id"
                         @click="createConversation = false; selectConversation(conversation)"
-                        class="border-t p-2 px-4 cursor-pointer hover:bg-gray-50 sm:hidden xl:block"
+                        class="border-t p-2 px-4 cursor-pointer hover:bg-gray-50 sm:hidden xl:block xl:px-8"
                         :class="{ 'bg-gray-100': conversation.chat_id === selectedChat_id }">
-                        <!-- here jeneh - joey added -->
                         <div class="flex justify-between">
-                            <div class="flex items-center gap-x-2">
+                            <div class="grid grid-cols-[40px_1fr] items-center gap-x-2">
                                 <img :src="conversation.profile_url || default_avatar" alt="profile"
                                     class="w-10 h-10 object-cover border bg-gray-50 rounded-full">
                                 <span class="font-medium truncate">{{ conversation.other_participant_name }}</span>
@@ -614,7 +609,7 @@ onMounted(async () => {
                         <div v-else>
                             <div v-if="conversation.user_id == user_id" class="flex justify-between">
                                 <p class="text-sm truncate">You: {{ conversation.message }}</p>
-                                <span class="text-[12px] sm:hidden lg:flex">{{ formatTime(conversation.date) }}</span>
+                                <!-- <span class="text-[12px] sm:hidden lg:flex">{{ formatTime(conversation.date) }}</span> -->
                             </div>
                             <div v-else-if="conversation.user_id == null" class="flex justify-between items-center">
                                 <p class="text-sm truncate">{{
@@ -647,7 +642,7 @@ onMounted(async () => {
         </div>
 
         <!-- Chat Area -->
-        <div v-if="!createConversation" class="w-[100%] flex flex-col border-r-2">
+        <div v-if="!createConversation" class="sm:w-[80%] xl:w-[70%] flex flex-col border-r-2">
             <!-- Chat Header -->
             <!-- <div class="text-gray-600 bg-white p-4 flex gap-x-2 items-center">
                 <span class="text-md font-semibold">{{ selectedConversation?.NameFrom }}</span>
@@ -692,7 +687,8 @@ onMounted(async () => {
                             <p>
                                 <!-- Check if message contains "rescued" or "handled" -->
                                 <span v-if="containsReportedOrHandled(message.message) === true"
-                                    @click="toggleModalViewDetails(message.this_post_id, true)" class="cursor-pointer text-green-600">
+                                    @click="toggleModalViewDetails(message.this_post_id, true)"
+                                    class="cursor-pointer text-green-600">
                                     {{ message.message }} </span>
                                 <span v-else-if="containsReportedOrHandled(message.message) === false"
                                     @click="toggleModalViewDetails(message.this_post_id, false)" class="text-teal-500">
@@ -742,13 +738,13 @@ onMounted(async () => {
             <!-- Message Input Form -->
             <form @submit.prevent="retrieveMessage">
                 <!-- Nov15 -->
-                <div class="px-4 my-2 mx-2 sm:col-span-2 sm:px-0">
-                    <ul role="list" class="grid grid-cols-2 gap-x-2 gap-y-4 sm:grid-cols-6 sm:gap-x-4 lg:grid-cols-8">
+                <div v-if="files.length > 0" class="px-4 my-2 mx-2 sm:col-span-2 sm:px-0">
+                    <ul role="list" class="grid grid-cols-2 gap-x-2 gap-y-4 sm:gap-x-4 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-8">
                         <li v-for="(file, index) in files" :key="file.source" class="relative">
                             <div
                                 class="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-md bg-gray-100 focus-within:ring-2 focus-within:ring-teal-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
                                 <img :src="file.url" alt=""
-                                    class="pointer-events-none w-full sm:h-40 lg:h-40 object-cover" />
+                                    class="pointer-events-none sm:w-full sm:h-24 lg:w-32 lg:h-32 object-cover" />
                                 <button @click.prevent="removeImage(index)"
                                     class="absolute top-0 right-0 p-1 text-gray-500 hover:text-red-700">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
@@ -802,17 +798,40 @@ onMounted(async () => {
         <!-- New Conversation Area -->
         <div v-if="createConversation" class="w-[70%] flex flex-col border-r-2">
             <!-- New Conversation Header -->
+            <div v-if="!receiverId" class="flex flex-row w-full gap-x-3 items-center p-8">
+                <span class="text-base font-semibold">To: </span>
+                <div class="relative w-full">
+                    <MagnifyingGlassIcon class="h-5 w-5 text-gray-400 absolute inset-y-2 left-3" aria-hidden="true" />
+                    <input id="search" name="search" @input="handleInput(searchValue)" v-model="searchValue"
+                        class="block w-full rounded-lg bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
+                        placeholder="Search" type="search" />
+                    <!-- Search Results Dropdown -->
+                    <ul v-if="searchResults.length > 0"
+                        class="absolute bg-white border mt-1 w-full max-h-60 overflow-y-auto">
+                        <li v-for="item in searchResults" :key="item.id" class="px-4 py-2 hover:bg-gray-100">
+                            <button @click="handleItemClick(item.id, item.name)" class="w-full text-left">
+                                {{ item.name }}
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div v-else class="relative p-8">
+                <span class="text-base font-semibold flex gap-x-1">To: {{ receiverName }}</span>
+            </div>
+            <!-- Nov16 Comment - Joey changes New Conversation Header
             <div class="text-gray-600 bg-white p-4 gap-x-2 items-center flex">
                 <span class="text-md font-semibold">
                     <span>To: </span>
-                    <div v-if="!receiverId" class="relative">
+                    <div v-if="!receiverId" class="relative bg-red-400 w-full">
+                        <span>To: </span>
                         <div class=" pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                             <MagnifyingGlassIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
                         </div>
                         <input id="search" name="search" @input="handleInput(searchValue)" v-model="searchValue"
                             class="block w-full rounded-lg bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
                             placeholder="Search" type="search" />
-                        <!-- Search Results Dropdown -->
+                        Search Results Dropdown
                         <ul v-if="searchResults.length > 0"
                             class="absolute bg-white border mt-1 w-full max-h-60 overflow-y-auto">
                             <li v-for="item in searchResults" :key="item.id" class="px-4 py-2 hover:bg-gray-100">
@@ -826,7 +845,7 @@ onMounted(async () => {
                         <span>To: {{ receiverName }}</span>
                     </div>
                 </span>
-            </div>
+            </div> -->
 
             <!-- New Conversation Messages (if any) -->
             <div class="flex-1 overflow-y-auto px-4 bg-gray-50">
