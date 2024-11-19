@@ -114,7 +114,7 @@ const confirmAction = async () => { //upon click
     try {
         const response = await axios.post('http://localhost:5000/accept-report', {
             post_id: props.postId,
-            shelter_id: localStorage.getItem('c_id')
+            user_id: localStorage.getItem('u_id')
         });
 
         if (response.data.success) {
@@ -151,7 +151,7 @@ const cancelRescue = async () => { //rescued => yes
     try {
         const response = await axios.post('http://localhost:5000/cancelOperation', {
             _post_id: props.postId,
-            _shelter_id: localStorage.getItem('c_id')
+            user_id: localStorage.getItem('u_id')
         });
 
         if (response.data.success) {

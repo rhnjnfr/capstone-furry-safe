@@ -963,7 +963,7 @@ export const addShelterPost = async (req, res) => {
 // This is the function for accepting rescue reports
 export const acceptRescueReport = async (req, res) => {
   try {
-    const { post_id, shelter_id, status } = req.body;
+    const { post_id, user_id, status } = req.body;
     // First, update the report status in tbl_post_details
 
     const { data: handlerData, error: handlerError } = await supabase //insert to tbl_report_handler
@@ -971,7 +971,7 @@ export const acceptRescueReport = async (req, res) => {
       .insert([
         {
           post_id: post_id,
-          handled_by: shelter_id,
+          handled_by: user_id,
         },
       ]);
 
@@ -1061,7 +1061,7 @@ export const confirmRescue = async (req, res) => {
 // Nov12 Replacement based on Salpocials code
 export const cancelOperation = async (req, res) => {
   try {
-    const { _post_id } = req.body; // Assuming you only need the post_id to update the status
+    const { _post_id, _user_id} = req.body; // Assuming you only need the post_id to update the status
 
     // Update the report_status to 'Pending' in the tbl_post_details table
     const { data: updateData, error: updateError } = await supabase
@@ -1075,7 +1075,14 @@ export const cancelOperation = async (req, res) => {
         .status(500)
         .json({ success: false, message: "Failed to update report status" });
     }
+    else {
+      const { data: updateData, error: updateError } = await supabase
+        .from("tbl_report_handler")
+        .update({ cancelled: true }) // Ensure 'cancelled' matches your database column name
+        .eq("post_id", _post_id) // Replace _post_id with the variable holding the desired post ID
+        .eq("handled_by", _user_id); // Replace user_id with the variable holding the desired user ID
 
+    }
     return res
       .status(200)
       .json({ success: true, message: "Operation cancelled successfully" });

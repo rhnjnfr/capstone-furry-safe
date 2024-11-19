@@ -107,19 +107,19 @@ function toggleModalViewDetails() {
     }
 };
 let posts = ref([])
-let _shelter_id = localStorage.getItem('c_id')
+let _user_id = localStorage.getItem('u_id')
 async function retrieveReports() {
     try {
         console.log("retrieveReports =)")
         const response = await axios.post("http://localhost:5000/getongoingoperations", {
-            _shelter_id: _shelter_id,
+            _shelter_id: _user_id,
             _status: 'In progress' // Nov12 'Pending' change to 'In progress' 
         });
 
         if (response.data && response.data.length > 0) {
             posts.value = response.data
         }
-        console.log("post value", posts.value)
+        console.log("ongoing operations", posts.value)
     }
     catch (err) {
         console.log("error in retrieve operations", err)
@@ -134,7 +134,7 @@ const cancelRescue = async () => { //rescued => yes
     try {
         const response = await axios.post('http://localhost:5000/cancelOperation', {
             _post_id: props.postId,
-            _shelter_id: localStorage.getItem('c_id')
+            _user_id: localStorage.getItem('u_id')
         });
 
         if (response.data.success) {

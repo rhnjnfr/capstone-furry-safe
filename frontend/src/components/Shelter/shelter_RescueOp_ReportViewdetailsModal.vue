@@ -68,7 +68,7 @@ async function getUserDetailsOnHover() {
         if (response.data.success && response.data.data.length > 0) {
             userdetails.value = response.data.data;
 
-            console.log("value", userdetails.value[0].profile_url)
+            console.log("user details", userdetails.value[0].name)
         }
     }
     catch (err) {
@@ -136,7 +136,7 @@ const open = ref(true)
                                             <img :src="userdetails[0].profile_url" alt="profile"
                                                 class="w-10 h-10 rounded-full object-cover" />
                                             <span class="font-bold sm:text-base xl:text-xl">
-                                                {{ selectedReportDetails.posted_by }}</span>
+                                                {{ userdetails[0].name }}  </span>
                                         </div>
                                     </div>
                                     <div

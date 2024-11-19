@@ -308,18 +308,18 @@ const getUserFullName = async () => {
 
 let selectedPost = ref(null)
 let posts = ref([])
-let _shelter_id = localStorage.getItem('c_id')
+let _user_id = localStorage.getItem('u_id')
 async function retrieveInPorgressReports() {
     try {
         const response = await axios.post("http://localhost:5000/getongoingoperations", {
-            _shelter_id: _shelter_id,
+            _shelter_id: _user_id,
             _status: 'In progress'
         });
 
         if (response.data && response.data.length > 0) {
             posts.value = response.data
         }
-        console.log("post value", posts.value)
+        console.log("Handled value", posts.value)
     }
     catch (err) {
         console.log("error in retrieve operations", err)
@@ -329,13 +329,15 @@ let rescuedposts = ref([])
 async function retrieveRescuedReports() {
     try {
         const response = await axios.post("http://localhost:5000/getongoingoperations", {
-            _shelter_id: _shelter_id,
+            _shelter_id: _user_id,
             _status: 'Rescued'
         });
 
         if (response.data && response.data.length > 0) {
             rescuedposts.value = response.data
         }
+        console.log("Rescued value", posts.value)
+
     }
     catch (err) {
         console.log("error in retrieve operations", err)

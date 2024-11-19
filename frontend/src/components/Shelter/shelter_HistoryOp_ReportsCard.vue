@@ -26,7 +26,7 @@ const toggleModalViewDetails = (id) => {
 let selectedPost = ref(null)
 let posts = ref([])
 let selectedPostDetails = ref([])
-let id = localStorage.getItem('c_id')
+let id = localStorage.getItem('u_id')
 async function retrieveReports() { //display
     try {
         console.log("retrieveReports")
