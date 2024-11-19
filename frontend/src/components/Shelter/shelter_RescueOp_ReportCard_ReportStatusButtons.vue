@@ -2,10 +2,11 @@
     <div class="font-semibold border-t text-sm rounded-b-lg">
         <!-- Nov5 change v-if="!showRescueCancelButtons && !showSuccessMessage && !showConfirmRescue && !showConfirmCancel" to -->
         <button v-if="!showRescueCancelButtons && !showSuccessMessage && !showConfirmDialog" type="button"
-            class="flex justify-center py-4 font-semibold w-full text-red-600 bg-slate-50 hover:bg-red-500 hover:text-white rounded-b-lg"
+            class="flex justify-center py-4 font-semibold w-full text-red-600 bg-slate-50 hover:bg-green-500 hover:text-white rounded-b-lg"
             @click="handleTakeAction">
             <!-- Nov15 @click="showRescueCancelButtons = true; confirmAction()"> change to -->
-            Take Action
+            <span v-if="operation === 'Missing Report'">Found</span>
+            <span v-else>Take Action</span>
         </button>
         <!-- Is this code even used? - Salpocial -->
         <div v-else-if="showRescueCancelButtons || props.operation == 'ongoing'"
@@ -45,9 +46,9 @@
             <!-- <span>Rescued Succesfully</span> -->
             <span>{{ successMessage }}</span> <!-- Nov5 -->
         </div>
-        <!-- Nov15 Modal for Buddy Rescue Fill-Up Form --> 
-        <formModal v-if="showFormModal" :reportDetails="props.reportDetails" :postId="postId" @close="showFormModal = false"
-            @statusUpdated="handleAction('Rescued')">
+        <!-- Nov15 Modal for Buddy Rescue Fill-Up Form -->
+        <formModal v-if="showFormModal" :reportDetails="props.reportDetails" :postId="postId"
+            @close="showFormModal = false" @statusUpdated="handleAction('Rescued')">
         </formModal>
     </div>
 </template>

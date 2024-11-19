@@ -350,7 +350,23 @@ async function loadPetStatus() { // load pet status... tf do u want
 }
 const currentUser_id = ref(localStorage.getItem('u_id'));
 const receiverId = ref(null)
+
+// Define error state for each field
+const isNameError = ref(false);
+const isGenderError = ref(false);
+const isPetError = ref(false);
+const isSterilizationError = ref(false);
+const isStatusError = ref(false);
+
 async function retrieveData() {
+
+    // Nov20 Reset errors before validation
+    isNameError.value = false;
+    isGenderError.value = false;
+    isPetError.value = false;
+    isSterilizationError.value = false;
+    isStatusError.value = false;
+
     const formData = new FormData();
     const vaccineArray = getSelectedVaccineIds();
 
@@ -394,7 +410,7 @@ async function retrieveData() {
     // Append data entries to FormData
     entries.forEach(([key, value]) => formData.append(key, value));
 
-    // Validate required fields
+    // Nov20 not use Validate required fields
     const name_ = formData.get('name');
     const gender_ = formData.get('gender');
     const pet_ = formData.get('pet_category_id');
@@ -403,50 +419,106 @@ async function retrieveData() {
     const steril_ = formData.get('other_sterilization');
     const steril2_ = formData.get('sterilization_id');
 
-    for (const [key, value] of formData.entries()) {
-        console.log(`Formdata: ${key}: ${value}`);
+    // Nov20 Validate and append to formData for checking
+    let isValid = true;
+    entries.forEach(([key, value]) => {
+        if (value) {
+            formData.append(key, value);
+        } else {
+            isValid = false;
+            if (key === 'name') isNameError.value = true;
+            if (key === 'gender') isGenderError.value = true;
+            if (key === 'pet_category_id' || key === 'other_pet_category') isPetError.value = true;
+            if (key === 'other_sterilization' || key === 'sterilization_id') isSterilizationError.value = true;
+            if (key === 'status') isStatusError.value = true;
+        }
+    });
+
+    // for (const [key, value] of formData.entries()) {
+    //     console.log(`Formdata: ${key}: ${value}`);
+    // } oks rah deh gamiton -Joey
+
+    if (!isValid) {
+        console.log('Validation failed for inputs');
+        return;
     }
 
-    if (name_ && gender_ && status_ && (pet_ || pet2_) && (steril_ || steril2_)) {
-        try {
-            // Save pet profile
-            const response = await axios.post("http://localhost:5000/save_pet_profile", formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
+    // Nov20 If validation passes, proceed with the API calls
+    try {
+        // Save pet profile
+        const response = await axios.post("http://localhost:5000/save_pet_profile", formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+
+        if (response.data.success) {
+            const postId = props.postId; // Ensure this is correctly returned from the API
+            const shelterId = localStorage.getItem('c_id');
+
+            // Confirm rescue
+            const rescueResponse = await axios.post("http://localhost:5000/confirmRescue", {
+                post_id: postId,
+                shelter_id: shelterId
             });
 
-            if (response.data.success) {
-                const postId = props.postId; // Ensure this is correctly returned from the API
-                const shelterId = localStorage.getItem('c_id');
-
-                // Confirm rescue
-                const rescueResponse = await axios.post("http://localhost:5000/confirmRescue", {
-                    post_id: postId,
-                    shelter_id: shelterId
+            if (rescueResponse.data.success) {
+                retrieveMessage();
+                navigateTo({
+                    path: "/animalprofile",
+                    query: { showToast: true, message: 'Pet Profile Saved and Rescued Successfully', from: 'create' }
                 });
-
-                if (rescueResponse.data.success) {
-                    retrieveMessage()
-                    navigateTo({
-                        path: "/animalprofile",
-                        query: { showToast: true, message: 'Pet Profile Saved and Rescued Successfully', from: 'create' }
-                    });
-
-
-                } else {
-                    console.error('Failed to confirm rescue:', rescueResponse.data.message);
-                }
-
             } else {
-                console.error('Failed to save profile:', response.data.message);
+                console.error('Failed to confirm rescue:', rescueResponse.data.message);
             }
-        } catch (err) {
-            console.error("Error occurred during the process:", err);
+        } else {
+            console.error('Failed to save profile:', response.data.message);
         }
-    } else {
-        console.log("Validation failed for inputs:", {
-            name_, gender_, status_, pet_, pet2_, steril_, steril2_
-        });
+    } catch (err) {
+        console.error("Error occurred during the process:", err);
     }
+
+    // Nov20 Comment if (name_ && gender_ && status_ && (pet_ || pet2_) && (steril_ || steril2_)) {
+    //     try {
+    //         // Save pet profile
+    //         const response = await axios.post("http://localhost:5000/save_pet_profile", formData, {
+    //             headers: { 'Content-Type': 'multipart/form-data' }
+    //         });
+
+    //         if (response.data.success) {
+    //             const postId = props.postId; // Ensure this is correctly returned from the API
+    //             const shelterId = localStorage.getItem('c_id');
+
+    //             // Confirm rescue
+    //             const rescueResponse = await axios.post("http://localhost:5000/confirmRescue", {
+    //                 post_id: postId,
+    //                 shelter_id: shelterId
+    //             });
+
+    //             if (rescueResponse.data.success) {
+    //                 retrieveMessage()
+    //                 navigateTo({
+    //                     path: "/animalprofile",
+    //                     query: { showToast: true, message: 'Pet Profile Saved and Rescued Successfully', from: 'create' }
+    //                 });
+
+
+    //             } else {
+    //                 console.error('Failed to confirm rescue:', rescueResponse.data.message);
+    //             }
+
+    //         } else {
+    //             console.error('Failed to save profile:', response.data.message);
+    //         }
+    //     } catch (err) {
+    //         console.error("Error occurred during the process:", err);
+    //     }
+    // } else {
+    //     // If validation fails, show the error message
+    //     isErrorFlag.value = true;
+
+    //     console.log("Validation failed for inputs:", {
+    //         name_, gender_, status_, pet_, pet2_, steril_, steril2_
+    //     });
+    // }
 }
 const userFullName = ref(null)
 const getUserFullName = async () => {
@@ -740,12 +812,19 @@ const open = ref(true);
                                                 </div>
                                                 <div class="mt-[1rem] grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                                                     <div class="md:col-span-3 sm:col-span-full">
-                                                        <label for="given-name"
-                                                            class="block text-sm font-medium leading-6 text-gray-900">Name</label>
+                                                        <div class="flex gap-x-1 items-center">
+                                                            <label for="given-name"
+                                                                class="block text-sm font-medium leading-6 text-gray-900">Name</label>
+                                                            <span v-if="isNameError"
+                                                                class="text-red-600 text-[12px] text-center">*Pet name is
+                                                                required.</span>
+                                                        </div>
                                                         <div class="mt-2">
                                                             <input v-model="name" type="text" name="given-name"
-                                                                id="given-name" autocomplete="given-name"
-                                                                class="block w-full rounded-md border-0 py-1.5 px-[1rem] text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6" />
+                                                                id="given-name" autocomplete="given-name" :class="[
+                                                                    'block w-full rounded-md py-1.5 px-[1rem] text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6',
+                                                                    { 'ring-red-300': isNameError }
+                                                                ]" />
                                                         </div>
                                                     </div>
                                                     <div class="md:col-span-3 sm:col-span-full">
@@ -768,14 +847,20 @@ const open = ref(true);
                                                         </div>
                                                     </div>
                                                     <div id="anitype" class="lg:col-span-2 sm:col-span-full">
-                                                        <label for="animaltype"
-                                                            class="block text-sm font-medium leading-6 text-gray-900">Pet
-                                                            Type</label>
+                                                        <div class="flex gap-x-1 items-center">
+                                                            <label for="animaltype"
+                                                                class="block text-sm font-medium leading-6 text-gray-900">
+                                                                Pet Type</label>
+                                                            <span v-if="isPetError"
+                                                                class="text-red-600 text-[12px] text-center">
+                                                                *Pet Type is required.</span>
+                                                        </div>
                                                         <div class="mt-2">
                                                             <select v-if="selectedAnimalType !== 'Other'"
                                                                 id="animaltype" name="animaltype"
-                                                                v-model="selectedAnimalType"
-                                                                class="block w-full rounded-md border-0 py-1.5 px-[1rem] text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                                                                v-model="selectedAnimalType" :class="['block w-full rounded-md border-0 py-1.5 px-[1rem] text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-xs sm:text-sm sm:leading-6',
+                                                                    { 'ring-red-300': isPetError }
+                                                                ]">
                                                                 <option value="" selected disabled hidden>Select Animal
                                                                     Type</option>
                                                                 <option v-for="(item, index) in animalCategory"
@@ -842,12 +927,18 @@ const open = ref(true);
                                                         </div>
                                                     </div>
                                                     <div id="gender" class="lg:col-span-1 sm:col-span-full">
-                                                        <label for="animalGender"
-                                                            class="block text-sm font-medium leading-6 text-gray-900">Gender</label>
+                                                        <div class="flex gap-x-1 items-center">
+                                                            <label for="animalGender"
+                                                                class="block text-sm font-medium leading-6 text-gray-900">Gender</label>
+                                                            <span v-if="isGenderError"
+                                                                class="text-red-600 text-[12px] text-center">*Pet Gender is
+                                                                required.</span>
+                                                        </div>
                                                         <div class="mt-2">
                                                             <select v-model="selectedGender" id="animalGender"
-                                                                name="animalGender"
-                                                                class="block w-full rounded-md border-0 py-1.5 px-[1rem] text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                                                                name="animalGender" :class="[
+                                                                    'block w-full rounded-md border-0 py-1.5 px-[1rem] text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-xs sm:text-sm sm:leading-6',
+                                                                    { 'ring-red-300': isGenderError }]">
                                                                 <option value="" selected disabled hidden>Select Gender
                                                                 </option>
                                                                 <option value="male">Male</option>
@@ -886,13 +977,20 @@ const open = ref(true);
                                                         </div>
                                                     </div>
                                                     <div id="lvl" class="md:col-span-2 sm:col-span-full">
-                                                        <label for="energyLvl"
-                                                            class="block text-sm font-medium leading-6 text-gray-900">Energy
-                                                            Level</label>
+                                                        <div class="flex gap-x-1 items-center">
+                                                            <label for="energyLvl"
+                                                                class="block text-sm font-medium leading-6 text-gray-900">Energy
+                                                                Level</label>
+                                                            <span v-if="isStatusError"
+                                                                class="text-red-600 text-[12px] text-center">
+                                                                *Pet Status is required.</span>
+                                                        </div>
                                                         <div class="mt-2">
                                                             <select id="energyLvl" name="energyLvl"
-                                                                @change="getSelectedOption($event)"
-                                                                class="block w-full rounded-md border-0 py-1.5 px-[1rem] text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                                                                @change="getSelectedOption($event)" :class="[
+                                                                    'block w-full rounded-md border-0 py-1.5 px-[1rem] text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-xs sm:text-sm sm:leading-6',
+                                                                    { 'ring-red-300': isStatusError }
+                                                                ]">
                                                                 <option value="" selected disabled hidden>Select Energy
                                                                     Level Status</option>
                                                                 <option>Low</option>
@@ -988,9 +1086,15 @@ const open = ref(true);
                                                         </div>
                                                     </div>
                                                     <div v-if="categoriesLoaded" class="sm:col-span-full">
-                                                        <h4 class="font-medium text-gray-900">
-                                                            Has this animal been sterilized?
-                                                        </h4>
+                                                        <div class="flex gap-x-1 items-center">
+                                                            <h4 class="font-medium text-gray-900">
+                                                                Has this animal been sterilized?
+                                                            </h4>
+                                                            <span v-if="isSterilizationError "
+                                                                class="text-red-600 text-[12px] text-center">*Pet sterilization
+                                                                is
+                                                                required.</span>
+                                                        </div>
                                                         <div v-for="[categoryname, options] in Object.entries(categoriesRaw)"
                                                             :key="categoryname" class="mt-4 space-y-2">
                                                             <span v-if="categoryname !== 'None'"

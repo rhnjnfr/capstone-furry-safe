@@ -11,7 +11,7 @@ const openCreateModal = ref(false) // for create report modal
 const navigation = [
     { name: 'Home', to: { name: 'buddy_home' }, icon: HomeIcon, current: false },
     { name: 'Message', to: { name: 'buddy_messages' }, icon: ChatBubbleOvalLeftEllipsisIcon, current: false },
-    { name: 'Explore', to: { name: '' }, icon: CursorArrowRaysIcon, current: false },
+    { name: 'Explore', to: { name: 'buddy_explore' }, icon: CursorArrowRaysIcon, current: false },
     { name: 'Create', to: null, icon: PlusIcon, current: false, },
     { name: 'Profile', to: { name: 'buddy_profile' }, icon: UserIcon, current: false },
 ]
