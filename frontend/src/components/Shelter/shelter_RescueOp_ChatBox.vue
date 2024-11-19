@@ -343,6 +343,25 @@ async function retrieveRescuedReports() {
         console.log("error in retrieve operations", err)
     }
 }
+let pendingposts = ref([])
+async function retrievePendingReports() {
+    try {
+        const response = await axios.post("http://localhost:5000/getereports", {
+            _post_id: selectedPost.value,
+            _post_type: -1,
+            _report_status: 'Pending' // Nov12 'In progress'  change to 'Pending'
+        });
+
+        if (response.data && response.data.length > 0) {
+            pendingposts.value = response.data
+        }
+        console.log("pendingposts value", pendingposts.value)
+
+    }
+    catch (err) {
+        console.log("error in retrieve operations", err)
+    }
+}
 let selectedPostDetails = ref([])
 const selectedPostViewDetailsId = ref(null);
 let visible = ref(false)
@@ -352,14 +371,18 @@ const toggleModalViewDetails = (id, flag) => {
     selectedPostViewDetailsId.value = selectedPostViewDetailsId.value === id ? visible.value = false : id;
     let foundPost = null
 
-    console.log(id, flag)
-    if (flag) {
+    console.log("view details", id, flag)
+    if (flag == 'rescued') {
         console.log("Rescued?")
         foundPost = rescuedposts.value.find(post => post.post_id === selectedPostViewDetailsId.value);
     }
-    else {
+    else if (flag == 'handled') {
         console.log("Handled?")
         foundPost = posts.value.find(post => post.post_id === selectedPostViewDetailsId.value);
+    }
+    else {
+        console.log("cancelled")
+        foundPost = pendingposts.value.find(post => post.post_id === selectedPostViewDetailsId.value);
     }
 
     if (foundPost) {
@@ -469,9 +492,9 @@ const sortedMessages = computed(() => {
     return [...selectedConversation.value.messages].sort((a, b) => new Date(a.date) - new Date(b.date));
 });
 function containsReportedOrHandled(message) {
-    let messagevalue = message.toLowerCase().includes('rescued') ? true : false
-    // return message.toLowerCase().includes('reported') || message.toLowerCase().includes('handled');
-    return messagevalue
+    const keywords = ['handled', 'rescued', 'withdrawn'];
+    const lowerMessage = message.toLowerCase();
+    return keywords.find(keyword => lowerMessage.includes(keyword)) || null;
 }
 
 // Function to format time
@@ -518,6 +541,7 @@ onMounted(async () => {
     await fetchInbox();
     await retrieveInPorgressReports();
     await retrieveRescuedReports();
+    await retrievePendingReports();
 });
 </script>
 
@@ -562,8 +586,7 @@ onMounted(async () => {
                 <div class="overflow-hidden ">
                     <!-- Create New Conversation Section -->
                     <div v-if="createConversation">
-                        <div
-                            class="bgorange border-t p-4 m-2 rounded px-4 cursor-pointer hover:bg-lightorange group">
+                        <div class="bgorange border-t p-4 m-2 rounded px-4 cursor-pointer hover:bg-lightorange group">
                             <div class="flex justify-between items-center font-medium text-sm truncate text-white">
                                 <span v-if="!receiverId" class="truncate">New Message</span>
                                 <span v-else class="truncate">New Message to {{ receiverName }}</span>
@@ -688,14 +711,16 @@ onMounted(async () => {
                         <div class="text-sm text-gray-600 p-3">
                             <p>
                                 <!-- Check if message contains "rescued" or "handled" -->
-                                <span v-if="containsReportedOrHandled(message.message) === true"
-                                    @click="toggleModalViewDetails(message.this_post_id, true)"
+                                <span v-if="containsReportedOrHandled(message.message) === 'rescued'"
+                                    @click="toggleModalViewDetails(message.this_post_id, 'rescued')"
                                     class="cursor-pointer text-green-600">
                                     {{ message.message }} </span>
-                                <span v-else-if="containsReportedOrHandled(message.message) === false"
-                                    @click="toggleModalViewDetails(message.this_post_id, false)" class="text-teal-500">
+                                <span v-else-if="containsReportedOrHandled(message.message) === 'handled'"
+                                    @click="toggleModalViewDetails(message.this_post_id, 'handled')"
+                                    class="text-teal-500">
                                     {{ message.message }} </span>
-                                <span v-else class="cursor-pointer">
+                                <span v-else class="cursor-pointer text-red-500"
+                                    @click="toggleModalViewDetails(message.this_post_id, 'withdrawn')">
                                     {{ message.message }}
                                 </span>
                             </p>
@@ -741,7 +766,8 @@ onMounted(async () => {
             <form @submit.prevent="retrieveMessage">
                 <!-- Nov15 -->
                 <div v-if="files.length > 0" class="px-4 my-2 mx-2 sm:col-span-2 sm:px-0">
-                    <ul role="list" class="grid grid-cols-2 gap-x-2 gap-y-4 sm:gap-x-4 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-8">
+                    <ul role="list"
+                        class="grid grid-cols-2 gap-x-2 gap-y-4 sm:gap-x-4 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-8">
                         <li v-for="(file, index) in files" :key="file.source" class="relative">
                             <div
                                 class="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-md bg-gray-100 focus-within:ring-2 focus-within:ring-teal-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">

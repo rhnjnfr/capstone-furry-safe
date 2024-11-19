@@ -6,7 +6,8 @@ import axios from 'axios';
 import { io } from 'socket.io-client';
 
 import default_avatar from '@/assets/images/buddy_default.jpg'
-import viewpostimagepreview from '@/components/Buddy/buddy_Home_ImagePreviewModal.vue';
+import viewbuddypostdetials from '@/components/Shelter/shelter_RescueOp_ReportViewdetailsModal.vue';
+
 
 // Reactive user ID
 const user_id = ref(localStorage.getItem('u_id'));
@@ -398,9 +399,9 @@ const sortedMessages = computed(() => {
 
 //basta kani diri =) 
 function containsReportedOrHandled(message) {
-  let messagevalue = message.toLowerCase().includes('rescued') ? true : false
-  // return message.toLowerCase().includes('reported') || message.toLowerCase().includes('handled');
-  return messagevalue
+  const keywords = ['handled', 'rescued', 'withdrawn'];
+  const lowerMessage = message.toLowerCase();
+  return keywords.find(keyword => lowerMessage.includes(keyword)) || null;
 }
 let selectedPostDetails = ref([])
 const selectedPostViewDetailsId = ref(null);
@@ -411,14 +412,18 @@ const toggleModalViewDetails = (id, flag) => {
   selectedPostViewDetailsId.value = selectedPostViewDetailsId.value === id ? visible.value = false : id;
   let foundPost = null
 
-  console.log(id, flag)
-  if (flag) {
-    console.log("Rescued?", id)
+  console.log("view details", id, flag)
+  if (flag == 'rescued') {
+    console.log("Rescued?", rescuedposts.value)
     foundPost = rescuedposts.value.find(post => post.post_id === selectedPostViewDetailsId.value);
   }
-  else {
-    console.log("Handled?", id)
+  else if (flag == 'handled') {
+    console.log("Handled?")
     foundPost = posts.value.find(post => post.post_id === selectedPostViewDetailsId.value);
+  }
+  else {
+    console.log("cancelled")
+    foundPost = pendingposts.value.find(post => post.post_id === selectedPostViewDetailsId.value);
   }
 
   if (foundPost) {
@@ -429,11 +434,12 @@ const toggleModalViewDetails = (id, flag) => {
     console.error("Post not found for ID:", id);
   }
 };
+let _user_id = localStorage.getItem('u_id')
 let rescuedposts = ref([])
 async function retrieveRescuedReports() {
   try {
-    const response = await axios.post("http://localhost:5000/getongoingoperations", {
-      _shelter_id: _shelter_id,
+    const response = await axios.post("http://localhost:5000/getereports", {
+      _user_id: _user_id,
       _status: 'Rescued'
     });
 
@@ -446,11 +452,10 @@ async function retrieveRescuedReports() {
   }
 }
 let posts = ref([])
-let _shelter_id = localStorage.getItem('c_id')
 async function retrieveInPorgressReports() {
   try {
-    const response = await axios.post("http://localhost:5000/getongoingoperations", {
-      _shelter_id: _shelter_id,
+    const response = await axios.post("http://localhost:5000/getereports", {
+      _user_id: _user_id,
       _status: 'In progress'
     });
 
@@ -458,6 +463,24 @@ async function retrieveInPorgressReports() {
       posts.value = response.data
     }
     console.log("post value", posts.value)
+  }
+  catch (err) {
+    console.log("error in retrieve operations", err)
+  }
+}
+let pendingposts = ref([])
+async function retrievePendingReports() {
+  try {
+    const response = await axios.post("http://localhost:5000/getereports", {
+      _post_type: -1,
+      _report_status: 'Pending' // Nov12 'In progress'  change to 'Pending'
+    });
+
+    if (response.data && response.data.length > 0) {
+      pendingposts.value = response.data
+    }
+    console.log("pendingposts value", pendingposts.value)
+
   }
   catch (err) {
     console.log("error in retrieve operations", err)
@@ -507,6 +530,7 @@ onMounted(async () => {
   await fetchInbox();
   await retrieveRescuedReports();
   await retrieveInPorgressReports();
+  await retrievePendingReports();
 });
 </script>
 <template>
@@ -629,18 +653,20 @@ onMounted(async () => {
             <div class="text-sm text-gray-600 p-3">
               <p>
                 <!-- Check if message contains "rescued" or "handled" -->
-                <span v-if="containsReportedOrHandled(message.message) === true"
-                  @click="toggleModalViewDetails(message.this_post_id, true)" class="cursor-pointer text-green-600">
+                <span v-if="containsReportedOrHandled(message.message) === 'rescued'"
+                  @click="toggleModalViewDetails(message.this_post_id, 'rescued')"
+                  class="cursor-pointer text-green-600">
                   {{ message.message }} </span>
-                <span v-else-if="containsReportedOrHandled(message.message) === false"
-                  @click="toggleModalViewDetails(message.this_post_id, false)" class="text-teal-500">
+                <span v-else-if="containsReportedOrHandled(message.message) === 'handled'"
+                  @click="toggleModalViewDetails(message.this_post_id, 'handled')" class="text-teal-500">
                   {{ message.message }} </span>
-                <span v-else class="cursor-pointer">
+                <span v-else class="cursor-pointer text-red-500"
+                  @click="toggleModalViewDetails(message.this_post_id, 'withdrawn')">
                   {{ message.message }}
                 </span>
               </p>
 
-              <viewpostdetials v-if="visible" :selectedPostDetails="selectedPostDetails"
+              <viewbuddypostdetials v-if="visible" :selectedPostDetails="selectedPostDetails"
                 @close="toggleModalViewDetails(message.this_post_id)" />
             </div>
           </div>

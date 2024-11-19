@@ -2,8 +2,8 @@
     <div class="font-semibold border-t text-sm rounded-b-lg">
         <button v-if="!showRescueCancelButtons && !showSuccessMessage && !showConfirmDialog" type="button"
             class="flex justify-center py-4 font-semibold w-full text-red-600 bg-slate-50 hover:bg-red-500 hover:text-white rounded-b-lg"
-            @click="showRescueCancelButtons = true; confirmAction()">
-            Take Action
+            @click="showRescueCancelButtons = true; MessageUser()">
+            Message
         </button>
 
         <div v-else-if="showRescueCancelButtons || props.operation == 'ongoing'" class="flex justify-between font-semibold text-gray-600 rounded-b-lg">
@@ -19,10 +19,7 @@
 
 <script setup>
 import { onMounted, ref } from 'vue';
-
-
 import axios from 'axios';
-
 
 const props = defineProps({
     postId: {
@@ -42,5 +39,9 @@ const selectedAction = ref('');
 const handleAction = (action) => {
     selectedAction.value = action;
 };
+
+function MessageUser(){
+    console.log("message user")
+}
 
 </script>

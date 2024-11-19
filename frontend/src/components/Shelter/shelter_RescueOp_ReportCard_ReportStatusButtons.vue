@@ -45,8 +45,8 @@
             <!-- <span>Rescued Succesfully</span> -->
             <span>{{ successMessage }}</span> <!-- Nov5 -->
         </div>
-        <!-- Nov15 Modal for Buddy Rescue Fill-Up Form -->
-        <formModal v-if="showFormModal" :postId="postId" @close="showFormModal = false"
+        <!-- Nov15 Modal for Buddy Rescue Fill-Up Form --> 
+        <formModal v-if="showFormModal" :reportDetails="props.reportDetails" :postId="postId" @close="showFormModal = false"
             @statusUpdated="handleAction('Rescued')">
         </formModal>
     </div>
@@ -73,6 +73,10 @@ const props = defineProps({
         type: Number,
         required: false
     },
+    reportDetails: {
+        type: Object,
+        required: false
+    }
 });
 
 const emit = defineEmits(['statusUpdated']);

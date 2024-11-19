@@ -1192,7 +1192,6 @@ export const addShelterEvent = async (req, res) => {
     });
   }
 };
-
 export const getOngoingOperations = async (req, res) => {
   try {
     const { _shelter_id, _status } = req.body;
