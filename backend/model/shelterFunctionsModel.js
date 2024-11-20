@@ -964,6 +964,7 @@ export const addShelterPost = async (req, res) => {
 export const acceptRescueReport = async (req, res) => {
   try {
     const { post_id, user_id, status } = req.body;
+    console.log("status", status)
     // First, update the report status in tbl_post_details
 
     const { data: handlerData, error: handlerError } = await supabase //insert to tbl_report_handler

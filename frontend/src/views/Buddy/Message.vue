@@ -443,7 +443,6 @@ let rescuedposts = ref([])
 async function retrieveRescuedReports() {
   try {
     const response = await axios.post("http://localhost:5000/getereports", {
-      _user_id: _user_id,
       _status: 'Rescued'
     });
 

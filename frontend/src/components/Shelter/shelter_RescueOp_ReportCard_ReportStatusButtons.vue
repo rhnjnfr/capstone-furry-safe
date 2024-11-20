@@ -64,7 +64,7 @@ import formModal from "@/components/Buddy/buddy_Rescue_FillUpForm.vue"; // Nov15
 const props = defineProps({
     postId: {
         type: Number,
-        required: true
+        required: false,
     },
     operation: {
         type: String,
@@ -82,22 +82,26 @@ const props = defineProps({
 
 const emit = defineEmits(['statusUpdated']);
 
+let status = ref(null)
 const showRescueCancelButtons = ref(false);
 const showSuccessMessage = ref(false);
 const showConfirmDialog = ref(false);
 const successMessage = ref('');
 const selectedAction = ref('');
 const showFormModal = ref(false); // State for showing the form modal
-
+const userType = localStorage.getItem('u_type'); 
 // Nov15
 const handleTakeAction = async () => {
-    const userType = localStorage.getItem('u_type'); // Retrieve the user type
+    // Retrieve the user type
 
     if (userType === 'shelter') {
         // Confirm rescue action for shelter
+        status.value = 'In progress'
         await confirmAction();
     } else if (userType === 'buddy') {
         // Show the form modal instead of redirecting
+        status.value = 'Rescued'
+        await confirmAction();
         showFormModal.value = true; // Open the modal
     }
 };
@@ -119,7 +123,8 @@ const confirmAction = async () => { //upon click
     try {
         const response = await axios.post('http://localhost:5000/accept-report', {
             post_id: props.postId,
-            user_id: localStorage.getItem('u_id')
+            user_id: localStorage.getItem('u_id'),
+            status: status.value,
         });
 
         if (response.data.success) {
@@ -190,30 +195,36 @@ const getUserFullName = async () => {
 };
 async function retrieveMessage() {
     await getUserFullName()
+
+    console.log("chat id", selectedChat_id.value)
     if (!selectedChat_id.value) {
         await retrieveChatId(); // Await the creation of a new chat
-        // After creating a new chat, selectedChat_id should be set
     }
     const formData = new FormData();
-    // const tempurl = [null];
-
-    // files.value.forEach((fileobj) => { //append images
-    //     formData.append(`url`, fileobj.file);
-    // })
 
     console.log("retrievemessagehere")
     console.log("props post id",)
+    let messageData = null;
 
-    let messageData = [
-        ["chat_id", selectedChat_id.value],
-        ["user_id", null],
-        ["message", `This stray animal report is now handled by ` + userFullName.value],
-        ["date", new Date().toISOString()],
-        ["post_id", props.postId]
-        //     ["sender_name", userFullName],
-        //     ["p1_name", userFullName],
-        //     ["p2_name", receiverName.value] // Ensure receiverName is set
-    ];
+    if (userType === 'shelter') {
+        messageData = [
+            ["chat_id", selectedChat_id.value],
+            ["user_id", null],
+            ["message", `This stray animal report is now handled by ` + userFullName.value],
+            ["date", new Date().toISOString()],
+            ["post_id", props.postId]
+        ];
+    } else if (userType === 'buddy') {
+        messageData = [
+            ["chat_id", selectedChat_id.value],
+            ["user_id", null],
+            ["message", userFullName.value + ` rescued the animal in this post.`],
+            ["date", new Date().toISOString()],
+            ["post_id", props.postId]
+        ];
+    }
+
+
 
     messageData.forEach(([key, value]) => formData.append(key, value));
 
@@ -223,6 +234,7 @@ async function retrieveMessage() {
 const selectedChat_id = ref(null)
 const retrieveChatId = async () => {
     try {
+        console.log("new chat here", receiverId.value, currentUser_id)
         const response = await axios.post("http://localhost:5000/newchat", {
             senderid: currentUser_id,
             receiverid: receiverId.value
@@ -244,7 +256,6 @@ async function sendMessagetoUser(thisformData) {
         console.log("send message to user", pair[0], pair[1]);
     }
 
-    // return
     try {
         const response = await axios.post("http://localhost:5000/sendmessage", thisformData, {
             headers: {
@@ -261,8 +272,6 @@ async function sendMessagetoUser(thisformData) {
     }
 }
 
-
-
 const cancelAction = () => {
     showConfirmDialog.value = false;
     showRescueCancelButtons.value = true;
@@ -271,66 +280,7 @@ const cancelAction = () => {
 let button_flag = ref('')
 onMounted(() => {
     button_flag.value = props.operation
-    receiverId.value = props.reportedUserId
+    receiverId.value = props.reportDetails.user_id
 })
 
 </script>
-<!-- 
-// Nov5 orig salpocial's code
-// export default {
-//     props: {
-//         postId: {
-//             type: Number,
-//             required: true
-//         }
-//     },
-//     emits: ['statusUpdated'],
-//     setup(props, { emit }) {
-//         const showRescueCancelButtons = ref(false);
-//         const showSuccessMessage = ref(false);
-//         const showConfirmDialog = ref(false);
-//         const successMessage = ref('');
-//         const selectedAction = ref('');
-
-//         const handleAction = (action) => {
-//             selectedAction.value = action;
-//             showRescueCancelButtons.value = false;
-//             showConfirmDialog.value = true;
-//         };
-
-//         const confirmAction = async () => {
-//             try {
-//                 const response = await axios.post('http://localhost:5000/accept-rescue', {
-//                     post_id: props.postId,
-//                     shelter_id: localStorage.getItem('c_id'),
-//                     status: selectedAction.value
-//                 });
-
-//                 if (response.data.success) {
-//                     showConfirmDialog.value = false;
-//                     showSuccessMessage.value = true;
-//                     successMessage.value = `${selectedAction.value} Successfully`;
-//                     emit('statusUpdated');
-//                 }
-//             } catch (error) {
-//                 console.error('Error:', error);
-//                 // Handle error (show error message)
-//             }
-//         };
-
-//         const cancelAction = () => {
-//             showConfirmDialog.value = false;
-//             showRescueCancelButtons.value = true;
-//         };
-
-//         return {
-//             showRescueCancelButtons,
-//             showSuccessMessage,
-//             showConfirmDialog,
-//             successMessage,
-//             handleAction,
-//             confirmAction,
-//             cancelAction
-//         };
-//     }
-// } -->

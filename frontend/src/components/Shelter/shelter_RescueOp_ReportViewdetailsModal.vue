@@ -259,7 +259,7 @@ const open = ref(true)
                                                             <button class="w-full">
                                                                 <!-- Nov15 added :postId="selectedReportDetails.post_id" salpocial's integration-->
                                                                  <!-- Nov20 added :operation="selectedReportDetails.post_type" - Joey -->
-                                                                <statusbuttons :reportDetails="selectedReportDetails"
+                                                                <statusbuttons  :reportDetails="selectedReportDetails" 
                                                                     :postId="selectedReportDetails.post_id" :operation="selectedReportDetails.post_type"/>
                                                             </button>
                                                         </div>
