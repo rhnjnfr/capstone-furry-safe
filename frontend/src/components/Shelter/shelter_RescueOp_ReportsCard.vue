@@ -103,7 +103,7 @@ onMounted(async () => {
 
             </div>
             <div> <!-- Nov5 added :postId="report.post_id" @statusUpdated="handleStatusUpdate"-->
-                <statusbuttons :postId="report.post_id" :reportedUserId="report.user_id" :reportDetails = "selectedPostDetails"
+                <statusbuttons :postId="report.post_id" :reportedUserId="report.user_id" :reportDetails = "report"
                     @statusUpdated="handleStatusUpdate" />
             </div>
         </div>

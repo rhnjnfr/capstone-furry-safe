@@ -2,11 +2,18 @@
     <div class="font-semibold border-t text-sm rounded-b-lg">
         <!-- Nov5 change v-if="!showRescueCancelButtons && !showSuccessMessage && !showConfirmRescue && !showConfirmCancel" to -->
         <button v-if="!showRescueCancelButtons && !showSuccessMessage && !showConfirmDialog" type="button"
-            class="flex justify-center py-4 font-semibold w-full text-red-600 bg-slate-50 hover:bg-green-500 hover:text-white rounded-b-lg"
-            @click="handleTakeAction">
+            class="flex justify-center py-4 font-semibold w-full text-red-600 bg-slate-50 hover:bg-green-500 hover:text-white rounded-b-lg">
             <!-- Nov15 @click="showRescueCancelButtons = true; confirmAction()"> change to -->
-            <span v-if="operation === 'Missing Report'">Found</span>
-            <span v-else>Take Action</span>
+            <span v-if="operation === 'Missing Report' && props.reportedUserId == uid"
+                @click="handleTakeAction">Found</span>
+            <RouterLink v-else-if="operation === 'Missing Report' && props.reportedUserId != uid" title="Chat with Us"
+                class="flex items-center gap-x-2 relative group">
+                <!-- :to="{ name: 'sheltermessages', query: { shelterId: post.shelter_id, shelterUserID: post.user_id } }" -->
+                <span class="font-bold text-sm hidden group-hover:flex">
+                   
+                </span> Message
+            </RouterLink>
+            <span v-else @click="handleTakeAction">Take Action</span>
         </button>
         <!-- Is this code even used? - Salpocial -->
         <div v-else-if="showRescueCancelButtons || props.operation == 'ongoing'"
@@ -89,7 +96,8 @@ const showConfirmDialog = ref(false);
 const successMessage = ref('');
 const selectedAction = ref('');
 const showFormModal = ref(false); // State for showing the form modal
-const userType = localStorage.getItem('u_type'); 
+const userType = localStorage.getItem('u_type');
+const uid = localStorage.getItem('u_id')
 // Nov15
 const handleTakeAction = async () => {
     // Retrieve the user type
@@ -198,14 +206,12 @@ async function retrieveMessage() {
 
     console.log("chat id", selectedChat_id.value)
     if (!selectedChat_id.value) {
+        console.log("selectedchat_id.value is null")
         await retrieveChatId(); // Await the creation of a new chat
     }
     const formData = new FormData();
 
-    console.log("retrievemessagehere")
-    console.log("props post id",)
     let messageData = null;
-
     if (userType === 'shelter') {
         messageData = [
             ["chat_id", selectedChat_id.value],
@@ -224,11 +230,7 @@ async function retrieveMessage() {
         ];
     }
 
-
-
     messageData.forEach(([key, value]) => formData.append(key, value));
-
-    // sendMessage(formData)
     sendMessagetoUser(formData)
 }
 const selectedChat_id = ref(null)
@@ -277,10 +279,14 @@ const cancelAction = () => {
     showRescueCancelButtons.value = true;
 };
 
+let reportDetails;
 let button_flag = ref('')
 onMounted(() => {
     button_flag.value = props.operation
-    receiverId.value = props.reportDetails.user_id
+    reportDetails = props.reportDetails
+    receiverId.value = reportDetails.user_id
+
+    console.log("receiverId", reportDetails.user_id)
 })
 
 </script>
