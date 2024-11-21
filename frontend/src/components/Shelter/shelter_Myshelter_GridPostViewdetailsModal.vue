@@ -105,16 +105,16 @@ onMounted(async () => {
 </script> -->
 
 <script setup>
-import { ref, reactive, computed, onMounted, watch, onBeforeUnmount  } from 'vue'
+import { ref, reactive, computed, onMounted, watch, onBeforeUnmount } from 'vue'
 import axios from "axios"
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
 
 import { ChevronLeftIcon, ChevronRightIcon, EllipsisHorizontalIcon } from "@heroicons/vue/20/solid";
 // to close press esc
 onMounted(() => {
-  const closeModalOnEsc = (e) => e.key === 'Escape' && emit('close')
-  window.addEventListener('keydown', closeModalOnEsc)
-  onBeforeUnmount(() => window.removeEventListener('keydown', closeModalOnEsc))
+    const closeModalOnEsc = (e) => e.key === 'Escape' && emit('close')
+    window.addEventListener('keydown', closeModalOnEsc)
+    onBeforeUnmount(() => window.removeEventListener('keydown', closeModalOnEsc))
 })
 
 import CreatePostModal from '@/components/Shelter/shelter_NewPostModal.vue' // for edit modal reusing the create post modal
@@ -211,11 +211,37 @@ watch(
 onMounted(async () => {
     selectedPostDetails.value = props.selectedPostDetails
     await getPetPostDetails()
+    generateQR()
     console.log("What Mode:", props.mode) // for pov
 })
 
 const emit = defineEmits(['close']) // for closing the modal
 const open = ref(true)
+
+
+let qrgenerated = ref(false)
+let qrphotosrc = ref(null)
+function generateQR() {
+    //for qr
+    let qrvalue = window.location.href;
+    qrphotosrc.value = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + qrvalue;
+    qrgenerated.value = true
+
+    console.log("qr generated", qrgenerated.value)
+}
+async function downloadQR() {
+    try {
+        const response = await fetch(qrphotosrc.value);
+        const blob = await response.blob();
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'qrcode.png';  // Set a name for the downloaded file
+        link.click();
+        URL.revokeObjectURL(link.href);  // Clean up after download
+    } catch (err) {
+        console.error("Failed to download the QR code", err);
+    }
+}
 </script>
 
 
@@ -307,12 +333,41 @@ const open = ref(true)
                                         </div>
                                     </div>
                                 </div>
+                                <!-- <div class="absolute top-[40rem]">
+                                    <div class="relative group w-fit bg-white">
+                                        <div v-if="qrgenerated" class="w-[13rem] border rounded-lg p-[2rem]">
+                                            <img id="qrcode" :src="qrphotosrc" alt="Pet QR Code">
+                                        </div>
+                                        <div
+                                            class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded">
+                                            <button @click="downloadQR"
+                                                class="bg-blue-500 text-white px-4 py-1 rounded">
+                                                Download
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div> -->
                                 <div class="border rounded-xl border-gray-100 sm:mx-4 mb-8">
                                     <dl class="divide-y divide-gray-100">
                                         <div
-                                            class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 rounded-t-xl bg-gray-100">
+                                            class="relative inline-block px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 rounded-t-xl bg-gray-100">
                                             <span class="text-base font-semibold leading-6 text-gray-900 sm:col-span-3">
                                                 Pet Information</span>
+                                            <div class="absolute top-10 right-0 md:right-4">
+                                                <div class="relative group w-fit">
+                                                    <div v-if="qrgenerated"
+                                                        class="w-[13rem] rounded-lg p-[2rem]">
+                                                        <img id="qrcode" :src="qrphotosrc" alt="Pet QR Code">
+                                                    </div>
+                                                    <div
+                                                        class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded">
+                                                        <button @click="downloadQR"
+                                                            class="bg-blue-500 text-white px-4 py-1 rounded">
+                                                            Download
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="px-4 py-4 sm:grid md:grid-cols-3 sm:gap-y-2 sm:px-6">
                                             <dt class="text-sm font-medium text-gray-900">Status</dt> <!-- HERE JO-->
@@ -455,6 +510,20 @@ const open = ref(true)
                                         </div>
                                     </dl>
                                 </div>
+                                <!-- <div class="flex justify-center">
+                                    <div class="relative group w-fit bg-white">
+                                        <div v-if="qrgenerated" class="w-[13rem] border rounded-lg p-[2rem]">
+                                            <img id="qrcode" :src="qrphotosrc" alt="Pet QR Code">
+                                        </div>
+                                        <div
+                                            class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded">
+                                            <button @click="downloadQR"
+                                                class="bg-blue-500 text-white px-4 py-1 rounded">
+                                                Download
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div> -->
                             </div>
                             <!-- content end -->
 

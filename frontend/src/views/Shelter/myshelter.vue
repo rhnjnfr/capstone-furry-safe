@@ -117,11 +117,13 @@ onMounted(() => {
 
 import gridPostImages from '@/components/Shelter/shelter_Myshelter_GridPosts.vue'
 import gridEventImages from '@/components/Shelter/shelter_MyShelter_GridEventpost.vue' //new added
+import gridPetProfileImages from '@/components/Shelter/shelter_Myshelter_GridPetProfiles.vue' //Nov21 new added
 
 // tab grid display
 const tabs = ref([
     { name: 'Posts', icon: RectangleStackIcon, current: true },
     { name: 'Events', icon: SparklesIcon, current: false },
+    { name: 'Pet Profile', icon: SparklesIcon, current: false },
 ])
 
 const currentTab = ref(tabs.value[0].name)
@@ -258,6 +260,11 @@ const updateCurrentTab = (tabName) => {
                 <div v-show="currentTab === 'Events'" class="h-auto">
                     <div class="xl:container mx-auto my-2">
                         <gridEventImages/>
+                    </div>
+                </div>
+                <div v-show="currentTab === 'Pet Profile'" class="h-auto">
+                    <div class="xl:container mx-auto my-2">
+                        <gridPetProfileImages/>
                     </div>
                 </div>
             </div>
