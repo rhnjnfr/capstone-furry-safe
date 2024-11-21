@@ -24,7 +24,8 @@ import {
   getOngoingOperations,
   getRescuedHistory,
   confirmRescue,
-  cancelOperation
+  cancelOperation,
+  setShelterEvent
 } from "../model/shelterFunctionsModel.js";
 
 export const insertShelterAddress = (req, res) => {
@@ -92,6 +93,9 @@ export const insertShelterPost = (req, res) => {
 // Function for shelter create new post
 export const insertShelterEvent = (req, res) => {
   addShelterEvent(req, res);
+};
+export const modifyShelterEvent = (req, res) => {
+  setShelterEvent(req, res);
 };
 
 // In progresss Shelter Rescue Operations

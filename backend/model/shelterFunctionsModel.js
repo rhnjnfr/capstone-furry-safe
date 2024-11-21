@@ -1033,7 +1033,7 @@ export const foundRescue = async (req, res) => {
     } else {
       const { data: updateData, error: updateError } = await supabase //update in post_Details
         .from("tbl_post_details")
-        .update({ report_status: status}) // Nov12 "Pending" change to "In progress"
+        .update({ report_status: status }) // Nov12 "Pending" change to "In progress"
         .eq("post_id", post_id);
 
       if (updateError) {
@@ -1198,7 +1198,7 @@ export const addShelterEvent = async (req, res) => {
     console.log("Received event data:", req.body);
     console.log("Received files:", req.files);
 
-    const {
+    let {
       host_id,
       event_name,
       date_time_start,
@@ -1206,10 +1206,13 @@ export const addShelterEvent = async (req, res) => {
       location_lat,
       location_long,
       caption,
+      location_address,
     } = req.body;
     const files = req.files;
     let photoUrls = [];
 
+    caption = caption == 'null' || caption == '' ? null : caption
+    photoUrls = photoUrls == 'null' || photoUrls == 'undefined' || photoUrls == '' ? [] : photoUrls
     // Handle multiple file uploads
     if (files && files.length > 0) {
       for (const photo of files) {
@@ -1251,7 +1254,9 @@ export const addShelterEvent = async (req, res) => {
       _long: parseFloat(location_long),
       _caption: caption,
       _photo_url: photoUrls,
+      _location_address: location_address
     });
+
 
     // from("tbl_events").insert([
     //   {
@@ -1265,6 +1270,103 @@ export const addShelterEvent = async (req, res) => {
     //     photo_display_url: photoUrls, // Store array of URLs
     //   },
     // ]);
+
+    if (error) {
+      console.error("Database insert error:", error);
+      return res.status(500).send({
+        success: false,
+        message: "Failed to create event",
+        error: error.message,
+      });
+    }
+
+    res.status(200).send({
+      success: true,
+      message: "Event created successfully",
+      photoUrls: photoUrls,
+    });
+  } catch (err) {
+    console.error("Error in addShelterEvent:", err);
+    res.status(500).send({
+      success: false,
+      message: "Internal server error",
+      error: err.message,
+    });
+  }
+};
+export const setShelterEvent = async (req, res) => {
+  try {
+    console.log("Received event data:", req.body);
+    console.log("Received files:", req.files);
+
+    let {
+      host_id,
+      event_name,
+      date_time_start,
+      date_time_end,
+      location_lat,
+      location_long,
+      caption,
+      location_address,
+      eventid,
+      imgurl
+    } = req.body;
+    const files = req.files;
+    let photoUrls = [];
+
+    caption = caption == 'null' || caption == '' ? null : caption
+    photoUrls = photoUrls == 'null' || photoUrls == 'undefined' || photoUrls == '' ? [] : photoUrls
+
+    // Handle multiple file uploads
+    if (files && files.length > 0) {
+      for (const photo of files) {
+        const photoPath = `events/${Date.now()}_${photo.originalname}`;
+
+        const { data: photoUploadData, error: photoUploadError } =
+          await supabase.storage
+            .from("pets_images")
+            .upload(photoPath, photo.buffer, {
+              contentType: photo.mimetype,
+            });
+
+        if (!photoUploadError) {
+          const { data: photoUrlData } = supabase.storage
+            .from("pets_images")
+            .getPublicUrl(photoPath);
+          photoUrls.push(photoUrlData.publicUrl);
+          console.log("Photo uploaded successfully:", photoUrlData.publicUrl);
+        } else {
+          console.error("Photo upload error:", photoUploadError);
+          return res
+            .status(500)
+            .send({ message: "Failed to upload event photo." });
+        }
+      }
+    }
+
+    console.log("Inserting event into database");
+    if (photoUrls.length < 1) {
+      console.log("url", photoUrls)
+      photoUrls.push(imgurl)
+    }
+    else {
+
+      console.log("?")
+    }
+    console.log("url", photoUrls)
+    // Insert into tbl_events
+    const { data, error } = await supabase.rpc("modify_event", {
+      _event_id: eventid,
+      _host_id: parseInt(host_id),
+      _event_name: event_name,
+      _date_time_start: date_time_start,
+      _date_time_end: date_time_end,
+      _lat: parseFloat(location_lat),
+      _long: parseFloat(location_long),
+      _caption: caption,
+      _photo_url: photoUrls,
+      _location_address: location_address
+    });
 
     if (error) {
       console.error("Database insert error:", error);

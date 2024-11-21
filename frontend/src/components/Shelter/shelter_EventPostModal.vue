@@ -98,7 +98,7 @@
                       <li v-for="(image, index) in imageUrls" :key="image.source" class="relative">
                         <div
                           class="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-teal-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
-                          <img :src="image.url" alt="" class="pointer-events-none w-full h-44 object-cover" />
+                          <img :src="image.url || image" alt="" class="pointer-events-none w-full h-44 object-cover" />
                           <button @click.prevent="removeImage(index)"
                             class="absolute top-0 right-0 p-1 text-red-500 hover:text-red-700">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
@@ -144,6 +144,10 @@ const props = defineProps({ // for reuse form defines mode if either edit or cre
   mode: {
     type: String,
     required: true
+  },
+  eventdetails: {
+    type: Object,
+    required: false
   }
 });
 
@@ -151,7 +155,7 @@ const props = defineProps({ // for reuse form defines mode if either edit or cre
 const handleSubmit = () => {
   if (props.mode === 'edit') {
     // Logic for editing
-    console.log('Editing event...');
+    modifyEventPost()
   } else {
     // Logic for creating
     createNewPost()
@@ -171,10 +175,27 @@ function handleData(data) {
 
 const emit = defineEmits(['close']) // for closing the modal
 // to close press esc
+
+const eventdetails = ref([])
+const eventid = ref(null)
 onMounted(() => {
+
+  if (props.mode == 'edit') {
+    eventdetails.value = props.eventdetails
+    eventTitle.value = eventdetails.value.event_name
+    startDateTime.value = eventdetails.value.date_time_start
+    endDateTime.value = eventdetails.value.date_time_end
+    caption.value = eventdetails.value.caption
+    selectedLocationAddress.value = eventdetails.value.location_address
+    eventid.value = eventdetails.value.event_id
+    imageUrls.value = eventdetails.value.photo_urls
+  }
+
   const closeModalOnEsc = (e) => e.key === 'Escape' && emit('close')
   window.addEventListener('keydown', closeModalOnEsc)
   onBeforeUnmount(() => window.removeEventListener('keydown', closeModalOnEsc))
+
+
 })
 
 const open = ref(true);
@@ -305,6 +326,8 @@ async function createNewPost() {
     formData.append('location_lat', latitude.value || '0');
     formData.append('location_long', longitude.value || '0');
     formData.append('caption', caption.value);
+    formData.append('location_address', selectedLocationAddress.value)
+    
 
     // Append multiple photos
     imageUrls.value.forEach((image, index) => {
@@ -319,6 +342,47 @@ async function createNewPost() {
     console.log("Submitting event data:", Object.fromEntries(formData));
 
     const response = await axios.post('http://localhost:5000/create-event', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+
+    console.log("Server response:", response.data);
+
+    if (response.data.success) {
+      console.log('Event created successfully');
+      console.log('Photo URLs:', response.data.photoUrls);
+      emit('close');
+    } else {
+      console.error("Event creation failed:", response.data.message);
+    }
+  } catch (err) {
+    console.error("Error creating event:", err.response ? err.response.data : err.message);
+  }
+}
+async function modifyEventPost() {
+  try {
+    const formData = new FormData();
+    formData.append('host_id', localStorage.getItem('c_id'));
+    formData.append('event_name', eventTitle.value);
+    formData.append('date_time_start', startDateTime.value);
+    formData.append('date_time_end', endDateTime.value);
+    formData.append('location_lat', latitude.value || '0');
+    formData.append('location_long', longitude.value || '0');
+    formData.append('caption', caption.value);
+    formData.append('location_address', selectedLocationAddress.value)
+    formData.append('eventid', eventid.value)
+    formData.append('imgurl', imageUrls.value)
+    
+
+    // Append multiple photos
+    imageUrls.value.forEach((image, index) => {
+      formData.append(`photos`, image.file);
+    });
+
+    console.log("Submitting event data:", Object.fromEntries(formData));
+
+    const response = await axios.post('http://localhost:5000/modify-event', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }

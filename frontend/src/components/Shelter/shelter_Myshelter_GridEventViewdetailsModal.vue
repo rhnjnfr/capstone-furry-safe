@@ -50,7 +50,7 @@
                                                         class="block w-full py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-t-lg"
                                                         role="menuitem">Edit Post</button>
 
-                                                    <CreateEventModal v-if="openEditModal" mode="edit"
+                                                    <CreateEventModal v-if="openEditModal" mode="edit" :eventdetails = "selectedPetDetails"
                                                         @close="openEditModal = false" />
 
                                                     <button @click="deletePost"
@@ -142,7 +142,7 @@
                                                             Location</dt>
                                                         <dd
                                                             class="mt-1 text-sm leading-6 text-gray-700 xl:col-span-2 sm:mt-0">
-                                                            location placeholder =)</dd>
+                                                            {{ selectedPetDetails.location_address }}</dd>
                                                     </div>
                                                     <div
                                                         class="bg-gray-50 px-4 py-6 sm:grid xl:grid-cols-3 gap-y-1 gap-x-4 sm:px-3">
@@ -186,7 +186,6 @@ const toggleDropdown = () => {
 let date = ref(null)
 onMounted(async () => {
     selectedPetDetails.value = props.selectedPetDetails
-
     date.value = formatDateRange(selectedPetDetails.value.date_time_start, selectedPetDetails.value.date_time_end)
     console.log("=)", selectedPetDetails.value)
 })
