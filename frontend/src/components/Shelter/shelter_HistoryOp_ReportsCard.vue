@@ -1,6 +1,5 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import statusbuttons from '@/components/Shelter/shelter_RescueOp_ReportCard_ReportStatusButtons.vue';
 import previewhover from '@/components/Shelter/shelter_HoverName.vue';
 import axios from "axios";
 

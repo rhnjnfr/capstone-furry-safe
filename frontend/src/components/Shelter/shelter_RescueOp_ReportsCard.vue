@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import statusbuttons from '@/components/Shelter/shelter_RescueOp_ReportCard_ReportStatusButtons.vue';
+import missingstatusbutton from '@/components/Shelter/shelter_Missingreports_Button.vue'
 // import previewhover from '@/components/Shelter/shelter_HoverName.vue';
 import axios from "axios";
 
@@ -40,7 +41,7 @@ async function retrieveReports() { //display
             posts.value = response.data.filter(report => report.report_status !== 'Rescued' && report.report_status !== 'In progress'); // Nov12 added ( && report.report_status !== 'In progress' )
         }
 
-        console.log("posts", posts.value[0].user_id)
+        console.log("posts here", posts.value[0].post_type)
     }
     catch (err) {
         console.log("error in retrieve reports", err)
@@ -103,7 +104,10 @@ onMounted(async () => {
 
             </div>
             <div> <!-- Nov5 added :postId="report.post_id" @statusUpdated="handleStatusUpdate"-->
-                <statusbuttons :postId="report.post_id" :reportedUserId="report.user_id" :reportDetails = "report"
+                <!-- v-if="report.post_type != 'Missing Report'" -->
+                <missingstatusbutton v-if="report.post_type == 'Missing Report'" :postId="report.post_id"
+                    :reportedUserId="report.user_id" :reportDetails="report" />
+                <statusbuttons v-else :postId="report.post_id" :reportedUserId="report.user_id" :reportDetails="report"
                     @statusUpdated="handleStatusUpdate" />
             </div>
         </div>

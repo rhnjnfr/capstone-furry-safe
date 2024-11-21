@@ -59,7 +59,6 @@ const prevImage = () => {
 let _user_id = ref(null)
 let userdetails = ref([])
 async function getUserDetailsOnHover() {
-    console.log("on hover")
     try {
         const response = await axios.post("http://localhost:5000/getusedetails", {
             _id: _user_id.value
@@ -67,18 +66,15 @@ async function getUserDetailsOnHover() {
 
         if (response.data.success && response.data.data.length > 0) {
             userdetails.value = response.data.data;
-
-            console.log("user details", userdetails.value[0].name)
         }
     }
     catch (err) {
         console.log("error in retrieve reports", err)
     }
-
 }
 onMounted(async () => {
     selectedReportDetails.value = props.selectedPostDetails;
-    console.log("props", selectedReportDetails.value);
+    console.log("Papi props", props.selectedPostDetails.reportDetails);
     _user_id.value = selectedReportDetails.value.user_id
     await getUserDetailsOnHover()
 })

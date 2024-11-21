@@ -464,8 +464,34 @@ export const updatepetprofile = async (req, res) => {
       sterilization_id,
       vaccines,
     } = req.body;
-    const files = req.files;
 
+    id = id === 'null' || id === '' ? null : id
+    pet_id = pet_id === 'null' || pet_id === '' ? null : pet_id
+    gender = gender === 'null' || gender === '' ? null : gender
+    pet_category_id = pet_category_id === 'null' || pet_category_id === '' ? null : pet_category_id
+    other_pet_category = other_pet_category === 'null' || other_pet_category === '' ? null : other_pet_category
+    breed_id = breed_id === 'null' || breed_id === '' ? null : breed_id
+    other_breed = other_breed === 'null' || other_breed === '' ? null : other_breed
+    status = status === 'null' || status === '' ? null : status
+    name = name === 'null' || name === '' ? null : name
+    nickname = nickname === 'null' || nickname === '' ? null : nickname
+    old_profile = old_profile === 'null' || old_profile === '' ? null : old_profile
+    daterehomed = daterehomed === 'null' || daterehomed === '' ? null : daterehomed
+    energylevel = energylevel === 'null' || energylevel === '' ? null : energylevel
+    age = age === 'null' || age === '' ? 0 : age
+    sizeweight = sizeweight === 'null' || sizeweight === '' ? null : sizeweight
+    coat = coat === 'null' || coat === '' ? null : coat
+    about = about === 'null' || about === '' ? null : about
+    special_needs = special_needs === 'null' || special_needs === '' ? null : special_needs
+    old_files = old_files === 'null' || old_files === '' ? null : old_files
+    list_of_old_files = list_of_old_files === 'null' || list_of_old_files === '' ? null : list_of_old_files
+    med_condition = med_condition === 'null' || med_condition === '' ? null : med_condition
+    other_vaccines = other_vaccines === 'null' || other_vaccines === '' ? null : other_vaccines
+    other_sterilization = other_sterilization === 'null' || other_sterilization === '' ? null : other_sterilization
+    sterilization_id = sterilization_id === 'null' || sterilization_id === '' ? null : sterilization_id
+    vaccines = vaccines === 'null' || vaccines === '' ? null : vaccines
+
+    const files = req.files;
     const photoToDelete = await comparePetExtraPhoto(
       old_files,
       list_of_old_files
@@ -510,7 +536,6 @@ export const updatepetprofile = async (req, res) => {
     }
 
     comparePetExtraPhoto(old_files, list_of_old_files);
-
     for (const photo of extraPhotos) {
       const photoPath = `pets_photos/${Date.now()}_${photo.originalname}`;
       const { data: photoUploadData, error: photoUploadError } =
@@ -557,8 +582,31 @@ export const updatepetprofile = async (req, res) => {
       // Handle the case where vaccines is null
       vaccines = null;
     }
-    console.log("date rehomed here", daterehomed);
-
+    console.log("Logging here:");
+    console.log('pet_id:', pet_id);
+    console.log('gender:', gender);
+    console.log('pet_category_id:', pet_category_id);
+    console.log('other_pet_category:', other_pet_category);
+    console.log('breed_id:', breed_id);
+    console.log('other_breed:', other_breed);
+    console.log('status:', status);
+    console.log('name:', name);
+    console.log('nickname:', nickname);
+    console.log('daterehomed:', daterehomed);
+    console.log('energylevel:', energylevel);
+    console.log('age:', age);
+    console.log('sizeweight:', sizeweight);
+    console.log('coat:', coat);
+    console.log('about:', about);
+    console.log('special_needs:', special_needs);
+    console.log('med_condition:', med_condition);
+    console.log('other_vaccines:', other_vaccines);
+    console.log('vaccines:', vaccines);
+    console.log('other_sterilization:', other_sterilization);
+    console.log('sterilization_id:', sterilization_id);
+    console.log('profileUrl:', profileUrl);
+    console.log('photoToDelete:', photoToDelete);
+    console.log('extraPhotoUrls:', extraPhotoUrls);
 
     const { data, err } = await supabase.rpc("update_animal_profile_details", {
       _pet_id: pet_id,
@@ -581,17 +629,18 @@ export const updatepetprofile = async (req, res) => {
       _other_vaccines: other_vaccines,
       _vaccines: vaccines,
       _other_sterilization: other_sterilization,
-      _sterilization_id: sterilization_id === "null" ? null : sterilization_id,
+      _sterilization_id: sterilization_id,
       _profile_photo: profileUrl,
       _photo_url_to_delete: photoToDelete,
       _photo_url: extraPhotoUrls,
     });
-    if (err) {
-      console.log("Error:", err);
-    } else {
+    if (data) {
+      console.log("data here '", data, "' =)")
       return res.status(200).json({
         success: true,
       });
+    } else {
+      console.log("Error:", err, data, '=)');
     }
   } catch (err) {
     console.log("an error occured when updating", err);
@@ -1062,7 +1111,7 @@ export const confirmRescue = async (req, res) => {
 // Nov12 Replacement based on Salpocials code
 export const cancelOperation = async (req, res) => {
   try {
-    const { _post_id, _user_id} = req.body; // Assuming you only need the post_id to update the status
+    const { _post_id, _user_id } = req.body; // Assuming you only need the post_id to update the status
 
     // Update the report_status to 'Pending' in the tbl_post_details table
     const { data: updateData, error: updateError } = await supabase

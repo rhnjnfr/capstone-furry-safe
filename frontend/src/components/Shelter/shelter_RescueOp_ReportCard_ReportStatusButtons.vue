@@ -1,20 +1,27 @@
 <template>
+    <!-- Changes code - Salpocial (Nov21)-->
     <div class="font-semibold border-t text-sm rounded-b-lg">
-        <!-- Nov5 change v-if="!showRescueCancelButtons && !showSuccessMessage && !showConfirmRescue && !showConfirmCancel" to -->
-        <button v-if="!showRescueCancelButtons && !showSuccessMessage && !showConfirmDialog" type="button"
-            class="flex justify-center py-4 font-semibold w-full text-red-600 bg-slate-50 hover:bg-green-500 hover:text-white rounded-b-lg">
-            <!-- Nov15 @click="showRescueCancelButtons = true; confirmAction()"> change to -->
-            <span v-if="operation === 'Missing Report' && props.reportedUserId == uid"
-                @click="handleTakeAction">Found</span>
-            <RouterLink v-else-if="operation === 'Missing Report' && props.reportedUserId != uid" title="Chat with Us"
-                class="flex items-center gap-x-2 relative group">
-                <!-- :to="{ name: 'sheltermessages', query: { shelterId: post.shelter_id, shelterUserID: post.user_id } }" -->
-                <span class="font-bold text-sm hidden group-hover:flex">
-                   
-                </span> Message
+        <div v-if="!showRescueCancelButtons && !showSuccessMessage && !showConfirmDialog" class="flex justify-center">
+            <button v-if="operation === 'Missing Report' && props.reportedUserId == uid"
+                type="button"
+                class="flex justify-center py-4 font-semibold w-full text-red-600 bg-slate-50 hover:bg-green-500 hover:text-white rounded-b-lg"
+                @click="handleTakeAction">
+                Found
+            </button>
+            <RouterLink v-else-if="operation === 'Missing Report' && props.reportedUserId != uid"
+                :to="getMessageRoute"
+                class="flex justify-center py-4 font-semibold w-full text-red-600 bg-slate-50 hover:bg-green-500 hover:text-white rounded-b-lg">
+                <span class="font-bold text-sm">Message</span>
             </RouterLink>
-            <span v-else @click="handleTakeAction">Take Action</span>
-        </button>
+            <button v-else
+                type="button"
+                class="flex justify-center py-4 font-semibold w-full text-red-600 bg-slate-50 hover:bg-green-500 hover:text-white rounded-b-lg"
+                @click="handleTakeAction">
+                Take Action
+            </button>
+        </div>
+        <!-- End of Huge Changes - Salpocial (Nov21) -->
+        
         <!-- Is this code even used? - Salpocial -->
         <div v-else-if="showRescueCancelButtons || props.operation == 'ongoing'"
             class="flex justify-between font-semibold text-gray-600 rounded-b-lg">
@@ -61,11 +68,15 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue'; // Added "Computed" - Salpocial (Nov21)
 
 // Nov5 start of salpocial's new code
 import axios from 'axios';
 import formModal from "@/components/Buddy/buddy_Rescue_FillUpForm.vue"; // Nov15
+
+// Salpocial Add (Nov21)
+import { useRoute } from 'vue-router';
+const route = useRoute();
 
 // converted into <script setup> salpocial's code below
 const props = defineProps({
@@ -87,6 +98,23 @@ const props = defineProps({
     }
 });
 
+console.log('Props:', props);
+
+// New code - Salpocial (Nov21)
+const getMessageRoute = computed(() => {
+    console.log('userType:', userType);
+    console.log('Reported user ID', props.reportDetails.user_id);
+    console.log('postId:', props.postId);
+
+    if (userType === 'shelter') {
+        console.log('Going to Shelter', props.postId, props.reportDetails.user_id);
+        return { name: 'sheltermessages', query: { shelterId: props.postId, shelterUserID: props.reportDetails.user_id } };
+    } else {
+        console.log('Going to Buddy', props.postId, props.reportDetails.user_id);
+        return { name: 'buddy_messages', query: { buddyId: props.reportDetails.user_id } };
+    }
+});
+
 const emit = defineEmits(['statusUpdated']);
 
 let status = ref(null)
@@ -98,6 +126,10 @@ const selectedAction = ref('');
 const showFormModal = ref(false); // State for showing the form modal
 const userType = localStorage.getItem('u_type');
 const uid = localStorage.getItem('u_id')
+
+console.log('userType from localStorage:', userType);
+console.log('uid from localStorage:', uid);
+
 // Nov15
 const handleTakeAction = async () => {
     // Retrieve the user type
@@ -284,9 +316,11 @@ let button_flag = ref('')
 onMounted(() => {
     button_flag.value = props.operation
     reportDetails = props.reportDetails
-    receiverId.value = reportDetails.user_id
 
-    console.log("receiverId", reportDetails.user_id)
+    // Salpocial Add/Changes (Nov21)
+    receiverId.value = reportDetails.user_id || shelterUserID
+    const shelterUserID = route.query.shelterUserID;    
+
 })
 
 </script>

@@ -35,9 +35,6 @@ export default {
     },
 };
 
-// function toggleModal() {
-//     console.log("D:")
-// }
 </script>
 <template>
     <div class="h-screen flex flex-col my-8 mx-8">
