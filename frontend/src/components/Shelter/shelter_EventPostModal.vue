@@ -37,7 +37,7 @@
                       class="w-full py-2.5 px-[1rem] text-lg font-medium placeholder:text-gray-400 focus:outline-none"
                       placeholder="Event Title" />
                   </div>
-                  <div class="flex sm:flex-col md:flex-row sm:text-sm md:text-[13px] px-[1.1rem] gap-x-2 border-t py-2">
+                  <div class="flex sm:flex-col md:flex-row sm:text-sm md:text-[13px] px-[1.1rem] gap-x-2 border-y py-2">
                     <div class="flex items-center sm:gap-x-1.5 md:gap-x-1">
                       <label for="start-datetime" class="text-gray-400">Event Start:</label>
                       <p class="sm:text-sm md:text-[12px]">{{ startDateTime }}</p>
@@ -53,6 +53,15 @@
                         class="w-[1rem] h-[1rem] text-transparent bg-transparent border-none cursor-pointer focus:outline-none" />
                     </div>
                   </div>
+                  <!-- Nov21 -->
+                  <div class="py-2 flex flex-col gap-y-2">
+                    <div>
+                      <div class="text-red-400 text-[12px] italic" v-if="locationflag == false">@</div>
+                      <input id="location" placeholder="Enter your Location" v-model="selectedLocationAddress"
+                        class="w-full text-sm text-gray-700 py-[10px] px-5 outline-none transition" />
+                    </div>
+                  </div>
+
                   <div class="mt-1 border-t border-gray-200">
                     <label for="caption" class="sr-only">Event Caption</label>
                     <textarea v-model="caption" name="caption"
@@ -72,7 +81,7 @@
                         </label>
                       </div>
                       <div>
-                        <button>
+                        <button @click.prevent="showMapModal = true, clearflags()">
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="25" height="25">
                             <path fill="#f03d3d"
                               d="M172.3 501.7C27 291 0 269.4 0 192 0 86 86 0 192 0s192 86 192 192c0 77.4-27 99-172.3 309.7-9.5 13.8-29.9 13.8-39.5 0zM192 272c44.2 0 80-35.8 80-80s-35.8-80-80-80-80 35.8-80 80 35.8 80 80 80z" />
@@ -110,6 +119,9 @@
                     {{ mode === 'edit' ? 'Save Changes' : 'Post' }}</button>
                 </div>
               </div>
+
+              <mapoverlay @dataSent="handleData" v-if="showMapModal" @close="showMapModal = false" />
+              <Toast ref="toastRef" @closed="refreshRoute($router)" />
             </DialogPanel>
           </TransitionChild>
         </div>
@@ -121,6 +133,9 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import axios from 'axios';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
+
+// Nov21 Added Map
+import mapoverlay from '@/components/buddy_PinModal.vue'
 
 // joey added
 import { defineProps } from 'vue'; // for reusing the form defining mode receive either edit or create yeahhh - joey
@@ -144,6 +159,15 @@ const handleSubmit = () => {
 };
 // end of reuse the modal
 
+// Nov21 Function to handle data sent from the map overlay
+function handleData(data) {
+  console.log(data);
+  // Assuming data contains address, lat, and lng
+  selectedLocationAddress.value = data.address; // Automatically update the address input
+  latitude.value = data.lat; // Update latitude if needed
+  longitude.value = data.lng; // Update longitude if needed
+}
+
 
 const emit = defineEmits(['close']) // for closing the modal
 // to close press esc
@@ -163,7 +187,18 @@ const eventTitle = ref('')
 const latitude = ref(null)
 const longitude = ref(null)
 const caption = ref(null)
+const showMapModal = ref(false) // Nov21 Added for map
+const selectedLocationAddress = ref('') // Nov21
 
+
+// Nov21 flags
+const photoflag = ref(true);
+const locationflag = ref(true);
+
+function clearflags() {
+  locationflag.value = true
+  photoflag.value = true
+}
 
 const handleFileChange = (event) => {
   const files = event.target.files;
