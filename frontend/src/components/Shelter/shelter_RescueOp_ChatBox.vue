@@ -683,24 +683,6 @@ onMounted(async () => {
                             class="h-7 w-7 text-gray-700 hover:text-gray-900" aria-hidden="true" />
                     </div>
                 </div>
-                <div class="px-4 sm:col-span-2 sm:px-0">
-                    <ul role="list"
-                        class="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
-                        <li v-for="(file, index) in files" :key="file.source" class="relative">
-                            <div
-                                class="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-teal-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
-                                <img :src="file.url" alt="" class="pointer-events-none h-20 w-20 object-cover" />
-                                <button @click="removeImage(index)"
-                                    class="absolute top-0 right-0 p-1 text-gray-600 hover:text-red-600">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" stroke-width="2" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
             </form>
         </div>
     </div>
@@ -931,26 +913,7 @@ onMounted(async () => {
 
             <!-- Message Input Form -->
             <form @submit.prevent="retrieveMessage">
-                <!-- Nov15 -->
-                <div v-if="files.length > 0" class="px-4 my-2 mx-2 sm:col-span-2 sm:px-0">
-                    <ul role="list"
-                        class="grid grid-cols-2 gap-x-2 gap-y-4 sm:gap-x-4 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-8">
-                        <li v-for="(file, index) in files" :key="file.source" class="relative">
-                            <div
-                                class="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-md bg-gray-100 focus-within:ring-2 focus-within:ring-teal-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
-                                <img :src="file.url" alt=""
-                                    class="pointer-events-none sm:w-full sm:h-24 lg:w-32 lg:h-32 object-cover" />
-                                <button @click.prevent="removeImage(index)"
-                                    class="absolute top-0 right-0 p-1 text-gray-500 hover:text-red-700">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" stroke-width="2" class="w-7 h-7">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
+                
                 <!-- Nov15 -->
                 <div v-if="files.length > 0" class="px-4 my-2 mx-2 sm:col-span-2 sm:px-0">
                     <ul role="list"

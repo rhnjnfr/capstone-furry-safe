@@ -1009,6 +1009,53 @@ export const addShelterPost = async (req, res) => {
   }
 };
 
+
+export const foundRescue = async (req, res) => {
+  try {
+    const { post_id, user_id, status } = req.body;
+    console.log("status", status)
+    // First, update the report status in tbl_post_details
+
+    const { data: handlerData, error: handlerError } = await supabase //insert to tbl_report_handler
+      .from("tbl_report_handler")
+      .insert([
+        {
+          post_id: post_id,
+          handled_by: user_id,
+        },
+      ]);
+
+    if (handlerError) {
+      console.error("Error creating handler record:", handlerError);
+      return res
+        .status(500)
+        .json({ success: false, message: "Failed to create handler record" });
+    } else {
+      const { data: updateData, error: updateError } = await supabase //update in post_Details
+        .from("tbl_post_details")
+        .update({ report_status: status}) // Nov12 "Pending" change to "In progress"
+        .eq("post_id", post_id);
+
+      if (updateError) {
+        console.error("Error updating record:", handlerError);
+        return res
+          .status(500)
+          .json({ success: false, message: "Failed to update record" });
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: `Report ${status === "Rescued" ? "Accepted" : "Cancelled"
+        } successfully`,
+    });
+  } catch (err) {
+    console.error("Error in acceptRescueReport:", err);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
+  }
+};
 // This is the function for accepting rescue reports
 export const acceptRescueReport = async (req, res) => {
   try {
@@ -1033,7 +1080,7 @@ export const acceptRescueReport = async (req, res) => {
     } else {
       const { data: updateData, error: updateError } = await supabase //update in post_Details
         .from("tbl_post_details")
-        .update({ report_status: "In progress" }) // Nov12 "Pending" change to "In progress"
+        .update({ report_status: status }) // Nov12 "Pending" change to "In progress"
         .eq("post_id", post_id);
 
       if (updateError) {

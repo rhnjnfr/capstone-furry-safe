@@ -65,7 +65,8 @@ const removeFile = (index) => {
 
 const navigateTo = (path) => {
     // Navigate to a new path
-    useRouter().push(path);
+    // useRouter().push(path);
+    router.push(path);
 };
 
 // Nov21  Error tracking variables

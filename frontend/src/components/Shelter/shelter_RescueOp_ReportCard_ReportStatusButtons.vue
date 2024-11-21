@@ -170,6 +170,7 @@ const confirmAction = async () => { //upon click
         if (response.data.success) {
             retrieveMessage()
             showConfirmDialog.value = false;
+
             emit('statusUpdated'); // Nov15
             emit('close'); // Nov15
         }
@@ -238,7 +239,6 @@ async function retrieveMessage() {
 
     console.log("chat id", selectedChat_id.value)
     if (!selectedChat_id.value) {
-        console.log("selectedchat_id.value is null")
         await retrieveChatId(); // Await the creation of a new chat
     }
     const formData = new FormData();

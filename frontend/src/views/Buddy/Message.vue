@@ -183,6 +183,7 @@ async function sendMessage(thisformData) {
     });
 
     if (response.data.success) {
+      createConversation.value = false;
       let messageData = {
         chat_id: selectedChat_id.value,
         user_id: parseInt(user_id.value),
@@ -531,49 +532,49 @@ watch(searchValue, (newValue) => {
 
 // Nov20 - Salpocial
 const retrieveUserChat = async () => {
-    const userIdFromQuery = route.query.buddyId; 
-    console.log("User  ID from Query:", userIdFromQuery);
+  const userIdFromQuery = route.query.buddyId;
+  console.log("User  ID from Query:", userIdFromQuery);
 
-    if (!userIdFromQuery) return; // Exit early if userId is not present
+  if (!userIdFromQuery) return; // Exit early if userId is not present
 
-    try {
-        const response = await axios.post("http://localhost:5000/getfullname", {
-            id: userIdFromQuery,
-        });
+  try {
+    const response = await axios.post("http://localhost:5000/getfullname", {
+      id: userIdFromQuery,
+    });
 
-        console.log("API Response:", response.data);
+    console.log("API Response:", response.data);
 
-        if (Array.isArray(response.data) && response.data.length > 0) {
-            const [userData] = response.data;
+    if (Array.isArray(response.data) && response.data.length > 0) {
+      const [userData] = response.data;
 
-            // Update receiver details
-            receiverId.value = userIdFromQuery;
-            receiverName.value = userData.full_name;
+      // Update receiver details
+      receiverId.value = userIdFromQuery;
+      receiverName.value = userData.full_name;
 
-            console.log("Receiver ID set to:", receiverId.value);
-            console.log("Receiver Name set to:", receiverName.value);
+      console.log("Receiver ID set to:", receiverId.value);
+      console.log("Receiver Name set to:", receiverName.value);
 
-            // Find an existing conversation with the receiver
-            const existingChat = conversations.value.find(chat => 
-                chat.participant_1_id === Number(receiverId.value) || 
-                chat.participant_2_id === Number(receiverId.value)
-            );
+      // Find an existing conversation with the receiver
+      const existingChat = conversations.value.find(chat =>
+        chat.participant_1_id === Number(receiverId.value) ||
+        chat.participant_2_id === Number(receiverId.value)
+      );
 
-            if (existingChat) {
-                console.log("Existing chat found:", existingChat);
-                selectConversation(existingChat);
-                createConversation.value = false;
-            } else {
-                console.log("No existing chat found. Preparing new conversation.");
-                createConversation.value = true; // Show the new conversation UI
-                selectedChat_id.value = null;  // Ensure no chat ID is set for new chat
-            }
-        } else {
-            console.error("Failed to fetch receiver name. Response:", response.data);
-        }
-    } catch (error) {
-        console.error("Error fetching user data:", error);
+      if (existingChat) {
+        console.log("Existing chat found:", existingChat);
+        selectConversation(existingChat);
+        createConversation.value = false;
+      } else {
+        console.log("No existing chat found. Preparing new conversation.");
+        createConversation.value = true; // Show the new conversation UI
+        selectedChat_id.value = null;  // Ensure no chat ID is set for new chat
+      }
+    } else {
+      console.error("Failed to fetch receiver name. Response:", response.data);
     }
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+  }
 };
 
 onMounted(async () => {
@@ -664,22 +665,6 @@ onMounted(async () => {
             <PaperAirplaneIcon @click.prevent="createNewMessage" class="h-7 w-7 text-gray-700 hover:text-gray-900"
               aria-hidden="true" />
           </div>
-        </div>
-        <div class="px-4 sm:col-span-2 sm:px-0">
-          <ul role="list" class="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
-            <li v-for="(file, index) in files" :key="file.source" class="relative">
-              <div
-                class="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-teal-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
-                <img :src="file.url" alt="" class="pointer-events-none h-20 w-20 object-cover" />
-                <button @click="removeImage(index)" class="absolute top-0 right-0 p-1 text-gray-600 hover:text-red-600">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2" class="w-4 h-4">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            </li>
-          </ul>
         </div>
       </form>
     </div>

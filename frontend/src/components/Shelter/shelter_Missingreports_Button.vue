@@ -3,11 +3,18 @@
         <!-- <button v-if="!showRescueCancelButtons && !showSuccessMessage && !showConfirmDialog" type="button"
             class="flex justify-center py-4 font-semibold w-full text-red-600 bg-slate-50 hover:bg-red-500 hover:text-white rounded-b-lg"
             @click="showRescueCancelButtons = true;"> -->
-        <button
+        <button v-if="props.reportDetails.user_id != _user_id "
             class="flex justify-center py-4 font-semibold w-full text-red-600 bg-slate-50 hover:bg-green-500 hover:text-white rounded-b-lg"
             @click="clicked = true; getMessageRoute()">
             <!-- <RouterLink :to="getMessageRoute"> -->
             <span class="font-bold text-sm">Message</span>
+            <!-- </RouterLink> -->
+        </button>
+        <button v-if="props.reportDetails.user_id == _user_id && props.reportDetails.report_status == 'Pending'"
+            class="flex justify-center py-4 font-semibold w-full text-red-600 bg-slate-50 hover:bg-green-500 hover:text-white rounded-b-lg"
+            @click="setFoundPet()">
+            <!-- <RouterLink :to="getMessageRoute"> -->
+            <span class="font-bold text-sm">Found Pet</span>
             <!-- </RouterLink> -->
         </button>
 
@@ -50,25 +57,37 @@ function navigateTo(path) {
     router.push(path);
 }
 
-const emit = defineEmits(['statusUpdated']);
+const emit = defineEmits(['statusUpdated', 'close']);
 
 const selectedreportDetails = ref(null);
 const reportDetails = ref(null);
+const _user_id = localStorage.getItem('u_id')
+
 onMounted(async () => {
     reportDetails.value = props.reportDetails;
-    console.log('Props ssssssss', props.reportDetails);
+    console.log('id', props.reportDetails);
 });
 
-// Assuming reportDetails is an array of posts:
-function selectedPost() {
-    console.log("selecting post..", reportDetails.value)
-    return selectedreportDetails.value ? reportDetails.value.find(post => post.post_id === props.postId) : null;
-}
+let status = 'Rescued'
+async function setFoundPet() {
+    try {
+        const response = await axios.post('http://localhost:5000/accept-report', {
+            post_id: props.postId,
+            user_id: localStorage.getItem('u_id'),
+            status: status,
+        });
 
-// // OR if reportDetails is an object:
-// const selectedPost = computed(() => {
-//     return reportDetails.value ? reportDetails.value[props.postId] : null;
-// });
+        if (response.data.success) {
+            console.log("updated")
+            emit('statusUpdated'); // Nov15
+            emit('close'); // Nov15
+        }
+        // emit('statusUpdated'); Nov15 comment line Salpocial changes
+    } catch (error) {
+        console.error('Error:', error);
+        // Handle error (show error message)
+    }
+};
 
 // Computed route based on user type
 let clicked = false

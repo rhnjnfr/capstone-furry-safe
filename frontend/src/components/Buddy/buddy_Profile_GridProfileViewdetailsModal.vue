@@ -155,11 +155,12 @@ const open = ref(true)
                                     <img :src="allPhotos[0]" alt="first image"
                                         class="w-full object-contain rounded-l-2xl" />
                                 </div>
-                                <div v-else-if="allPhotos.length === 2" class="grid grid-flow-col gap-2 my-4 h-[35rem]">
+                                <div v-else-if="allPhotos.length === 2"
+                                    class="flex gap-2 my-4 h-[35rem] rounded-2xl overflow-hidden">
                                     <img :src="allPhotos[0]" alt="first image"
-                                        class="col-span-3 w-full h-full object-cover rounded-l-2xl bg-black" />
+                                        class="col-span-3 w-full h-full object-contain bg-black" />
                                     <img :src="allPhotos[1]" alt="second image"
-                                        class="col-span-3 object-cover w-full h-full rounded-tr-2xl bg-black" />
+                                        class="col-span-3 object-contain w-full h-full bg-black" />
                                 </div>
                                 <div v-else-if="allPhotos.length >= 3"
                                     @click="toggleModalViewImagePreview(selectedProfile.id)"
