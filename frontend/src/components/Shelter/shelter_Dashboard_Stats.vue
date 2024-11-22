@@ -29,31 +29,53 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- <div class="relative mt-6 flex-1 px-4 sm:px-6">
-                                        <div class="card">
-                                            <Chart type="line" :data="chartData" :options="chartOptions"
-                                                class="h-[30rem] text-gray-700 text-sm" />
+
+                                    <div class="p-4 px-8 flex flex-col gap-y-3">
+                                        <div v-if="rescuedReport && rescuedReport.length > 0">
+                                            <h1 class="py-3 font-bold text-lg text-green-600">Rescue Handled</h1>
+                                            <div v-for="(rescued, index) in rescuedReport" :key="rescued.post_id"
+                                            class="border rounded-2xl p-4">
+                                                <span class="flex gap-5 text-sm items-center">
+                                                    Reported by:
+                                                    <span class="hover:underline cursor-pointer">{{
+                                                        rescued.posted_by }}</span>
+                                                </span>
+                                                <span class="flex gap-5 text-sm">Report Type:
+                                                    <h1 class="font-bold text-sm flex gap-3">{{ rescued.post_type }}
+                                                    </h1>
+                                                </span>
+                                                <span class="flex gap-10 text-sm">Location:
+                                                    <p class="font-semibold text-sm">{{ rescued.report_address_location
+                                                        }}</p>
+                                                </span>
+                                            </div>
                                         </div>
-                                    </div> -->
+
+                                        <div v-if="ongoingReport && ongoingReport.length > 0">
+                                            <h1 class="py-3 font-bold text-lg text-amber-600">Ongoing Reports</h1>
+                                            <div v-for="(ongoing, index) in ongoingReport" :key="ongoing.post_id"
+                                                class="border rounded-2xl p-4">
+
+                                                <span class="flex gap-5 text-sm items-center">
+                                                    Reported by:
+
+                                                    <span class="hover:underline cursor-pointer">{{
+                                                        ongoing.posted_by }}</span>
 
 
-                                    <!-- start -->
+                                                </span>
+                                                <span class="flex gap-5 text-sm">Report Type:
+                                                    <h1 class="font-bold text-sm flex gap-3">{{ ongoing.post_type }}
+                                                    </h1>
+                                                </span>
 
-                                    <div class="p-4">
-                                        <div v-for="(report, index) in rescuedposts" :key="report.post_id" class="border">
-                                        <span class="flex gap-5 text-sm items-center">
-                                            Reported by:
-                                            <span class="hover:underline cursor-pointer">{{
-                                                report.posted_by }}</span>
-                                        </span>
-                                        <span class="flex gap-5 text-sm">Report Type:
-                                            <h1 class="font-bold text-sm flex gap-3">{{ report.post_type }}</h1>
-                                        </span>
-                                        <span class="flex gap-10 text-sm">Location:
-                                            <p class="font-semibold text-sm">{{ report.report_address_location
-                                                }}</p>
-                                        </span>
-                                    </div>
+                                                <span class="flex gap-10 text-sm">Location:
+                                                    <p class="font-semibold text-sm">{{ ongoing.report_address_location
+                                                        }}</p>
+                                                </span>
+
+                                            </div>
+                                        </div>
                                     </div>
                                     <!-- end -->
                                 </div>
@@ -73,37 +95,6 @@ import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } fro
 import { XMarkIcon } from '@heroicons/vue/24/outline'
 
 const open = ref(true)
-// chart
-// import Chart from 'primevue/chart';
-// onMounted(() => {
-//     chartData.value = setChartData();
-//     chartOptions.value = setChartOptions();
-// });
-
-// let posts = ref([])
-
-// async function retrieveRescuedReports() {
-//    try {
-//        console.log("retrieve rescue Reportssss");
-
-//        const response = await axios.post("http://localhost:5000/gethandledrescuehistory", {
-//            _report_status: 'Rescued',
-//            _handled_by: _user_id,
-//        });
-
-//        if (response.data && response.data.length > 0) {
-//             posts.value = response.data
-//             console.log("response", response.data);
-//             console.log("posts value", posts.value);
-//         } else {
-//            console.log("No data returned from the server.");
-//        }
-//        console.log("post value isdhsjdgskhdk", posts.value)
-
-//    } catch (err) {
-//        console.error("Error in retrieve rescue reports", err);
-//    }
-// }
 
 let ongoingReport = ref([])
 let _user_id = localStorage.getItem('u_id')
@@ -126,7 +117,7 @@ async function retrieveprogressReports() {
     }
 }
 
-let rescuedposts = ref([])
+let rescuedReport = ref([])
 async function retrieveRescuedReports() {
     try {
         console.log("retrieveReports in rescueeeee")
@@ -134,10 +125,10 @@ async function retrieveRescuedReports() {
             _report_status: 'Rescued',
             _handled_by: _user_id
         });
-        rescuedposts.value = response.data
+        rescuedReport.value = response.data
         console.log("response", response.data)
 
-        console.log("post value", rescuedposts.value)
+        console.log("post value", rescuedReport.value)
     }
     catch (err) {
         console.log("error in retrieve reports", err)
@@ -148,66 +139,4 @@ onMounted(async () => {
     retrieveprogressReports()
     retrieveRescuedReports()
 })
-
-// const chartData = ref();
-// const chartOptions = ref();
-
-// const setChartData = () => {
-
-//     return {
-//         labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-//         datasets: [
-//             {
-//                 label: 'Rescue',
-//                 data: [65, 59, 80, 81, 56, 55, 40],
-//                 fill: false,
-//                 borderColor: '#4cf7db',
-//                 tension: 0.4
-//             },
-//             {
-//                 label: 'Adoption',
-//                 data: [28, 48, 40, 19, 86, 27, 100],
-//                 fill: false,
-//                 borderColor: '#f7ad4c',
-//                 tension: 0.4
-//             }
-//         ]
-//     };
-// };
-// const setChartOptions = () => {
-//     const documentStyle = getComputedStyle(document.documentElement);
-//     const textColor = documentStyle.getPropertyValue('--p-text-color');
-//     const textColorSecondary = documentStyle.getPropertyValue('--p-text-muted-color');
-//     const surfaceBorder = documentStyle.getPropertyValue('--p-content-border-color');
-
-//     return {
-//         maintainAspectRatio: false,
-//         aspectRatio: 0.6,
-//         plugins: {
-//             legend: {
-//                 labels: {
-//                     color: textColor
-//                 }
-//             },
-//         },
-//         scales: {
-//             x: {
-//                 ticks: {
-//                     color: textColorSecondary
-//                 },
-//                 grid: {
-//                     color: surfaceBorder
-//                 }
-//             },
-//             y: {
-//                 ticks: {
-//                     color: textColorSecondary
-//                 },
-//                 grid: {
-//                     color: surfaceBorder
-//                 }
-//             }
-//         }
-//     };
-// }
 </script>
