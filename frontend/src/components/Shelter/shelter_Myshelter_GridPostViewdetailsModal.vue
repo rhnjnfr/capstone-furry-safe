@@ -157,6 +157,7 @@ const prevImage = () => {
         currentIndex.value--; // Decrement the current index to show the previous image
     }
 };
+const petID = ref(null)
 
 //functions 
 let post_details = ref([])
@@ -177,6 +178,11 @@ async function getPetPostDetails() {
         console.log("response", response.data)
         if (response.data.length > 0) {
             post_details.value = response.data[0]
+
+            const petId = Number(response.data[0].id);
+            petID = petId;
+            console.log('Pet ID:', petId);
+            console.log('i extracted value of Pet ID:', petID); 
 
             // Extract photos
             const profilePhoto = response.data[0].profileurl ? [response.data[0].profileurl] : [];
@@ -212,6 +218,7 @@ onMounted(async () => {
     selectedPostDetails.value = props.selectedPostDetails
     await getPetPostDetails()
     generateQR()
+    console.log("the petid extracted:", petID)
     console.log("What Mode:", props.mode) // for pov
 })
 
@@ -221,14 +228,43 @@ const open = ref(true)
 
 let qrgenerated = ref(false)
 let qrphotosrc = ref(null)
-function generateQR() {
-    //for qr
-    let qrvalue = window.location.href;
-    qrphotosrc.value = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + qrvalue;
-    qrgenerated.value = true
+// function generateQR() {
+//     //for qr
+//     let qrvalue = window.location.href;
+//     qrphotosrc.value = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + qrvalue;
+//     qrgenerated.value = true
 
-    console.log("qr generated", qrgenerated.value)
+//     console.log("qr generated", qrgenerated.value)
+// }
+
+function generateQR(petID) {
+    let qrvalue = `${window.location.origin}/frrysf_view/scanview_animalprofileform/${petID}`;
+    qrphotosrc.value = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + encodeURIComponent(qrvalue);
+    qrgenerated.value = true;
+
+    console.log("QR Generated:", qrphotosrc.value);
+    console.log("id is ",petID)
 }
+
+import { useRouter } from 'vue-router';
+// Access the router instance
+const router = useRouter();
+
+// Test navigation function to simulate QR scan navigation
+function testNavigation() {
+    const tpetid = petID; // Use the same petid you used to generate the QR code
+    const path = `/frrysf_view/scanview_animalprofileform/${tpetid}`;
+    console.log(`Navigating to path: ${path}`);
+
+    // Use the router to programmatically navigate to the generated path
+    router.push(path).then(() => {
+        console.log('Navigation successful!');
+    }).catch(error => {
+        console.log('Navigation failed:', error);
+    });
+}
+
+
 async function downloadQR() {
     try {
         const response = await fetch(qrphotosrc.value);
@@ -347,6 +383,7 @@ async function downloadQR() {
                                         </div>
                                     </div>
                                 </div> -->
+                                <button @click="testNavigation" class="bg-green-500">Test</button>
                                 <div class="border rounded-xl border-gray-100 sm:mx-4 mb-8">
                                     <dl class="divide-y divide-gray-100">
                                         <div

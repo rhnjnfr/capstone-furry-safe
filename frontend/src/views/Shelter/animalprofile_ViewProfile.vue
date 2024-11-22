@@ -3,7 +3,7 @@ import { PencilIcon } from '@heroicons/vue/20/solid'
 import linkfooter from '@/components/footerLink.vue'
 import axios from "axios";
 import { ref, watch, computed, onMounted, toRaw, reactive } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import Toast from '@/components/toast.vue';  // Ensure correct case for the file name
 
 //jo tabang 
@@ -92,17 +92,48 @@ async function loadPetProfiles() {
         }
     }
 }
-
+// original qr code
 let qrgenerated = ref(false)
 let qrphotosrc = ref(null)
-function generateQR() {
-    //for qr
-    let qrvalue = window.location.href;
-    qrphotosrc.value = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + qrvalue;
-    qrgenerated.value = true
+// function generateQR() {
+//     let qrvalue = window.location.href;
+//     qrphotosrc.value = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + qrvalue;
+//     qrgenerated.value = true
 
-    console.log("qr generated", qrgenerated.value)
+//     console.log("qr generated", qrgenerated.value)
+// }
+
+// test line
+
+
+function generateQR(petid) {
+    let qrvalue = `${window.location.origin}/frrysf_view/scanview_animalprofileform/${petid}`;
+    qrphotosrc.value = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + encodeURIComponent(qrvalue);
+    qrgenerated.value = true;
+
+    console.log("QR Generated:", qrphotosrc.value);
 }
+
+// Access the router instance
+const router = useRouter();
+
+// Test navigation function to simulate QR scan navigation
+function testNavigation() {
+    const tpetid = petid; // Use the same petid you used to generate the QR code
+    const path = `/frrysf_view/scanview_animalprofileform/${tpetid}`;
+    console.log(`Navigating to path: ${path}`);
+
+    // Use the router to programmatically navigate to the generated path
+    router.push(path).then(() => {
+        console.log('Navigation successful!');
+    }).catch(error => {
+        console.log('Navigation failed:', error);
+    });
+}
+// end of test line
+
+
+
 async function downloadQR() {
     try {
         const response = await fetch(qrphotosrc.value);
@@ -119,7 +150,7 @@ async function downloadQR() {
 
 onMounted(() => {
     loadPetProfiles()
-    generateQR()
+    generateQR(petid)
 
     if (route.query.showToast && route.query.from == 'edit') {
         console.log("D:", route.query)
@@ -169,6 +200,7 @@ onMounted(() => {
                             </button>
                         </div>
                     </div>
+                    <button @click="testNavigation" class="bg-green-500">Test</button>
                     <RouterLink :to="{ name: 'editanimalprofile', params: { petid: petDetails.petid } }">
                         <button id="switch2" type="button"
                             class="inline-flex justify-center rounded-md bg-white sm:px-[2rem] md:px-[2rem] lg:px-[2.5rem] py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">

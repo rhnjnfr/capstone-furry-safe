@@ -17,7 +17,6 @@
                             </RouterLink>
                         </div>
                     </div>
-
                     <div class="flex items-center lg:hidden">
                         <!-- Mobile menu button -->
                         <DisclosureButton

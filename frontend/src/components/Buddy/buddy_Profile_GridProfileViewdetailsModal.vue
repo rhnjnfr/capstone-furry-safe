@@ -9,12 +9,6 @@ onMounted(() => {
     onBeforeUnmount(() => window.removeEventListener('keydown', closeModalOnEsc))
 })
 
-// Nov12 to close press esc - Joey
-onMounted(() => {
-    const closeModalOnEsc = (e) => e.key === 'Escape' && emit('close')
-    window.addEventListener('keydown', closeModalOnEsc)
-    onBeforeUnmount(() => window.removeEventListener('keydown', closeModalOnEsc))
-})
 
 const selectedProfile = ref()
 
@@ -22,6 +16,10 @@ const props = defineProps({
     selectedProfileDetails: {
         type: Object,
         required: true,
+    },
+    mode: {
+        type: String,
+        required: false,
     },
 });
 
@@ -85,6 +83,7 @@ onMounted(() => {
 
         console.log("photos", allPhotos.value)
     }
+    console.log("What Mode:", props.mode) // for pov
 });
 
 const viewpostdetials = {
@@ -188,7 +187,7 @@ const open = ref(true)
                                     class="flex justify-between mb-4 mx-4 items-center sm:text-sm md:text-base font-bold mt-4 text-gray-700">
                                     <span class="sm:text-base lg:text-lg">{{ name }}'s Information</span>
 
-                                    <div class="flex sm:gap-x-2 md:gap-x-4">
+                                    <div  v-show="!mode" class="flex sm:gap-x-2 md:gap-x-4">
                                         <RouterLink :to="{ path: '/create_newanimalprofile', query: { mode: 'edit' } }"
                                             class="bg-gray-800 py-1 sm:px-4 md:px-8 rounded-lg text-white hover:bg-gray-700">
                                             Edit Profile</RouterLink>
