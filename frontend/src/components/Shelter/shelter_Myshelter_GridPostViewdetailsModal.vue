@@ -1,109 +1,3 @@
-<!-- <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
-
-import { ChevronLeftIcon, ChevronRightIcon, EllipsisHorizontalIcon } from "@heroicons/vue/20/solid";
-
-import CreatePostModal from '@/components/Shelter/shelter_NewPostModal.vue' // for edit modal reusing the create post modal
-const openEditModal = ref(false) // for create report modal
-
-// dropdown button (edit and delete)
-const isOpen = ref(false);
-const toggleDropdown = () => {
-    isOpen.value = !isOpen.value;
-};
-
-// Reactive state
-const currentIndex = ref(0);
-
-
-// Computed properties
-const currentImageUrl = computed(() => viewpostdetials.imageUrls[currentIndex.value]);
-const hasPrev = computed(() => currentIndex.value > 0);
-const hasNext = computed(() => currentIndex.value < viewpostdetials.imageUrls.length - 1);
-
-// Methods
-const nextImage = () => {
-    if (hasNext.value) {
-        currentIndex.value++;
-    }
-};
-
-const prevImage = () => {
-    if (hasPrev.value) {
-        currentIndex.value--;
-    }
-};
-
-// pet details
-const viewpostdetials = {
-    id: 1,
-    sheltername: 'Shelter Ni Eric',
-    profile: require("@/assets/images/eric.png"),
-    name: "Eric",
-    nickname: "ric",
-    rehomed: "10/22/2024",
-    type: "Dog",
-    breed: "Bulldog",
-    gender: "Male",
-    age: '2 yrs old',
-    size: "50 pounds",
-    coat: "Medium Fur",
-    energylvl: "high",
-    about: "jdsjdsjdsjd;l yehhhh dshd hdsahdo  idsoidh disj hsoi ihhs ihuh hsa gu hgp  ihdhasoh  ihuidgsa  ugui gdsugd ugug dus usgduia",
-    vacstatus: "rabies",
-    surgerystatus: "Chemical Sterilazation",
-    medcondition: "none",
-    needs: "Lambing ni Rhe...",
-    postcaption: "caption here...",
-    imageUrls: [
-        require("@/assets/images/homepage.png"),
-        require("@/assets/images/charles.png"),
-        require("@/assets/images/eric.png"),
-        require("@/assets/images/bals.png"),
-    ],
-
-};
-
-const healthAndMedical = ref([
-    {
-        label: 'Vaccinations Status',
-        status: "Up-to-date",
-        details: "including rabies and FVRCP"
-    },
-    {
-        label: 'Spay / Neuter',
-        status: "Neuter"
-    },
-    {
-        label: 'Medical Conditions',
-        status: "None known",
-        details: "but has a slight dental issue that requires regular cleaning"
-    },
-    {
-        label: 'Special Needs',
-        status: "None"
-    }
-]);
-
-let selectedPostDetails = ref([])
-const props = defineProps({ // for reuse form defines mode if either edit or create - joey
-    selectedPostDetails: {
-        type: Object,
-        required: false
-    }
-})
-const emit = defineEmits(['close']) // for closing the modal
-
-const open = ref(true)
-
-onMounted(async () => {
-    selectedPostDetails.value = props.selectedPostDetails
-    console.log("selected post in grid view", selectedPostDetails.value)
-})
-
-</script> -->
-
 <script setup>
 import { ref, reactive, computed, onMounted, watch, onBeforeUnmount } from 'vue'
 import axios from "axios"
@@ -157,6 +51,7 @@ const prevImage = () => {
         currentIndex.value--; // Decrement the current index to show the previous image
     }
 };
+const petID = ref(null)
 
 //functions 
 let post_details = ref([])
@@ -168,6 +63,7 @@ async function getPetPostDetails() {
     let _post_id = selectedPostDetails.value.post_id
 
     try {
+        console.log("_post_id", _post_id)
         const response = await axios.post("http://localhost:5000/profile", {
             _userid: _user_id,
             _petid: _pet_id,
@@ -178,11 +74,17 @@ async function getPetPostDetails() {
         if (response.data.length > 0) {
             post_details.value = response.data[0]
 
+            const petId = Number(response.data[0].id);
+            petID.value = petId;
+            console.log('Pet ID:', petId);
+            console.log('i extracted value of Pet ID:', petID); 
+
             // Extract photos
             const profilePhoto = response.data[0].profileurl ? [response.data[0].profileurl] : [];
             const additionalPhotos = response.data[0].additionalphotos != 'No additional photos' ? response.data[0].additionalphotos.split(', ') : [];
             const postPhotos = response.data[0].post_photos || [];
 
+            console.log("postphotos", response.data[0])
             // Combine all photos into details_photos
             details_photos.value = [...postPhotos, ...profilePhoto, ...additionalPhotos];
         }
@@ -212,7 +114,7 @@ onMounted(async () => {
     selectedPostDetails.value = props.selectedPostDetails
     await getPetPostDetails()
     generateQR()
-    console.log("What Mode:", post_details.value) // for pov
+    console.log("What Mode:", selectedPostDetails.value) // for pov
 })
 
 const emit = defineEmits(['close']) // for closing the modal
@@ -221,14 +123,44 @@ const open = ref(true)
 
 let qrgenerated = ref(false)
 let qrphotosrc = ref(null)
-function generateQR() {
-    //for qr here, need the first part of the path
-    let qrvalue = post_details.value.pet_id
-    qrphotosrc.value = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + qrvalue;
-    qrgenerated.value = true
+// function generateQR() {
+//     //for qr
+//     let qrvalue = window.location.href;
+//     qrphotosrc.value = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + qrvalue;
+//     qrgenerated.value = true
 
-    console.log("qr generated", qrgenerated.value)
+//     console.log("qr generated", qrgenerated.value)
+// }
+
+function generateQR() {
+    let qrvalue = `${window.location.origin}/frrysf_view/scanview_animalprofileform/${petID.value}`;
+    console.log("qr value", qrvalue)
+    qrphotosrc.value = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + encodeURIComponent(qrvalue);
+    qrgenerated.value = true;
+
+    console.log("QR Generated:", qrphotosrc.value);
+    console.log("id is ",petID.value)
 }
+
+import { useRouter } from 'vue-router';
+// Access the router instance
+const router = useRouter();
+
+// Test navigation function to simulate QR scan navigation
+function testNavigation() {
+    const tpetid = petID; // Use the same petid you used to generate the QR code
+    const path = `/frrysf_view/scanview_animalprofileform/${tpetid}`;
+    console.log(`Navigating to path: ${path}`);
+
+    // Use the router to programmatically navigate to the generated path
+    router.push(path).then(() => {
+        console.log('Navigation successful!');
+    }).catch(error => {
+        console.log('Navigation failed:', error);
+    });
+}
+
+
 async function downloadQR() {
     try {
         const response = await fetch(qrphotosrc.value);

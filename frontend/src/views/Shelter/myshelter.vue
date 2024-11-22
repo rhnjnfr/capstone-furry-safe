@@ -255,7 +255,6 @@ const updateCurrentTab = (tabName) => {
                     <div class="xl:container mx-auto my-2">
                         <gridPostImages />
                     </div>
-
                 </div>
                 <div v-show="currentTab === 'Events'" class="h-auto">
                     <div class="xl:container mx-auto my-2">

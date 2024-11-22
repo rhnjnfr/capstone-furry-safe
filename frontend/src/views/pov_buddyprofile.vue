@@ -11,11 +11,23 @@ import CreateReportModal from '@/components/Buddy/buddy_CreateReportPost_Modal.v
 const openCreateModal = ref(false) // for create report modal
 
 import viewprofiledetials from '@/components/Buddy/buddy_Profile_GridProfileViewdetailsModal.vue'; // for view profile details
+
 // view detials on grid profile images
+let viewpostflag = ref(false)
+
+const selectedProfileViewDetails = ref(null);
 const selectedProfileViewDetailsId = ref(null);
 const toggleModalProfileViewDetails = (id) => {
-    selectedProfileViewDetailsId.value = selectedProfileViewDetailsId.value === id ? null : id;
-    console.log(id);
+    if (selectedProfileViewDetailsId.value === id) {
+        selectedProfileViewDetailsId.value = null;
+        viewpostflag.value = false;
+        console.log("Profile modal closed");
+    } else {
+        selectedProfileViewDetailsId.value = id;
+        const pet = petprofiles.value.find(pet => pet.id === selectedProfileViewDetailsId.value);
+        if (pet) selectedProfileViewDetails.value = pet;
+        viewpostflag.value = true;
+    }
 };
 // end
 
@@ -38,9 +50,10 @@ const selectedTab = ref('Report'); // Default selected tab
 const user = ref({})
 
 
-onMounted(() => { //pag load sa page mag load ni =)
-    getUserDetails()
-    getBuddyPost()
+onMounted( async() => { //pag load sa page mag load ni 😊
+    await getUserDetails()
+    await getBuddyPost()
+    await getBuddyPets() // Nov12
 })
 
 const selectTab = (tab) => {
@@ -92,6 +105,38 @@ async function getBuddyPost() {
         console.log("error", err)
     }
 }
+const petprofiles = ref([])
+const petid = null;
+async function getBuddyPets() {
+    try {
+        const response = await axios.post("http://localhost:5000/profile", {
+            _userid: _id,
+            _petid: petid
+        });
+
+        if (response.data && response.data.length > 0) {
+            petprofiles.value = response.data
+
+            console.log("to display values", petprofiles.value)
+        }
+    }
+    catch (err) {
+        console.log("error in retrieve reports in getBuddyPost", err)
+    }
+}
+
+function hasMultiplePhotos(photo_display_url) {
+    try {
+
+        // // Double parse to handle stringified JSON
+        // const photos = JSON.parse(JSON.parse("${photo_display_url}"));
+        // return Array.isArray(photos) && photos.length > 1;
+        return Array.isArray(photo_display_url) && photo_display_url.length > 1
+    } catch (e) {
+        console.error("Error parsing photos:", e);
+        return false;
+    }
+}
 </script>
 <template>
     <div class="my-4">
@@ -100,7 +145,7 @@ async function getBuddyPost() {
             <div class="bg-white p-6">
                 <div class="flex sm:flex-col md:flex-row justify-between gap-y-4 items-center mb-6 px-8">
                     <div class="flex sm:flex-col md:flex-row items-center gap-y-3 gap-x-3">
-                        <img :src="user.user_profile_url || default_avatar" alt=""
+                        <img :src="default_avatar || user.user_profile_url" alt=""
                             class="rounded-full border-2 w-32 h-32 object-cover" />
                         <div>
                             <h2 class="text-2xl font-bold">{{ user.firstname + ' ' + user.lastname }}</h2>
@@ -182,16 +227,17 @@ async function getBuddyPost() {
                                     <button @click="toggleModalProfileViewDetails(Profile.id)"
                                         class="group block w-full overflow-hidden bg-white">
                                         <!-- Display the first image in the array or the single image if it's not an array -->
-                                        <img :src="Array.isArray(Profile.imageUrl) ? Profile.imageUrl[0] : Profile.imageUrl"
+                                        <img :src="Array.isArray(Profile.profileurl) ? Profile.profileurl[0] : Profile.profileurl"
                                             alt=""
                                             class="pointer-events-none aspect-square object-cover group-hover:opacity-75" />
 
                                         <!-- Display the overlay icon if there are multiple images -->
-                                        <Square2StackIcon
-                                            v-if="Array.isArray(Profile.imageUrl) && Profile.imageUrl.length > 1"
+                                        <Square2StackIcon v-if="((Profile.additionalphotos != 'No additional photos') || (Profile.post_photos != 'No post photos'))
+                                            && Profile.profileurl != 1"
                                             class="absolute top-2 right-2 h-5 w-5 text-white group-hover:opacity-75" />
                                     </button>
-                                    <viewprofiledetials v-if="selectedProfileViewDetailsId === Profile.id"
+                                    <viewprofiledetials v-if="viewpostflag == true"
+                                        :selectedProfileDetails="selectedProfileViewDetails" :mode="'pov'"
                                         @close="toggleModalProfileViewDetails(Profile.id)" />
                                 </li>
                             </ul>

@@ -63,6 +63,7 @@ import viewshelterprofile from "../views/pov_shelterProfile.vue";
 import viewbuddyprofile from "../views/pov_buddyprofile.vue";
 import SignUp from "../views/choose_Registration.vue";
 
+import frrysfView from "../layouts/Admin/headerNav.vue";
 
 const routes = [
   //jene loginhelp huehfjkgjgsad
@@ -101,7 +102,43 @@ const routes = [
   //   name: 'forgot_password',
   //   component: forgot_password
   // },
-  //
+
+  // { // original path
+  //   // for qr scan
+  //   path: "/frrysf_view",
+  //   name: "frrysf_view",
+  //   component: frrysfView,
+  //   redirect: { name: "scanviewanimalprofile"},
+  //   children: [
+  //     {
+  //       // animal profile - view animal profile
+  //       path: "/scanview_animalprofileform/:petid",
+  //       name: "scanviewanimalprofile",
+  //       component: viewanimalprofile,
+  //       props: true,
+  //     },
+  //   ],
+  // },
+
+
+
+  {
+    path: "/frrysf_view",
+    name: "frrysf_view",
+    component: frrysfView,
+    redirect: { name: "scanviewanimalprofile" },
+    children: [
+      {
+        path: "scanview_animalprofileform/:petid",
+        name: "scanviewanimalprofile",
+        component: viewanimalprofile,
+        props: true,
+      },
+    ],
+  },
+
+
+
   {
     path: "/Furrysafe_admin",
     name: "adminDashboard",

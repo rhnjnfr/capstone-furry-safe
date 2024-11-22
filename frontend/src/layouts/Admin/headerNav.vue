@@ -22,10 +22,10 @@
                         </DisclosureButton>
                     </div>
                     <!-- large screen -->
-                    <div class="hidden lg:ml-4 lg:flex lg:items-center gap-4">
-                        <RouterLink to="login" class="hover:text-lightorange">
+                    <div v-if="isLoggedIn == null"  class="hidden lg:ml-4 lg:flex lg:items-center gap-4">
+                        <RouterLink to="/login" class="hover:text-lightorange">
                             Login</RouterLink>
-                        <RouterLink to="buddy-registration"
+                        <RouterLink to="/Sign-Up"
                             class="bgteal text-white p-1.5 px-4 rounded-lg font-medium hover:bg-lightorange">
                             Sign-Up</RouterLink>
                     </div>
@@ -33,15 +33,15 @@
             </div>
             <!-- small screen -->
             <DisclosurePanel class="lg:hidden">
-                <div class="border-t border-gray-200 pb-3 pt-4 space-y-2 text-white">
+                <div v-if="isLoggedIn == null" class="border-t border-gray-200 pb-3 pt-4 space-y-2 text-white">
                     <div class="mx-[1rem]">
-                        <RouterLink to="buddy-registration"
+                        <RouterLink to="/Sign-Up"
                             class="w-full bgteal rounded-lg py-2 flex justify-center hover:bg-bgteal hover:font-medium">
                             Sign-Up
                         </RouterLink>
                     </div>
                     <div class="mx-[1rem]">
-                        <RouterLink to="login"
+                        <RouterLink to="/login"
                             class="w-full bgorange rounded-lg py-2 flex justify-center hover:bg-lightorange hover:font-medium">
                             Login</RouterLink>
                     </div>
@@ -50,7 +50,7 @@
         </Disclosure>
     </header>
     <main>
-        <div>
+        <div class="my-4 mx-8 border rounded-2xl ">
             <RouterView /> <!-- main content page -->
         </div>
     </main>
@@ -66,5 +66,6 @@ import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuIt
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/vue/24/outline'
 import logo from '@/assets/images/frrysfLOGO.png' // FurrySafe Logo
 
+let isLoggedIn = localStorage.getItem('access_token')
 // import Linkfooter from '@/components/footerLink.vue'
 </script>

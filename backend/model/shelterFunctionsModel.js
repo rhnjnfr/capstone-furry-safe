@@ -188,6 +188,7 @@ export const saveShelter_and_Link = async (req, res) => {
 export const retrievePetProfile = async (req, res) => {
   let { _userid, _petid, _post_id } = req.body;
 
+  _userid = _userid == null || _userid == "null" ? null : _userid;
   _post_id = _post_id == null || _post_id == "null" ? null : _post_id;
 
   try {
@@ -570,43 +571,30 @@ export const updatepetprofile = async (req, res) => {
 
     // other_vaccines = other_vaccines == 'No vaccines recorded' ? null : other_vaccines
 
-    if (vaccines !== null) {
-      if (typeof vaccines === "string") {
-        // If it's a string, convert it to an array with one element
-        vaccines = [Number(vaccines)];
-      } else if (Array.isArray(vaccines)) {
-        // If it's an array, map through it to convert all elements to numbers
-        vaccines = vaccines.map((v) => Number(v));
-      }
-    } else {
-      // Handle the case where vaccines is null
-      vaccines = null;
+    if (!vaccines || vaccines === 'null' || vaccines === '') {
+      // If `vaccines` is null, undefined, or an empty string, set it to an empty array
+      vaccines = [];
+    } else if (typeof vaccines === "string") {
+      // If it's a single string value, convert it to an array with one element
+      vaccines = [Number(vaccines)];
+    } else if (Array.isArray(vaccines)) {
+      // If it's already an array, ensure all elements are numbers
+      vaccines = vaccines.map((v) => Number(v));
     }
-    console.log("Logging here:");
-    console.log('pet_id:', pet_id);
-    console.log('gender:', gender);
-    console.log('pet_category_id:', pet_category_id);
-    console.log('other_pet_category:', other_pet_category);
-    console.log('breed_id:', breed_id);
-    console.log('other_breed:', other_breed);
-    console.log('status:', status);
-    console.log('name:', name);
-    console.log('nickname:', nickname);
-    console.log('daterehomed:', daterehomed);
-    console.log('energylevel:', energylevel);
-    console.log('age:', age);
-    console.log('sizeweight:', sizeweight);
-    console.log('coat:', coat);
-    console.log('about:', about);
-    console.log('special_needs:', special_needs);
-    console.log('med_condition:', med_condition);
-    console.log('other_vaccines:', other_vaccines);
-    console.log('vaccines:', vaccines);
-    console.log('other_sterilization:', other_sterilization);
-    console.log('sterilization_id:', sterilization_id);
-    console.log('profileUrl:', profileUrl);
-    console.log('photoToDelete:', photoToDelete);
-    console.log('extraPhotoUrls:', extraPhotoUrls);
+    if (!photoToDelete || photoToDelete === 'null' || photoToDelete === '') {
+      // If `photoToDelete` is null, undefined, or an empty string, set it to an empty array
+      photoToDelete = [];
+    } else if (typeof photoToDelete === "string") {
+      // If it's a single string value, convert it to an array with one element
+      photoToDelete = [photoToDelete];
+    }
+
+    // Process _photo_url
+    if (!extraPhotoUrls || extraPhotoUrls.length === 0) {
+      // If `extraPhotoUrls` is undefined, null, or an empty array, set it to an empty array
+      extraPhotoUrls = [];
+    }
+
 
     const { data, err } = await supabase.rpc("update_animal_profile_details", {
       _pet_id: pet_id,

@@ -20,6 +20,7 @@ const dob = ref('');
 const selectedGender = ref('')
 const firstname = ref('');
 const lastname = ref('');
+const contact = ref('')
 const url = ref('');
 
 const fileInput = ref(null);
@@ -89,6 +90,7 @@ async function populateForm(data) { // // Populate the interface with the retrie
     bio.value = data[0].bio
     selectedImage.value = (data[0].user_profile_url == null) ? null : data[0].user_profile_url
     retrievedProfile.value = (data[0].user_profile_url == null) ? null : data[0].user_profile_url
+    contact.value = data[0].contact_number 
 }
 async function saveProfile() {
     console.log("save profile function")
@@ -98,8 +100,6 @@ async function saveProfile() {
     if (!isImageChanged && selectedImage.value !== null) {
         console.log("Profile image hasn't changed, no update needed.");
         fileToUpload = retrievedProfile.value
-
-        console.log(fileToUpload)
     }
 
 
@@ -119,6 +119,7 @@ async function saveProfile() {
         ['_dob', dob.value],
         ['_gender', selectedGender.value],
         ['_bio', bio.value],
+        ['_contact', contact.value]
     ]
 
     // Handle the profile image update logic
@@ -264,6 +265,14 @@ onMounted(() => {
                                 <option value="Female">Female</option>
                                 <option value="Other">Other</option>
                             </select>
+                        </div>
+                    </div>
+                    <div class="md:col-span-3 sm:col-span-full">
+                        <label for="contact" class="block text-sm font-medium leading-6 text-gray-900">Contact
+                            Number</label>
+                        <div class="mt-2 w-full">
+                            <input type="text" v-model="contact" name="contact" id="contact" autocomplete="contact"
+                                class="block w-full rounded-md border-0 py-1.5 px-[1rem] text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6" />
                         </div>
                     </div>
                     <div class="col-span-full">

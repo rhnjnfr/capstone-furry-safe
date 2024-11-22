@@ -225,7 +225,7 @@ export const retrieveBuddyDetails = async (req, res) => {
 };
 export const updateBuddyDetails = async (req, res) => {
   //update buddy details
-  const { _buddy_id, _user_name, _firstname, _lastname, _dob, _gender, _bio } =
+  const { _buddy_id, _user_name, _firstname, _lastname, _dob, _gender, _bio, _contact } =
     req.body;
 
   console.log("_oldProfile:", req.body._oldProfile);
@@ -307,6 +307,7 @@ export const updateBuddyDetails = async (req, res) => {
       _gender: _gender,
       _bio: _bio,
       _profile_url: photoUrl,
+      _contact_number: _contact
     });
     if (error) {
       console.error("Database insert error:", error);

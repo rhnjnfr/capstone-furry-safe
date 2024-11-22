@@ -30,6 +30,7 @@ const name = ref(null)
 const nickname = ref(null)
 const healthAndMedical = reactive([])
 const allPhotos = ref([]);
+const u_id = localStorage.getItem('u_id')
 
 onMounted(() => {
     const closeModalOnEsc = (e) => e.key === 'Escape' && emit('close')
@@ -189,7 +190,9 @@ const open = ref(true)
                                     <span class="sm:text-base lg:text-lg">{{ name }}'s Information</span>
 
                                     <div class="flex sm:gap-x-2 md:gap-x-4">
-                                        <RouterLink :to="{ path: '/create_newanimalprofile', query: { mode: 'edit' } }"
+                                        <!-- Salpocial Changes -->
+                                        <RouterLink v-if="selectedProfile.owner_id == u_id"
+                                            :to="{ path: '/create_newanimalprofile', query: { mode: 'edit', petid: selectedProfile.id } }"
                                             class="bg-gray-800 py-1 sm:px-4 md:px-8 rounded-lg text-white hover:bg-gray-700">
                                             Edit Profile</RouterLink>
                                         <!-- <button
@@ -206,17 +209,18 @@ const open = ref(true)
                                             <!-- Nov12 -->
                                             <div
                                                 class="bg-gray-50 rounded-t-xl px-4 py-4 sm:grid md:grid-cols-3 sm:gap-y-2 sm:px-6">
-                                                <dt class="font-medium text-gray-900">Date Re-homed</dt>
+                                                <dt class="font-medium text-gray-900">Given-Name </dt>
                                                 <dd class="leading-6 text-gray-700">
-                                                    {{ selectedProfile.date_rehomed }}</dd>
-                                            </div>
-                                            <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                                <dt class="font-medium text-gray-900">Given-Name</dt>
-                                                <dd class="leading-6 text-gray-700 sm:col-span-2">
                                                     {{ name }}
                                                     <span v-if="nickname">
                                                         , "{{ nickname }}"
                                                     </span>
+                                                </dd>
+                                            </div>
+                                            <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                                <dt class="font-medium text-gray-900">Date Re-homed</dt>
+                                                <dd class="leading-6 text-gray-700 sm:col-span-2">
+                                                    {{ selectedProfile.date_rehomed }}
                                                 </dd>
                                             </div>
                                             <div class="bg-gray-50 px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -271,6 +275,19 @@ const open = ref(true)
                                             <div
                                                 class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 bg-gray-100 rounded-t-xl">
                                                 <!-- Nov12 name -->
+                                                <span class="font-medium text-gray-900">
+                                                    {{ name }} Status</span>
+                                            </div>
+                                            <div class="px-4 py-4 sm:gap-y-2 sm:px-6">
+                                                <!-- Nov12 selectedProfile.about -->
+                                                <dd class="leading-6 text-gray-700">
+                                                    {{ selectedProfile.status }}</dd>
+                                            </div>
+                                        </div>
+                                        <div class="border rounded-xl text-start">
+                                            <div
+                                                class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 bg-gray-100 rounded-t-xl">
+                                                <!-- Nov12 name -->
                                                 <span
                                                     class="text-lg font-semibold leading-6 text-gray-900 sm:col-span-3">
                                                     About {{ name }}</span>
@@ -278,7 +295,7 @@ const open = ref(true)
                                             <div class="px-4 py-4 sm:gap-y-2 sm:px-6">
                                                 <!-- Nov12 selectedProfile.about -->
                                                 <dd class="leading-6 text-gray-700">
-                                                    {{ selectedProfile.about }}"</dd>
+                                                    {{ selectedProfile.about }}</dd>
                                             </div>
                                         </div>
 
