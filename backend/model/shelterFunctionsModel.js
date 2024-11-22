@@ -1453,3 +1453,32 @@ export const getRescuedHistory = async (req, res) => {
     console.log("error in backend: getongoingoperations", err)
   }
 }
+
+// Nov22 joey added
+// export const getHandledRescueHistory = async (req, res) => {
+//   try {
+//     const { _report_status, _handled_by } = req.body;
+
+//     const { data, error } = await supabase.rpc("gethandled_reports", {
+//       _report_status,
+//       _handled_by,
+//     });
+
+//     if (data && !error) {
+//       res.status(200).send(data);
+//     } else {
+//       res.status(500).send({
+//         success: false,
+//         error: error.message || "Unknown error",
+//         message: "An Error Occurred",
+//       });
+//     }
+//   } catch (err) {
+//     console.error("Error in backend: getHandledRescueHistory", err);
+//     res.status(500).send({
+//       success: false,
+//       error: err.message,
+//       message: "Internal Server Error",
+//     });
+//   }
+// };
