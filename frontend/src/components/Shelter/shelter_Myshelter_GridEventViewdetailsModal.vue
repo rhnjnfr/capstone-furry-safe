@@ -32,12 +32,16 @@
                                     <div
                                         class="flex items-center justify-between text-gray-700 md:hidden gap-x-2 border-b px-[2rem] py-4">
                                         <div>
-                                            <h3 class="text-base font-semibold leading-7 text-gray-900">
-                                                Event's Information</h3>
+                                            <div v-if="userdetails[0]" class="flex items-center gap-x-3">
+                                                <img :src="userdetails[0].profile_url || default_profile" alt="profile"
+                                                    class="w-11 h-11 rounded-full object-cover " />
+                                                <span class="font-medium sm:text-base xl:text-2xl">{{
+                                                    userdetails[0].name}}</span>
+                                            </div>
                                         </div>
 
                                         <!-- dropdown buttons -->
-                                        <div class="relative inline-block text-left">
+                                        <div v-if="u_id == _user_id" class="relative inline-block text-left">
                                             <button @click="toggleDropdown" class="focus:outline-none">
                                                 <EllipsisHorizontalIcon class="h-6 w-6 text-gray-500" />
                                             </button>
@@ -97,12 +101,13 @@
                                                 <div v-if="userdetails[0]" class="flex items-center gap-x-3">
                                                     <img :src="userdetails[0].profile_url || default_profile"
                                                         alt="profile" class="w-11 h-11 rounded-full object-cover " />
-                                                    <span class="font-medium sm:text-base xl:text-2xl">{{ userdetails[0].name}}</span>
+                                                    <span class="font-medium sm:text-base xl:text-2xl">{{
+                                                        userdetails[0].name}}</span>
                                                 </div>
                                             </div>
 
                                             <!-- dropdown buttons -->
-                                            <div class="relative inline-block text-left">
+                                            <div v-if="u_id == _user_id" class="relative inline-block text-left">
                                                 <button @click="toggleDropdown" class="focus:outline-none">
                                                     <EllipsisHorizontalIcon class="h-6 w-6 text-gray-500" />
                                                 </button>
@@ -151,7 +156,8 @@
                                                             Location</dt>
                                                         <dd
                                                             class="mt-1 text-sm leading-6 text-gray-700 xl:col-span-2 sm:mt-0">
-                                                            {{ selectedPetDetails.location_address || selectedPetDetails.report_address_location }}</dd>
+                                                            {{ selectedPetDetails.location_address ||
+                                                            selectedPetDetails.report_address_location }}</dd>
                                                     </div>
                                                     <div
                                                         class="bg-gray-50 px-4 py-6 sm:grid xl:grid-cols-3 gap-y-1 gap-x-4 sm:px-3">
@@ -193,16 +199,18 @@ const toggleDropdown = () => {
 };
 
 // Nov12
+let u_id = localStorage.getItem('u_id')
 let date = ref(null)
 onMounted(async () => {
     selectedPetDetails.value = props.selectedPetDetails
-    date.value = formatDateRange(selectedPetDetails.value.date_time_start, selectedPetDetails.value.date_time_end)
+    console.log(date.value)
     _user_id.value = selectedPetDetails.value.user_id
     _event_id.value = selectedPetDetails.value.post_id
     await getUserDetails()
     await retrieveReports()
+    date.value = formatDateRange(selectedPetDetails.value.date_time_start, selectedPetDetails.value.date_time_end)
     console.log(userdetails.value)
-    console.log("event modal", _user_id.value, props.selectedPetDetails)
+    console.log("event modal", _user_id.value, selectedPetDetails.value)
 })
 
 let selectedPetDetails = ref([])
@@ -230,7 +238,7 @@ let userdetails = ref([])
 let _event_id = ref(null)
 async function getUserDetails() {
     try {
-    console.log("event modal 2", _user_id.value)
+        console.log("event modal 2", _user_id.value)
         const response = await axios.post("http://localhost:5000/getusedetails", {
             _id: _user_id.value
         });
@@ -248,7 +256,7 @@ let events = ref([])
 let photos = ref([])
 async function retrieveReports() {
     try {
-            console.log("eventssssssssssssssss") // Nov12
+        console.log("eventssssssssssssssss") // Nov12
 
         const response = await axios.post("http://localhost:5000/getevents", {
             _event_id: _event_id.value

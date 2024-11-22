@@ -160,7 +160,7 @@ onMounted(async () => {
                     </div>
                     <div v-else>
                         <vieweventdetials v-if="selectedPostViewDetailsId === post.post_id"
-                        :selectedPetDetails="selectedPostDetails" @close="toggleModalViewDetails(post.event_id)" />
+                        :selectedPetDetails="selectedPostDetails" @close="toggleModalViewDetails(post.post_id)" />
                         <!-- <viewbuddypostdetials v-if="selectedPostViewDetailsId === post.post_id"
                             :selectedPostDetails="selectedPostDetails" @close="toggleModalViewDetails(post.post_id)" /> -->
                     </div>

@@ -172,7 +172,6 @@
     async function logout(){
         try{
             //req to clear cookies 
-            console.log("email", this.userEmail)
             const response = await axios.post("http://localhost:5000/logout");
 
                  console.log(response)
