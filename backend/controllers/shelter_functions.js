@@ -25,7 +25,8 @@ import {
   getRescuedHistory,
   confirmRescue,
   cancelOperation,
-  setShelterEvent
+  setShelterEvent,
+  // getHandledRescueHistory, // Nov22
 } from "../model/shelterFunctionsModel.js";
 
 export const insertShelterAddress = (req, res) => {
@@ -117,4 +118,8 @@ export const setConfirmRescued = (req, res) => {
 };
 export const setCancelOperation = (req, res) => {
   cancelOperation(req, res);
+};
+
+export const gethandledhistory = (req, res) => {
+  getHandledRescueHistory(req, res); 
 };

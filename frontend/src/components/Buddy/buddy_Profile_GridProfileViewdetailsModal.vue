@@ -32,12 +32,15 @@ const healthAndMedical = reactive([])
 const allPhotos = ref([]);
 const u_id = localStorage.getItem('u_id')
 
+const petID = props.selectedProfileDetails.id;
+
 onMounted(() => {
     const closeModalOnEsc = (e) => e.key === 'Escape' && emit('close')
     window.addEventListener('keydown', closeModalOnEsc)
     onBeforeUnmount(() => window.removeEventListener('keydown', closeModalOnEsc))
 
     selectedProfile.value = props.selectedProfileDetails
+    console.log("age is", props.selectedProfileDetails.age)
 
     if (selectedProfile.value && selectedProfile.value.name_nickname) {
         const [firstName, nickName] = selectedProfile.value.name_nickname.split('/');
@@ -86,6 +89,13 @@ onMounted(() => {
 
         console.log("photos", allPhotos.value)
     }
+
+    if (props.selectedProfileDetails.id === petID) {
+        console.log("The pet id generated", petID)
+        generateQR(petID)
+    } else {
+        console.log("generation failed")
+    }
 });
 
 const viewpostdetials = {
@@ -114,6 +124,20 @@ const remainingImagesText = computed(() => {
     const remainingCount = viewpostdetials.imageUrls.length - 3
     return remainingCount > 0 ? `${remainingCount}+ more` : ''
 })
+
+
+
+
+let qrgenerated = ref(false)
+let qrphotosrc = ref(null)
+
+function generateQR(petID) {
+    let qrvalue = `${window.location.origin}/frrysf_view/scanview_animalprofileform/${petID}`;
+    qrphotosrc.value = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + encodeURIComponent(qrvalue);
+    qrgenerated.value = true;
+
+    console.log("QR Generated:", qrphotosrc.value);
+}
 
 const emit = defineEmits(['close']) // for closing the modal
 
@@ -208,6 +232,23 @@ const open = ref(true)
                                         <dl class="divide-y divide-gray-100">
                                             <!-- Nov12 -->
                                             <div
+                                                class="rounded-t-xl px-4 py-4 flex justify-center bg-gray-100 sm:gap-y-2 sm:px-6">
+
+                                                <div class="relative group w-fit bg-white overflow-hidden rounded-2xl">
+                                                    <div v-if="qrgenerated"
+                                                        class="w-[13rem] border rounded-lg p-[2rem]">
+                                                        <img id="qrcode" :src="qrphotosrc" alt="Pet QR Code">
+                                                    </div>
+                                                    <div
+                                                        class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded">
+                                                        <button @click="downloadQR"
+                                                            class="bg-blue-500 text-white px-4 py-1 rounded">
+                                                            Download
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div
                                                 class="bg-gray-50 rounded-t-xl px-4 py-4 sm:grid md:grid-cols-3 sm:gap-y-2 sm:px-6">
                                                 <dt class="font-medium text-gray-900">Given-Name </dt>
                                                 <dd class="leading-6 text-gray-700">
@@ -236,10 +277,19 @@ const open = ref(true)
                                             <div class="bg-gray-50 px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                                 <dt class="font-medium text-gray-900">Age / Gender</dt>
                                                 <dd class="leading-6 text-gray-700 sm:col-span-2 ">
-                                                    <span v-if="selectedProfile.age > 1">
+                                                    <!-- <span v-if="selectedProfile.age > 1">
                                                         {{ selectedProfile.age }} years old
                                                     </span>
                                                     <span v-if="selectedProfile.age == 1">
+                                                        {{ selectedProfile.age }} year old
+                                                    </span>
+                                                    <span class="italic" v-else>
+                                                        To be Confirmed
+                                                    </span> -->
+                                                    <span v-if="Number(selectedProfile.age) > 1">
+                                                        {{ selectedProfile.age }} years old
+                                                    </span>
+                                                    <span v-else-if="Number(selectedProfile.age) === 1">
                                                         {{ selectedProfile.age }} year old
                                                     </span>
                                                     <span class="italic" v-else>

@@ -149,12 +149,7 @@ const sidebarOpen = ref(false)
 
                                         <li class="mt-auto">
                                             <!-- si to="" diri ibutang ang path example to="/profile" -->
-                                            <RouterLink to=""
-                                                class="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-600 hover:bg-gray-100 hover:text-gray-800 px-6">
-                                                <AdjustmentsHorizontalIcon class="h-6 w-6 shrink-0"
-                                                    aria-hidden="true" />
-                                                Settings
-                                            </RouterLink>
+                                            
                                             <a @click.prevent="logout()"
                                                 class="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-600 hover:bg-gray-100 hover:text-gray-800 px-6">
                                                 <ArrowRightStartOnRectangleIcon class="h-6 w-6 shrink-0"
@@ -199,11 +194,7 @@ const sidebarOpen = ref(false)
                         </li>
 
                         <li class="mt-auto">
-                            <RouterLink to=""
-                                class="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-600 hover:bg-gray-100 hover:text-gray-800 px-6">
-                                <AdjustmentsHorizontalIcon class="h-6 w-6 shrink-0" aria-hidden="true" />
-                                Settings
-                            </RouterLink>
+                            
                             <a @click.prevent="logout()"
                                 class="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-600 hover:bg-gray-100 hover:text-gray-800 px-6">
                                 <ArrowRightStartOnRectangleIcon class="h-6 w-6 shrink-0" aria-hidden="true" />

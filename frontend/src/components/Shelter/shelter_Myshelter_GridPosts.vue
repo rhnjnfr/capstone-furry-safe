@@ -5,7 +5,9 @@ import { Square2StackIcon } from '@heroicons/vue/20/solid'
 
 import popupNewpost from '@/components/Shelter/shelter_NewPostModal.vue'
 const showModalCreatePost = ref(false)
-import viewpostdetials from '@/components/Shelter/shelter_Myshelter_GridPostViewdetailsModal.vue';
+// import viewpostdetials from '@/components/Shelter/shelter_Myshelter_GridPostViewdetailsModal.vue';
+
+import viewpostdetials from '@/components/Shelter/gridpostviewdetails.vue';
 
 // view detials on grid post images
 const selectedPostViewDetailsId = ref(null);

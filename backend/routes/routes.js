@@ -46,7 +46,8 @@ import {
   getrescuedhistory,
   setConfirmRescued,
   setCancelOperation,
-  modifyShelterEvent
+  modifyShelterEvent,
+  // gethandledhistory, // Nov22
 } from "../controllers/shelter_functions.js";
 
 import {
@@ -147,11 +148,13 @@ router.post("/getevents", upload2.any(), getEvents);
 router.post("/getongoingoperations", upload2.any(), getongoingoperation); 
 router.post("/getrescuedhistory", upload2.any(), getrescuedhistory); 
 router.post("/confirmRescue", upload2.any(), setConfirmRescued);  
-router.post("/cancelOperation", upload2.any(), setCancelOperation);  
+router.post("/cancelOperation", upload2.any(), setCancelOperation); 
+
+// router.post('/gethandledrescuehistory', gethandledhistory);
 
 
 //all 
-router.post("/getusedetails", getUserDetails) 
+router.post("/getusedetails", upload2.any(), getUserDetails) 
 
 
 
