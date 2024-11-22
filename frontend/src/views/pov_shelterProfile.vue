@@ -28,6 +28,8 @@ const toggleModalEventViewDetails = (id) => {
 
 
 import viewpostdetials from '@/components/Shelter/shelter_Myshelter_GridPostViewdetailsModal.vue';
+import newviewpostdetails from '@/components/gridpostviewdetails.vue'
+
 /// view detials on grid post images
 const selectedPostViewDetailsId = ref(null);
 let selectedPostDetails = ref([])
@@ -409,9 +411,13 @@ const updateCurrentTab = (tabName) => {
                                     <Square2StackIcon v-if="posthasMultiplePhotos(post.photos)"
                                         class="absolute top-2 right-2 h-5 w-5 text-white group-hover:opacity-75" />
                                 </button>
-                                <viewpostdetials v-if="selectedPostViewDetailsId === post.post_id"
-                                    :selectedPostDetails="selectedPostDetails" :mode="'pov'"
+                                <newviewpostdetails v-if="selectedPostViewDetailsId === post.post_id"
+                                    :selectedPostDetails="selectedPostDetails"
                                     @close="toggleModalViewPostDetails(post.post_id)" />
+
+                                <!-- <viewpostdetials v-if="selectedPostViewDetailsId === post.post_id"
+                                    :selectedPostDetails="selectedPostDetails" :mode="'pov'"
+                                    @close="toggleModalViewPostDetails(post.post_id)" /> -->
                             </li>
                         </ul>
                     </div>

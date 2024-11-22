@@ -244,7 +244,7 @@ async function downloadQR() {
                                         <p class=" max-w-2xl text-sm leading-6 text-gray-500">
                                             {{ post_details.owner }}</p>
                                     </div>
-                                    <div v-show="!mode" class="relative inline-block">
+                                    <!-- <div v-show="!mode" class="relative inline-block">
                                         <button @click="toggleDropdown" class="focus:outline-none">
                                             <EllipsisHorizontalIcon class="h-6 w-6 text-gray-500" />
                                         </button>
@@ -263,7 +263,7 @@ async function downloadQR() {
                                                     role="menuitem">Delete Post</button>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> -->
                                 </div>
                                 <!-- <div class="absolute top-[40rem]">
                                     <div class="relative group w-fit bg-white">

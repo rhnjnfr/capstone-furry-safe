@@ -5,8 +5,9 @@ import { ChatBubbleLeftRightIcon, UserCircleIcon } from "@heroicons/vue/24/outli
 import { InformationCircleIcon } from '@heroicons/vue/24/solid'
 import { MapPinIcon } from '@heroicons/vue/24/outline'
 
-import viewshelterpostdetials from '@/components/Buddy/buddy_Home_ViewdetailsModal.vue';
+import vieweventdetials from '@/components/Shelter/shelter_Myshelter_GridEventViewdetailsModal.vue';
 import viewbuddypostdetials from '@/components/Shelter/shelter_RescueOp_ReportViewdetailsModal.vue';
+import newviewpostdetails from '@/components/gridpostviewdetails.vue'
 
 import viewpostimagepreview from '@/components/Buddy/buddy_Home_ImagePreviewModal.vue';
 import default_avatar from '@/assets/images/buddy_default.jpg'
@@ -21,11 +22,14 @@ const selectedPostViewDetailsId = ref(null);
 
 const toggleModalViewDetails = (id) => {
     selectedPostViewDetailsId.value = selectedPostViewDetailsId.value === id ? null : id;
-    const foundPost = posts.value.find(post => post.post_id === selectedPostViewDetailsId.value);
+    const foundPost = postsandevents.value.find(post => post.post_id === selectedPostViewDetailsId.value);
 
     if (foundPost) {
         selectedPostDetails.value = foundPost
         console.log(selectedPostDetails.value)
+    }
+    else{
+        console.log("no match")
     }
 };
 
@@ -56,15 +60,33 @@ async function retrieveReports() {
         console.log("error in retrieve reports", err)
     }
 }
+let postsandevents = ref([])
+async function retrieveReportsandEvents() {
+    try {
+        console.log("retrieveReports")
+        const response = await axios.post("http://localhost:5000/getereportsandevents", {
+        });
+
+        if (response.data && response.data.length > 0) {
+            postsandevents.value = response.data
+        }
+        console.log("post and events value", postsandevents.value)
+    }
+    catch (err) {
+        console.log("error in retrieve reports", err)
+    }
+}
 
 onMounted(async () => {
     await retrieveReports()
+    await retrieveReportsandEvents()
 })
 
 </script>
 
 <template>
-    <div v-for="post in posts" :key="post.post_id"
+    <!-- <div v-for="post in posts" :key="post.post_id" -->
+    <div v-for="post in postsandevents" :key="post.post_id"
         class="md:container sm:w-full md:w-[80%] lg:w-[70%] xl:w-[52rem] h-fit mb-4 mx-auto bg-white py-2 px-4  rounded-xl">
         <div class="px-[.5rem] py-[10px] flex gap-x-2 items-center">
             <div>
@@ -85,9 +107,10 @@ onMounted(async () => {
                 'bg-amber-50 border-amber-300 text-amber-500': post.post_type === 'Missing Report',
                 'bg-red-50 border-red-300 text-red-500': post.post_type === 'Stray Report',
                 'bg-teal-50 border-teal-300 text-teal-500': post.post_type === 'Adoption',
+                'bg-blue-50 border-teal-300 text-teal-500': post.post_type === 'Event',
                 'bg-gray-50': post.post_type !== 'Missing Report' && post.post_type !== 'Stray Report' && post.post_type !== 'Adoption',
             }">{{ post.post_type }}</span>
-            <span :class="{
+            <span v-if="post.report_status != null" :class="{
                 'text-[10px] border py-1 px-3 font-medium rounded-full text-center': true,
                 'bg-amber-50 border-amber-300 text-amber-500': post.report_status === 'In progress',
                 'bg-red-50 border-red-300 text-red-500': post.report_status === 'Pending',
@@ -102,10 +125,16 @@ onMounted(async () => {
                     class="mx-auto flex-shrink-0 w-[50rem] sm:h-[35rem] md:h-[40rem] rounded-2xl object-cover cursor-pointer"
                     :src="post.photos[0]" alt="image post" />
             </div>
+            <div v-else-if="post.post_type == 'Stray Report' || post.post_type == 'Missing Report'">
+                <img @click="toggleModalViewDetails(post.post_id)"
+                    class="mx-auto flex-shrink-0 w-[50rem] sm:h-[35rem] md:h-[40rem] rounded-2xl object-cover cursor-pointer"
+                    :src="post.photos[0]" alt="image post" />
+            </div>
             <div v-else>
                 <img @click="toggleModalViewDetails(post.post_id)"
                     class="mx-auto flex-shrink-0 w-[50rem] sm:h-[35rem] md:h-[40rem] rounded-2xl object-cover cursor-pointer"
                     :src="post.photos[0]" alt="image post" />
+                    <!-- ? -->
             </div>
 
             <!-- Image Preview -->
@@ -119,12 +148,21 @@ onMounted(async () => {
                         <InformationCircleIcon class="sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-gray-100 hover:text-white" />
                     </button>
                     <div v-if="post.post_type == 'Adoption'">
-                        <viewshelterpostdetials v-if="selectedPostViewDetailsId === post.post_id"
+
+                        <newviewpostdetails v-if="selectedPostViewDetailsId === post.post_id"
+                            :selectedPostDetails="selectedPostDetails" @close="toggleModalViewDetails(post.post_id)" />
+                        <!--  <viewshelterpostdetials v-if="selectedPostViewDetailsId === post.post_id"
+                            :selectedPostDetails="selectedPostDetails" @close="toggleModalViewDetails(post.post_id)" /> -->
+                    </div>
+                    <div v-else-if="post.post_type == 'Stray Report' || post.post_type == 'Missing Report'">
+                        <viewbuddypostdetials v-if="selectedPostViewDetailsId === post.post_id"
                             :selectedPostDetails="selectedPostDetails" @close="toggleModalViewDetails(post.post_id)" />
                     </div>
                     <div v-else>
-                        <viewbuddypostdetials v-if="selectedPostViewDetailsId === post.post_id"
-                            :selectedPostDetails="selectedPostDetails" @close="toggleModalViewDetails(post.post_id)" />
+                        <vieweventdetials v-if="selectedPostViewDetailsId === post.post_id"
+                        :selectedPetDetails="selectedPostDetails" @close="toggleModalViewDetails(post.event_id)" />
+                        <!-- <viewbuddypostdetials v-if="selectedPostViewDetailsId === post.post_id"
+                            :selectedPostDetails="selectedPostDetails" @close="toggleModalViewDetails(post.post_id)" /> -->
                     </div>
                 </div>
             </div>

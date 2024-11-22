@@ -38,6 +38,7 @@ import {
   insertNewChat,
   fetchAllShelters, //added fetchAllShelters
   getReports,
+  getReportsandevents,
   getEvents,
   insertShelterPost, // Nov5 added insertShelterPost, insertShelterRescue, insertShelterEvent from salpocial's code
   insertShelterRescue,
@@ -142,6 +143,7 @@ router.post("/getbuddypost", upload2.any(), getBuddyPost)
 
 //shelter function 
 router.post("/getereports", getReports) 
+router.post("/getereportsandevents", getReportsandevents) 
 router.post("/insertshelterpost", upload2.any(), insertShelterPost);  //New route for shelter post
 router.post("/getevents", upload2.any(), getEvents);  
 router.post("/getongoingoperations", upload2.any(), getongoingoperation); 

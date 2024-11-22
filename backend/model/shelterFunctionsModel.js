@@ -884,11 +884,43 @@ export const retrieveReports = async (req, res) => {
     console.log("error occured in retrieveReports", err);
   }
 };
+export const retrieveReportsandEvents = async (req, res) => {
+  try {
+    let { _post_id, _post_type, _user_id, _report_status } = req.body;
+
+    // _post_id 
+    // _post_type 
+    // _user_id 
+    // _report_status 
+    // _event_id 
+    // _shelter_id 
+
+    _post_id = _post_id == null || _post_id == '' ? null : _post_id;
+    _user_id = (_user_id == null || _user_id == '') ? null : _user_id
+    _post_type = (_post_type == null || _post_type == '') ? null : _post_type
+    _report_status = (_report_status == null || _report_status == '') ? null : _report_status
+
+    console.log("here", _post_id, _post_type, _user_id);
+    const { data, error } = await supabase.rpc("get_filtered_posts_and_events", {
+    //   _post_id: _post_id,
+    //   _post_type: _post_type,
+    //   _user_id: _user_id,
+    //   _report_status: _report_status,
+    //
+     });
+    if (!error) {
+      res.status(200).send(data);
+    } else {
+    }
+  } catch (err) {
+    console.log("error occured in retrieveReports", err);
+  }
+};
 
 export const retrieveEvents = async (req, res) => {
   try {
     let { _event_id, _shelter_id } = req.body;
-
+    console.log("events", _event_id)
     _event_id = _event_id == null || _event_id == "" ? null : _event_id;
     _shelter_id = _shelter_id == null || _shelter_id == "" ? null : _shelter_id;
 

@@ -366,7 +366,9 @@ async function submitPost() {
     if(!newpost.value){
       isMissingCaption.value = true
     }
-    isMissingProofImageImage.value = true; // Nov21 for styling
+    if(!imageUrls.value || imageUrls.value.length === 0){
+      isMissingProofImageImage.value = true; // Nov21 for styling
+    }
     return;
   }
 

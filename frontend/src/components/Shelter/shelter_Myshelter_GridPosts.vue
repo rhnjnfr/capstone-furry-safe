@@ -6,6 +6,7 @@ import { Square2StackIcon } from '@heroicons/vue/20/solid'
 import popupNewpost from '@/components/Shelter/shelter_NewPostModal.vue'
 const showModalCreatePost = ref(false)
 import viewpostdetials from '@/components/Shelter/shelter_Myshelter_GridPostViewdetailsModal.vue';
+import newviewpostdetails from '@/components/gridpostviewdetails.vue'
 
 // view detials on grid post images
 const selectedPostViewDetailsId = ref(null);
@@ -41,7 +42,7 @@ async function retrieveReports() {
 
 function hasMultiplePhotos(photo_display_url) {
     try {
-        
+
         // // Double parse to handle stringified JSON
         // const photos = JSON.parse(JSON.parse(`"${photo_display_url}"`));
         // return Array.isArray(photos) && photos.length > 1;
@@ -68,11 +69,13 @@ onMounted(async () => {
                         class="pointer-events-none aspect-square object-cover group-hover:opacity-75" />
 
                     <!-- Display the overlay icon if there are multiple images -->
-                    <Square2StackIcon  v-if="hasMultiplePhotos(post.photos)"
+                    <Square2StackIcon v-if="hasMultiplePhotos(post.photos)"
                         class="absolute top-2 right-2 h-5 w-5 text-white group-hover:opacity-75" />
                 </button>
-                <viewpostdetials v-if="selectedPostViewDetailsId === post.post_id"  :selectedPostDetails="selectedPostDetails"
-                    @close="toggleModalViewPostDetails(post.post_id)" />
+                <newviewpostdetails v-if="selectedPostViewDetailsId === post.post_id"
+                    :selectedPostDetails="selectedPostDetails" @close="toggleModalViewPostDetails(post.post_id)" />
+                <!-- <viewpostdetials v-if="selectedPostViewDetailsId === post.post_id"  :selectedPostDetails="selectedPostDetails"
+                    @close="toggleModalViewPostDetails(post.post_id)" /> -->
             </li>
         </ul>
     </div>
@@ -85,6 +88,6 @@ onMounted(async () => {
             here.</p>
         <button @click="showModalCreatePost = true" type="button"
             class="underline underline-offset-4 hover:text-amber-600">Create your first Post</button>
-        <popupNewpost v-if="showModalCreatePost" @close="showModalCreatePost = false"/>
+        <popupNewpost v-if="showModalCreatePost" @close="showModalCreatePost = false" />
     </div>
 </template>

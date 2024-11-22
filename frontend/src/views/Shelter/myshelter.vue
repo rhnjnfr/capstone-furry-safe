@@ -6,6 +6,7 @@ import { PencilIcon, PhoneIcon, LinkIcon, EnvelopeIcon, MapPinIcon } from '@hero
 import { SparklesIcon, RectangleStackIcon } from '@heroicons/vue/24/outline'
 
 import linkfooter from '@/components/footerLink.vue'; // footer
+import default_profile from '@/assets/images/default_profile_photo.png';
 
 import Toast from '@/components/toast.vue';  // Ensure correct case for the file name
 const route = useRoute();
@@ -18,7 +19,6 @@ onMounted(() => {
         }
     }
 });
-
 
 const id = localStorage.getItem('c_id');
 const profiles = ref([]); // Holds shelter and email data
@@ -151,7 +151,7 @@ const updateCurrentTab = (tabName) => {
                         <!-- user profile image -->
                         <div>
                             <img class="sm:h-40 sm:w-40 xl:h-52 xl:w-52 rounded-full border-2 object-cover"
-                                :src="profileUrl" alt="profile image " />
+                                :src="profileUrl || default_profile" alt="profile image " />
                         </div>
 
                         <div class="sm:hidden md:flex flex-col w-[30rem] gap-y-4">

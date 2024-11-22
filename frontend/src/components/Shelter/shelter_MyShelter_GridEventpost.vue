@@ -39,7 +39,7 @@ async function retrieveReports() {
 
         if (response.data && response.data.length > 0) {
             events.value = response.data
-            photos.value = response.data.photo_urls
+            photos.value = response.data.photos
 
             console.log("events", events.value) // Nov12
         }
@@ -87,10 +87,10 @@ onMounted(async () => {
                 <button @click="toggleModalViewDetails(event.event_id)"
                     class="group block w-full overflow-hidden bg-white">
                     <!-- Display the overlay icon if there are multiple images -->
-                    <Square2StackIcon v-if="hasMultiplePhotos(event.photo_urls)"
+                    <Square2StackIcon v-if="hasMultiplePhotos(event.photos)"
                         class="absolute top-2 right-2 h-5 w-5 text-white group-hover:opacity-75" />
                     <!-- Display the image (single or first in array) -->
-                    <img :src="getFirstPhoto(event.photo_urls)" alt="Event image"
+                    <img :src="getFirstPhoto(event.photos)" alt="Event image"
                         class="pointer-events-none aspect-square object-cover group-hover:opacity-75" />
                 </button>
                 <!-- Nov12 added line :selectedPetDetails="selectedEventViewDetails" -->
