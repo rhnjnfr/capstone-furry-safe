@@ -239,7 +239,7 @@ const open = ref(true)
                                                     <span v-if="selectedProfile.age > 1">
                                                         {{ selectedProfile.age }} years old
                                                     </span>
-                                                    <span v-if="selectedProfile.age == 1">
+                                                    <span v-else-if="selectedProfile.age == 1">
                                                         {{ selectedProfile.age }} year old
                                                     </span>
                                                     <span class="italic" v-else>

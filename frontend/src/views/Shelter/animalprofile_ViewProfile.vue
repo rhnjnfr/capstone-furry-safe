@@ -268,12 +268,12 @@ onMounted(async () => {
                         <dd class="mt-1 text-sm leading-6 text-gray-700 sm:mt-2">
                             <span>
                                 <!--  {{ petDetails.age }} / {{ petDetails.gender }}-->
-                                <span v-if="petDetails.age == 0" class="italic"> Age to be confirmed </span>
-                                <span v-if="petDetails.age == 1" class="italic"> {{ petDetails.age }} year old </span>
-                                <span v-if="petDetails.age > 1" class="italic"> {{ petDetails.age }} years old </span>
+                                <span v-if="petDetails.age < 1" class="italic"> Age to be confirmed </span>
+                                <span v-else-if="petDetails.age == 1" class="italic"> {{ petDetails.age }} year old </span>
+                                <span v-else="petDetails.age > 1" class="italic"> {{ petDetails.age }} years old </span>
                                 /
                                 <span v-if="petDetails.gender == 'm'">Male</span>
-                                <span v-if="petDetails.gender == 'f'">Female</span>
+                                <span v-else="petDetails.gender == 'f'">Female</span>
                             </span>
                         </dd>
                     </div>

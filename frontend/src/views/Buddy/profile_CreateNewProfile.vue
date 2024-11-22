@@ -10,10 +10,10 @@ import { useRouter, useRoute } from 'vue-router';
 // joey added kay geh reuse nkon form sa shelter side tas nag himog new file so mao nani HAHHAHAH
 import { defineProps } from 'vue'; // for reusing the form defining mode receive either edit or create yeahhh - joey
 const props = defineProps({ // for reuse form defines mode if either edit or create - joey
-  mode: {
-    type: String,
-    required: true
-  }
+    mode: {
+        type: String,
+        required: true
+    }
 });
 
 // Access the current route
@@ -22,16 +22,16 @@ const currentMode = route.query.mode || 'create'; // Default to 'create' if no m
 
 // Function to handle submission based on mode
 const handleSubmit = () => {
-  if (currentMode === 'edit') {
-    // Logic for editing
-    console.log('Editing profile...');
-    retrieveData();
-  } else {
-    // Logic for creating
-    console.log('Creating profile...');
-    retrieveData() // Nov12
+    if (currentMode === 'edit') {
+        // Logic for editing
+        console.log('Editing profile...');
+        retrieveData();
+    } else {
+        // Logic for creating
+        console.log('Creating profile...');
+        retrieveData() // Nov12
 
-  }
+    }
 };
 // jeneh's code from shelter create new profile geh reuse nlng nkong form...
 
@@ -238,7 +238,7 @@ async function loadPetCategory() { //type from db dog cats //pet type/category r
         console.log(response)
         if (response.data) {
             animalCategory.value = response.data
-        }        
+        }
     }
     catch (err) {
         console.log("error", err)
@@ -258,7 +258,7 @@ async function loadPetBreed() { //breed from db //load pet breed when pet type (
         if (petbreed_id) {
             selectedAnimalBreed.value = petbreed_id.value
         }
-        
+
     }
     catch (err) {
         console.log("error", err)
@@ -438,11 +438,11 @@ async function retrieveData() {
     const steril2_ = formData.get('sterilization_id');
 
     // Nov12
-    if (name_ && gender_ && status_ && (pet_ || pet2_) && (steril_ || steril2_) &&  currentMode == 'create') {
+    if (name_ && gender_ && status_ && (pet_ || pet2_) && (steril_ || steril2_) && currentMode == 'create') {
         console.log("creating... ")
         savePetProfile(formData)
     }
-    if (name_ && gender_ && status_ && (pet_ || pet2_) && (steril_ || steril2_) &&  currentMode == 'edit') {
+    if (name_ && gender_ && status_ && (pet_ || pet2_) && (steril_ || steril2_) && currentMode == 'edit') {
         console.log("updating ... ")
         updatePetDetails(formData)
     }
@@ -555,7 +555,7 @@ async function updatePetDetails(thisformdata) {
             {
                 headers: { 'Content-Type': 'multipart/form-data' } // Correct header placement
             }
-        ) 
+        )
         if (response.data.success) {
             navigateTo({
                 path: `/buddy_profile`,
@@ -577,6 +577,10 @@ async function savePetProfile(formData) { //Save pet profile, pet profile photo,
     console.log("profile picture to save", profileToUpload.value)
     console.log("extra photos", files.value)
 
+    for (const [key, value] of formData.entries()) {
+        console.log(key, value);
+    }
+
     try {
         const response = await axios.post("http://localhost:5000/save_pet_profile",
             formData,
@@ -585,7 +589,6 @@ async function savePetProfile(formData) { //Save pet profile, pet profile photo,
             }
         );
 
-        console.log("tite", response.data.success)
         if (response.data.success) {
             // navigateTo("/myshelter", { query: { showToast: true, message: 'Saved Successfully', from: 'edit' } });
             navigateTo({
@@ -703,7 +706,7 @@ onMounted(() => { //pag load sa page mag load ni =)
     //data rendering :'D
     loadPetCategory()
     loadPetStatus()
-    
+
     if (currentMode === 'edit') {
         loadPetDetails(); // Load pet details if in edit mode
     }

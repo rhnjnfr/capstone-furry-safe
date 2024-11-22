@@ -5,6 +5,7 @@ import { ChevronLeftIcon, ChevronRightIcon, EllipsisHorizontalIcon } from "@hero
 import statusbuttons from '@/components/Shelter/shelter_RescueOp_ReportCard_ReportStatusButtons.vue';
 import axios from "axios"
 
+import default_profile from '@/assets/images/default_profile_photo.png';
 import CreateReportModal from '@/components/Buddy/buddy_CreateReportPost_Modal.vue' // for edit modal
 const openEditModal = ref(false) // for create report modal
 
@@ -129,7 +130,7 @@ const open = ref(true)
                                     <div v-if="userdetails[0]"
                                         class="flex items-center justify-between text-gray-700 md:hidden gap-x-2 border-b px-[2rem] py-4">
                                         <div class="flex items-center gap-x-2">
-                                            <img :src="userdetails[0].profile_url" alt="profile"
+                                            <img :src="userdetails[0].profile_url || default_profile" alt="profile"
                                                 class="w-10 h-10 rounded-full object-cover" />
                                             <span class="font-bold sm:text-base xl:text-xl">
                                                 {{ userdetails[0].name }}  </span>
@@ -172,7 +173,7 @@ const open = ref(true)
 
                                             <!-- orig code -->
                                             <div v-if="userdetails[0]" class="flex items-center gap-x-3">
-                                                <img :src="userdetails[0].profile_url" alt="profile"
+                                                <img :src="userdetails[0].profile_url || default_profile" alt="profile"
                                                     class="w-10 h-10 rounded-full object-cover" />
                                                 <span class="font-bold sm:text-base xl:text-xl">{{
                                                     selectedReportDetails.posted_by }}</span>
