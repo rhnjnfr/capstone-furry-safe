@@ -162,14 +162,14 @@ let posts = ref([])
 async function retrieveReports() {
     try {
         const response = await axios.post("http://localhost:5000/getereports", {
-            _user_id
+            _user_id: _user_id
         });
 
         if (response.data && response.data.length > 0) {
             posts.value = response.data
         }
-        console.log("post value", posts.value)
-        console.log("posts photos", posts.value[0].photos)
+        // console.log("post value", posts.value)
+        console.log("posts photos", response.data)
 
     }
     catch (err) {
@@ -241,9 +241,9 @@ async function retrieveEvents() {
 
         if (response.data && response.data.length > 0) {
             events.value = response.data
-            photos.value = response.data.photo_urls
+            photos.value = response.data.photos
 
-            console.log("events", events.value) // Nov12
+            console.log("events", response.data.photos) // Nov12
         }
     }
     catch (err) {
@@ -438,10 +438,10 @@ const updateCurrentTab = (tabName) => {
                                 <button @click="toggleModalEventViewDetails(event.event_id)"
                                     class="group block w-full overflow-hidden bg-white">
                                     <!-- Display the overlay icon if there are multiple images -->
-                                    <Square2StackIcon v-if="eventhasMultiplePhotos(event.photo_urls)"
+                                    <Square2StackIcon v-if="eventhasMultiplePhotos(event.photos)"
                                         class="absolute top-2 right-2 h-5 w-5 text-white group-hover:opacity-75" />
                                     <!-- Display the image (single or first in array) -->
-                                    <img :src="getFirstPhoto(event.photo_urls)" alt="Event image"
+                                    <img :src="getFirstPhoto(event.photos)" alt="Event image"
                                         class="pointer-events-none aspect-square object-cover group-hover:opacity-75" />
                                 </button>
                                 <vieweventdetials v-if="selectedEventViewDetailsId === event.event_id"
