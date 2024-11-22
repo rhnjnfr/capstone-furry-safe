@@ -235,14 +235,14 @@ onMounted(async () => {
                         <dt class="text-sm font-medium leading-6 text-gray-900">Owner</dt>
                         <RouterLink v-if="userType == 'buddy'" :to="petDetails.owner_type === 'shelter'
                             ? { name: 'pov_viewshelterprofile_buddy', query: { shelterId: petDetails.owner_typeid, shelterUserID: petDetails.owner_id } }
-                            : { name: 'pov_viewbuddyprofile_buddy', query: { buddyId: petDetails.owner_typeid } }">
+                            : { name: 'pov_viewbuddyprofile_buddy', query: { buddyId: petDetails.owner_id } }">
                             <span class="mt-1 text-sm leading-6 text-gray-700 sm:mt-2">
                                 {{ petDetails.owner }}
                             </span>
                         </RouterLink>
                         <RouterLink v-else :to="petDetails.owner_type === 'shelter'
                             ? { name: 'pov_viewshelterprofile_shelter', query: { shelterId: petDetails.owner_typeid, shelterUserID: petDetails.owner_id } }
-                            : { name: 'pov_viewbuddyprofile_shelter', query: { buddyId: petDetails.owner_typeid } }">
+                            : { name: 'pov_viewbuddyprofile_shelter', query: { buddyId: petDetails.owner_id } }">
                             <span class="mt-1 text-sm leading-6 text-gray-700 sm:mt-2">
                                 {{ petDetails.owner }}
                             </span>
