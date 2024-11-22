@@ -212,7 +212,7 @@ onMounted(async () => {
     selectedPostDetails.value = props.selectedPostDetails
     await getPetPostDetails()
     generateQR()
-    console.log("What Mode:", props.mode) // for pov
+    console.log("What Mode:", post_details.value) // for pov
 })
 
 const emit = defineEmits(['close']) // for closing the modal
@@ -222,8 +222,8 @@ const open = ref(true)
 let qrgenerated = ref(false)
 let qrphotosrc = ref(null)
 function generateQR() {
-    //for qr
-    let qrvalue = window.location.href;
+    //for qr here, need the first part of the path
+    let qrvalue = post_details.value.pet_id
     qrphotosrc.value = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + qrvalue;
     qrgenerated.value = true
 
